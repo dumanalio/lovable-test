@@ -2,30 +2,66 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Starter Template – Ali</title>
+  <title>Cartablo</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Hero Block -->
-  <section class="hero">
-    <h1>Willkommen bei Cartablo</h1>
-    <p>Moderne Poster in klaren Linien und Farben</p>
-    <a href="#text" class="btn">Jetzt entdecken</a>
-  </section>
+  <div id="app">Lade Website...</div>
 
-  <!-- Text Block -->
-  <section id="text" class="text-block">
-    <h2>Über unsere Poster</h2>
-    <p>
-      Unsere Motive verbinden Minimalismus mit Eleganz. 
-      Gedruckt auf hochwertigem Papier – perfekt für dein Zuhause.
-    </p>
-  </section>
+  <script>
+    // JSON-Daten laden
+    fetch("data.json")
+      .then(res => res.json())
+      .then(data => {
+        document.title = data.pageTitle;
+        const app = document.getElementById("app");
+        app.innerHTML = ""; // reset
 
-  <!-- Footer Block -->
-  <footer class="footer">
-    <p>© 2025 Cartablo – Alle Rechte vorbehalten.</p>
-  </footer>
+        data.blocks.forEach(block => {
+          if (block.type === "hero") {
+            app.innerHTML += `
+              <section class="hero">
+                <h1>${block.headline}</h1>
+                <p>${block.sub}</p>
+                <a href="${block.ctaLink}" class="btn">${block.ctaText}</a>
+              </section>`;
+          }
+
+          if (block.type === "text") {
+            app.innerHTML += `
+              <section class="text-block">
+                <h2>${block.title}</h2>
+                <p>${block.body}</p>
+              </section>`;
+          }
+
+          if (block.type === "gallery") {
+            const imgs = block.images.map(img => `<img src="${img}" alt="Poster">`).join("");
+            app.innerHTML += `
+              <section id="gallery" class="gallery">
+                <h2>Galerie</h2>
+                <div class="grid">${imgs}</div>
+              </section>`;
+          }
+
+          if (block.type === "faq") {
+            const faqs = block.items.map(i => `<details><summary>${i.q}</summary><p>${i.a}</p></details>`).join("");
+            app.innerHTML += `
+              <section class="faq">
+                <h2>Häufige Fragen</h2>
+                ${faqs}
+              </section>`;
+          }
+
+          if (block.type === "footer") {
+            app.innerHTML += `
+              <footer class="footer">
+                <p>${block.text}</p>
+              </footer>`;
+          }
+        });
+      });
+  </script>
 </body>
 </html>
 
