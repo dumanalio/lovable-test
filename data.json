@@ -1,0 +1,36 @@
+{
+  "pageTitle": "Cartablo – Moderne Poster",
+  "blocks": [
+    {
+      "type": "hero",
+      "headline": "Moderne Poster für dein Zuhause",
+      "sub": "Minimalistisch. Elegant. Farbtreu.",
+      "ctaText": "Jetzt shoppen",
+      "ctaLink": "#gallery"
+    },
+    {
+      "type": "text",
+      "title": "Über unsere Kollektion",
+      "body": "Wir verbinden zeitlose Kunst mit moderner Einfachheit. Gedruckt auf hochwertigem Papier in Museumsqualität."
+    },
+    {
+      "type": "gallery",
+      "images": [
+        "https://picsum.photos/300/400?1",
+        "https://picsum.photos/300/400?2",
+        "https://picsum.photos/300/400?3"
+      ]
+    },
+    {
+      "type": "faq",
+      "items": [
+        { "q": "Wie lange dauert die Lieferung?", "a": "In Deutschland ca. 2–4 Werktage." },
+        { "q": "Welche Größen gibt es?", "a": "Von 30×40 cm bis 70×100 cm." }
+      ]
+    },
+    {
+      "type": "footer",
+      "text": "© 2025 Cartablo – Alle Rechte vorbehalten."
+    }
+  ]
+}
