@@ -99,6 +99,8 @@
         return;
       }
 
+      console.log("👉 Sende an API:", input);
+
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -112,6 +114,8 @@
         console.error(payload);
         return;
       }
+
+      console.log("✅ API Antwort:", payload);
 
       localStorage.setItem("pageData", JSON.stringify(payload));
       renderPage(payload);
@@ -131,7 +135,10 @@
           if (!r.ok) throw new Error("Fehler beim Laden von data.json");
           return r.json();
         })
-        .then(renderPage)
+        .then(data => {
+          console.log("✅ data.json geladen:", data);
+          renderPage(data);
+        })
         .catch(err => {
           console.error("❌ Problem mit data.json:", err);
           document.getElementById("app").innerHTML =
