@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Container für die generierte Seite -->
   <div id="app">Lade Website...</div>
 
   <!-- Chatbox -->
@@ -15,12 +16,9 @@
   </div>
 
   <script>
-    // JSON-Daten laden
-    fetch("data.json")
-      .then(res => res.json())
-      .then(data => renderPage(data));
-
-    // Funktion zum Rendern
+    // =========================
+    // Funktion zum Rendern der Blöcke
+    // =========================
     function renderPage(data) {
       document.title = data.pageTitle;
       const app = document.getElementById("app");
@@ -91,10 +89,13 @@
       });
     }
 
+    // =========================
     // Chatbox-Logik
+    // =========================
     document.getElementById("chatSend").addEventListener("click", () => {
       const input = document.getElementById("chatInput").value;
 
+      // Für jetzt: fester Test → Erstelle Hero + Footer aus Eingabetext
       const newData = {
         "pageTitle": "Seite aus Chat gebaut",
         "blocks": [
@@ -112,14 +113,16 @@
         ]
       };
 
-      // Speichern in localStorage
+      // Speichern in localStorage (Simulation für data.json)
       localStorage.setItem("pageData", JSON.stringify(newData));
 
-      // Seite neu rendern
+      // Neu rendern
       renderPage(newData);
     });
 
-    // Beim Laden: wenn was im localStorage ist, das nehmen
+    // =========================
+    // Beim Laden: data.json oder gespeicherte Daten anzeigen
+    // =========================
     const saved = localStorage.getItem("pageData");
     if (saved) {
       renderPage(JSON.parse(saved));
