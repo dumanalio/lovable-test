@@ -8,99 +8,93 @@
 <body>
   <div id="app">Lade Website...</div>
 
-  <script>
-    // JSON-Daten laden
-    fetch("data.json")
-      .then(res => res.json())
-      .then(data => {
-        document.title = data.pageTitle;
-        const app = document.getElementById("app");
-        app.innerHTML = ""; // reset
-
-        data.blocks.forEach(block => {
-          // Hero Block
-          if (block.type === "hero") {
-            app.innerHTML += `
-              <section class="hero">
-                <h1>${block.headline}</h1>
-                <p>${block.sub}</p>
-                <a href="${block.ctaLink}" class="btn">${block.ctaText}</a>
-              </section>`;
-          }
-
-          // Features Block
-          if (block.type === "features") {
-            const items = block.items.map(i => `
-              <div class="feature">
-                <div class="icon">${i.icon}</div>
-                <h3>${i.title}</h3>
-                <p>${i.text}</p>
-              </div>
-            `).join("");
-            app.innerHTML += `
-              <section id="features" class="features">
-                <h2>Features</h2>
-                <div class="features-grid">${items}</div>
-              </section>`;
-          }
-
-          // Text Block
-          if (block.type === "text") {
-            app.innerHTML += `
-              <section class="text-block">
-                <h2>${block.title}</h2>
-                <p>${block.body}</p>
-              </section>`;
-          }
-
-          // Gallery Block
-          if (block.type === "gallery") {
-            const imgs = block.images.map(img => `<img src="${img}" alt="Bild">`).join("");
-            app.innerHTML += `
-              <section id="gallery" class="gallery">
-                <h2>Galerie</h2>
-                <div class="grid">${imgs}</div>
-              </section>`;
-          }
-
-          // FAQ Block
-          if (block.type === "faq") {
-            const faqs = block.items.map(i => `
-              <details>
-                <summary>${i.q}</summary>
-                <p>${i.a}</p>
-              </details>
-            `).join("");
-            app.innerHTML += `
-              <section class="faq">
-                <h2>Häufige Fragen</h2>
-                ${faqs}
-              </section>`;
-          }
-
-          // Footer Block
-          if (block.type === "footer") {
-            app.innerHTML += `
-              <footer class="footer">
-                <p>${block.text}</p>
-              </footer>`;
-          }
-        });
-      });
-  </script>
-</body>
-    <!-- Chatbox -->
+  <!-- Chatbox -->
   <div id="chatbox">
     <textarea id="chatInput" placeholder="Beschreibe deine Website..."></textarea>
     <button id="chatSend">Absenden</button>
   </div>
 
   <script>
+    // JSON-Daten laden
+    fetch("data.json")
+      .then(res => res.json())
+      .then(data => renderPage(data));
+
+    // Funktion zum Rendern
+    function renderPage(data) {
+      document.title = data.pageTitle;
+      const app = document.getElementById("app");
+      app.innerHTML = "";
+
+      data.blocks.forEach(block => {
+        if (block.type === "hero") {
+          app.innerHTML += `
+            <section class="hero">
+              <h1>${block.headline}</h1>
+              <p>${block.sub}</p>
+              <a href="${block.ctaLink}" class="btn">${block.ctaText}</a>
+            </section>`;
+        }
+
+        if (block.type === "features") {
+          const items = block.items.map(i => `
+            <div class="feature">
+              <div class="icon">${i.icon}</div>
+              <h3>${i.title}</h3>
+              <p>${i.text}</p>
+            </div>
+          `).join("");
+          app.innerHTML += `
+            <section id="features" class="features">
+              <h2>Features</h2>
+              <div class="features-grid">${items}</div>
+            </section>`;
+        }
+
+        if (block.type === "text") {
+          app.innerHTML += `
+            <section class="text-block">
+              <h2>${block.title}</h2>
+              <p>${block.body}</p>
+            </section>`;
+        }
+
+        if (block.type === "gallery") {
+          const imgs = block.images.map(img => `<img src="${img}" alt="Bild">`).join("");
+          app.innerHTML += `
+            <section id="gallery" class="gallery">
+              <h2>Galerie</h2>
+              <div class="grid">${imgs}</div>
+            </section>`;
+        }
+
+        if (block.type === "faq") {
+          const faqs = block.items.map(i => `
+            <details>
+              <summary>${i.q}</summary>
+              <p>${i.a}</p>
+            </details>
+          `).join("");
+          app.innerHTML += `
+            <section class="faq">
+              <h2>Häufige Fragen</h2>
+              ${faqs}
+            </section>`;
+        }
+
+        if (block.type === "footer") {
+          app.innerHTML += `
+            <footer class="footer">
+              <p>${block.text}</p>
+            </footer>`;
+        }
+      });
+    }
+
     // Chatbox-Logik
     document.getElementById("chatSend").addEventListener("click", () => {
       const input = document.getElementById("chatInput").value;
 
-      // 🟢 Simpler Test: wir überschreiben data.json mit festem Inhalt
       const newData = {
         "pageTitle": "Seite aus Chat gebaut",
         "blocks": [
@@ -118,36 +112,12 @@
         ]
       };
 
-      // Speichern in localStorage (Simulation für data.json)
+      // Speichern in localStorage
       localStorage.setItem("pageData", JSON.stringify(newData));
 
       // Seite neu rendern
       renderPage(newData);
     });
-
-    // Funktion zum Rendern (auslagern)
-    function renderPage(data) {
-      document.title = data.pageTitle;
-      const app = document.getElementById("app");
-      app.innerHTML = "";
-
-      data.blocks.forEach(block => {
-        if (block.type === "hero") {
-          app.innerHTML += `
-            <section class="hero">
-              <h1>${block.headline}</h1>
-              <p>${block.sub}</p>
-              <a href="${block.ctaLink}" class="btn">${block.ctaText}</a>
-            </section>`;
-        }
-        if (block.type === "footer") {
-          app.innerHTML += `
-            <footer class="footer">
-              <p>${block.text}</p>
-            </footer>`;
-        }
-      });
-    }
 
     // Beim Laden: wenn was im localStorage ist, das nehmen
     const saved = localStorage.getItem("pageData");
@@ -157,5 +127,5 @@
       fetch("data.json").then(r => r.json()).then(renderPage);
     }
   </script>
-
+</body>
 </html>
