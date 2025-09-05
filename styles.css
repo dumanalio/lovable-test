@@ -50,3 +50,40 @@ body {
   text-align: center;
   padding: 20px;
 }
+
+/* Gallery */
+.gallery {
+  padding: 40px 20px;
+  text-align: center;
+}
+.gallery .grid {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.gallery img {
+  width: 200px;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* FAQ */
+.faq {
+  padding: 40px 20px;
+  max-width: 600px;
+  margin: auto;
+}
+.faq details {
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 10px;
+  background: #f9f9f9;
+}
+.faq summary {
+  cursor: pointer;
+  font-weight: bold;
+}
+
