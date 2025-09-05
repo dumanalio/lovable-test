@@ -89,29 +89,35 @@
       });
     }
 
-    // =========================
-    // Chatbox-Logik
-    // =========================
-    document.getElementById("chatSend").addEventListener("click", () => {
-      const input = document.getElementById("chatInput").value;
 
-      // Für jetzt: fester Test → Erstelle Hero + Footer aus Eingabetext
-      const newData = {
-        "pageTitle": "Seite aus Chat gebaut",
-        "blocks": [
-          {
-            "type": "hero",
-            "headline": input,
-            "sub": "Dieser Text kam aus der Chatbox",
-            "ctaText": "Weiter",
-            "ctaLink": "#"
-          },
-          {
-            "type": "footer",
-            "text": "© 2025 Lovable-Light"
-          }
-        ]
-      };
+    // Chatbox-Logik mit API
+document.getElementById("chatSend").addEventListener("click", async () => {
+  const input = document.getElementById("chatInput").value.trim();
+  if (!input) {
+    alert("Bitte eine Beschreibung eingeben.");
+    return;
+  }
+
+  // Anfrage an unsere neue Serverless API
+  const res = await fetch("/api/generate", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ input })
+  });
+
+  const payload = await res.json();
+
+  if (!res.ok) {
+    alert("Fehler: " + (payload?.error || "Unbekannt"));
+    console.error(payload);
+    return;
+  }
+
+  // Seite mit neuem JSON rendern
+  localStorage.setItem("pageData", JSON.stringify(payload));
+  renderPage(payload);
+});
+
 
       // Speichern in localStorage (Simulation für data.json)
       localStorage.setItem("pageData", JSON.stringify(newData));
