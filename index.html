@@ -89,4 +89,73 @@
       });
   </script>
 </body>
+    <!-- Chatbox -->
+  <div id="chatbox">
+    <textarea id="chatInput" placeholder="Beschreibe deine Website..."></textarea>
+    <button id="chatSend">Absenden</button>
+  </div>
+
+  <script>
+    // Chatbox-Logik
+    document.getElementById("chatSend").addEventListener("click", () => {
+      const input = document.getElementById("chatInput").value;
+
+      // 🟢 Simpler Test: wir überschreiben data.json mit festem Inhalt
+      const newData = {
+        "pageTitle": "Seite aus Chat gebaut",
+        "blocks": [
+          {
+            "type": "hero",
+            "headline": input,
+            "sub": "Dieser Text kam aus der Chatbox",
+            "ctaText": "Weiter",
+            "ctaLink": "#"
+          },
+          {
+            "type": "footer",
+            "text": "© 2025 Lovable-Light"
+          }
+        ]
+      };
+
+      // Speichern in localStorage (Simulation für data.json)
+      localStorage.setItem("pageData", JSON.stringify(newData));
+
+      // Seite neu rendern
+      renderPage(newData);
+    });
+
+    // Funktion zum Rendern (auslagern)
+    function renderPage(data) {
+      document.title = data.pageTitle;
+      const app = document.getElementById("app");
+      app.innerHTML = "";
+
+      data.blocks.forEach(block => {
+        if (block.type === "hero") {
+          app.innerHTML += `
+            <section class="hero">
+              <h1>${block.headline}</h1>
+              <p>${block.sub}</p>
+              <a href="${block.ctaLink}" class="btn">${block.ctaText}</a>
+            </section>`;
+        }
+        if (block.type === "footer") {
+          app.innerHTML += `
+            <footer class="footer">
+              <p>${block.text}</p>
+            </footer>`;
+        }
+      });
+    }
+
+    // Beim Laden: wenn was im localStorage ist, das nehmen
+    const saved = localStorage.getItem("pageData");
+    if (saved) {
+      renderPage(JSON.parse(saved));
+    } else {
+      fetch("data.json").then(r => r.json()).then(renderPage);
+    }
+  </script>
+
 </html>
