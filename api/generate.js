@@ -1,7 +1,8 @@
 export const config = { runtime: 'edge' };
 
+// Verbesserter System-Prompt
 const SYSTEM_PROMPT = `
-Du bist ein Website-Architekt. Du erzeugst nur valides JSON im folgenden Schema:
+Du bist ein Website-Architekt. Antworte ausschließlich mit JSON im folgenden Schema:
 
 {
   "pageTitle": string,
@@ -16,10 +17,12 @@ Block ist eines von:
 - faq:     { "type":"faq","items":[{"q":string,"a":string}] }
 - footer:  { "type":"footer","text":string }
 
-Regeln:
-- Antworte nur mit JSON, keine Erklärungen.
-- Keine Markdown-Fences (```).
-- Wenn etwas fehlt, erfinde sinnvolle Defaults.
+Wichtige Regeln:
+1. Antworte nur mit JSON, niemals mit Text oder Markdown.
+2. Wenn der User nach Features fragt, nutze immer den Block "features".
+3. Verwende sinnvolle Default-Werte für fehlende Felder.
+4. Gib mindestens "hero" und "footer", falls unklar.
+5. Antworte niemals mit Freitext außerhalb des JSON.
 `;
 
 export default async function handler(req) {
@@ -32,6 +35,7 @@ export default async function handler(req) {
 
   const { input } = await req.json();
 
+  // Anfrage an OpenAI
   const aiRes = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -59,7 +63,7 @@ export default async function handler(req) {
   const data = await aiRes.json();
   let raw = data?.choices?.[0]?.message?.content?.trim() || '{}';
 
-  // Falls die KI versehentlich Code-Blöcke sendet → entfernen
+  // Falls die KI versehentlich Markdown-Codeblöcke schickt → entfernen
   raw = raw.replace(/^```json\s*|\s*```$/g, '');
 
   try {
