@@ -1,36 +1,36 @@
 {
-  "pageTitle": "Cartablo – Moderne Poster",
+  "pageTitle": "Meine erste Lovable-Light Seite",
   "blocks": [
     {
       "type": "hero",
-      "headline": "Moderne Poster für dein Zuhause",
-      "sub": "Minimalistisch. Elegant. Farbtreu.",
-      "ctaText": "Jetzt shoppen",
-      "ctaLink": "#gallery"
+      "headline": "Willkommen auf meiner Website",
+      "sub": "Diese Seite wurde automatisch aus JSON gebaut.",
+      "ctaText": "Mehr erfahren",
+      "ctaLink": "#features"
+    },
+    {
+      "type": "features",
+      "items": [
+        { "icon": "⚡", "title": "Schnell", "text": "In Sekunden erstellt" },
+        { "icon": "🎨", "title": "Flexibel", "text": "Viele Layouts & Blöcke" },
+        { "icon": "🛠️", "title": "Einfach", "text": "Kein Coding nötig" }
+      ]
     },
     {
       "type": "text",
-      "title": "Über unsere Kollektion",
-      "body": "Wir verbinden zeitlose Kunst mit moderner Einfachheit. Gedruckt auf hochwertigem Papier in Museumsqualität."
-    },
-    {
-      "type": "gallery",
-      "images": [
-        "https://picsum.photos/300/400?1",
-        "https://picsum.photos/300/400?2",
-        "https://picsum.photos/300/400?3"
-      ]
+      "title": "Wie es funktioniert",
+      "body": "Beschreibe deine Website im Chat. Die KI wandelt deine Worte in JSON um. Unser System rendert daraus automatisch eine fertige Seite."
     },
     {
       "type": "faq",
       "items": [
-        { "q": "Wie lange dauert die Lieferung?", "a": "In Deutschland ca. 2–4 Werktage." },
-        { "q": "Welche Größen gibt es?", "a": "Von 30×40 cm bis 70×100 cm." }
+        { "q": "Brauche ich Programmierkenntnisse?", "a": "Nein, alles läuft automatisch." },
+        { "q": "Was kostet es?", "a": "Nur deine Hostingkosten – keine Credits wie bei Lovable." }
       ]
     },
     {
       "type": "footer",
-      "text": "© 2025 Cartablo – Alle Rechte vorbehalten."
+      "text": "© 2025 Lovable-Light Demo"
     }
   ]
 }
