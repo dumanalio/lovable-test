@@ -1,6 +1,5 @@
 export const config = { runtime: 'edge' };
 
-// Verbesserter System-Prompt
 const SYSTEM_PROMPT = `
 Du bist ein Website-Architekt. Antworte ausschließlich mit JSON im folgenden Schema:
 
@@ -17,7 +16,7 @@ Block ist eines von:
 - faq:     { "type":"faq","items":[{"q":string,"a":string}] }
 - footer:  { "type":"footer","text":string }
 
-Wichtige Regeln:
+Regeln:
 1. Antworte nur mit JSON, niemals mit Text oder Markdown.
 2. Wenn der User nach Features fragt, nutze immer den Block "features".
 3. Verwende sinnvolle Default-Werte für fehlende Felder.
@@ -33,9 +32,17 @@ export default async function handler(req) {
     });
   }
 
-  const { input } = await req.json();
+  let input = "";
+  try {
+    const body = await req.json();
+    input = body.input || "";
+  } catch (e) {
+    return new Response(JSON.stringify({ error: 'Invalid JSON body' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json' }
+    });
+  }
 
-  // Anfrage an OpenAI
   const aiRes = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -47,7 +54,7 @@ export default async function handler(req) {
       temperature: 0,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: input || '' }
+        { role: 'user', content: input }
       ]
     })
   });
@@ -63,8 +70,8 @@ export default async function handler(req) {
   const data = await aiRes.json();
   let raw = data?.choices?.[0]?.message?.content?.trim() || '{}';
 
-  // Falls die KI versehentlich Markdown-Codeblöcke schickt → entfernen
-  raw = raw.replace(/^```json\s*|\s*```$/g, '');
+  // Entferne evtl. Markdown-Codeblöcke
+  raw = raw.replace(/^```json\s*/g, '').replace(/```$/g, '');
 
   try {
     const json = JSON.parse(raw);
