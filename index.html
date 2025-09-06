@@ -99,7 +99,8 @@
         return;
       }
 
-      // Anfrage an unsere neue Serverless API
+      console.log("👉 Sende an API:", input);
+
       const res = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -114,25 +115,34 @@
         return;
       }
 
-      // Seite mit neuem JSON rendern
+      console.log("✅ API Antwort:", payload);
+
       localStorage.setItem("pageData", JSON.stringify(payload));
       renderPage(payload);
     });
 
     // =========================
-    // Beim Laden: page.json oder gespeicherte Daten anzeigen
+    // Beim Laden: data.json oder gespeicherte Daten anzeigen
     // =========================
     const saved = localStorage.getItem("pageData");
     if (saved) {
+      console.log("⚡ Lade gespeicherte Seite aus localStorage");
       renderPage(JSON.parse(saved));
     } else {
-      fetch("page.json")
-        .then(r => r.json())
-        .then(renderPage)
+      console.log("🌍 Lade data.json...");
+      fetch("data.json")
+        .then(r => {
+          if (!r.ok) throw new Error("Fehler beim Laden von data.json");
+          return r.json();
+        })
+        .then(data => {
+          console.log("✅ data.json geladen:", data);
+          renderPage(data);
+        })
         .catch(err => {
-          console.error("❌ Problem mit page.json:", err);
+          console.error("❌ Problem mit data.json:", err);
           document.getElementById("app").innerHTML =
-            "<p style='color:red'>Fehler: Konnte page.json nicht laden.</p>";
+            "<p style='color:red'>Fehler: Konnte data.json nicht laden.</p>";
         });
     }
   </script>
