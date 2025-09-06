@@ -3,138 +3,264 @@
 <head>
   <meta charset="UTF-8" />
   <title>Lovable-Light</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* Mini-Erweiterungen, falls deine styles.css noch nicht alles hat */
+    :root{--bg:#111;--fg:#eee;--brand:#1a2a6c;--muted:#f5f5f7;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
+    .navbar{position:sticky;top:0;z-index:30;display:flex;gap:16px;align-items:center;justify-content:space-between;padding:12px 20px;background:#fff;border-bottom:1px solid #eaeaea}
+    .navbar .brand{font-weight:700}
+    .nav-items{display:flex;gap:14px;flex-wrap:wrap}
+    .nav-items a{color:#222;text-decoration:none;padding:6px 8px;border-radius:8px}
+    .nav-cta{background:#111;color:#fff;padding:8px 12px;border-radius:10px;text-decoration:none}
+    .center{display:flex;justify-content:center;align-items:center}
+    .btn{display:inline-block;background:#1a2a6c;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;border:0;cursor:pointer}
+    .section{padding:56px 20px;max-width:1080px;margin:0 auto}
+    .grid{display:grid;gap:16px}
+    .grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+    .grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+    .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:18px;box-shadow:0 6px 14px rgba(0,0,0,.06)}
+    .price{font-size:32px;font-weight:800;margin:4px 0}
+    .testimonial{font-style:italic}
+    .video iframe,.video video{width:100%;max-width:960px;aspect-ratio:16/9;border:0;border-radius:14px;box-shadow:0 6px 14px rgba(0,0,0,.08)}
+    .form-section form{display:grid;gap:12px;max-width:520px;margin:0 auto}
+    .form-section input,.form-section textarea, .form-section select{width:100%;padding:10px;border:1px solid #ddd;border-radius:10px}
+    .footer{background:var(--bg);color:var(--fg);text-align:center;padding:24px;margin-top:56px}
+    .notice{background:#fff3cd;border:1px solid #ffe69c;color:#5f4b00;border-radius:12px;padding:12px 14px}
+    /* Chatbox */
+    #chatbox{position:fixed;bottom:0;left:0;right:0;background:#f1f1f1;border-top:1px solid #ddd;display:flex;gap:10px;padding:8px}
+    #chatInput{flex:1;min-height:56px;padding:10px;border:1px solid #ccc;border-radius:10px;font-size:15px}
+    #chatSend{background:#1a2a6c;color:#fff;border:0;padding:0 18px;border-radius:10px;font-weight:700}
+    #spinner{display:none;margin-left:8px}
+  </style>
 </head>
 <body>
-  <!-- Container für Blöcke -->
-  <div id="app">Lade Website...</div>
 
-  <!-- Chatbox -->
+  <!-- dynamischer Inhalt kommt hier rein -->
+  <div id="app" class="section">Lade Website…</div>
+
+  <!-- Chat unten -->
   <div id="chatbox">
-    <textarea id="chatInput" placeholder="Beschreibe deine Website wie ein Mensch..."></textarea>
+    <textarea id="chatInput" placeholder="Beschreibe deine Website wie ein Mensch: „Navbar mit Logo links, Hero mit großem Titel, roter Button, danach 3 Features…“"></textarea>
     <button id="chatSend">Absenden</button>
+    <div id="spinner">⏳</div>
   </div>
 
   <script>
-    // =========================
-    // Render-Funktion
-    // =========================
-    function renderPage(data) {
-      console.log("🖼️ Rendere Seite mit JSON:", data);
+    /********* kleine Helfer *********/
+    const esc = (s)=>String(s??"").replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
+    const byId = (id)=>document.getElementById(id);
 
-      if (!data || !data.blocks) {
-        document.getElementById("app").innerHTML = "<p style='color:red'>⚠️ Keine gültigen Daten zum Rendern.</p>";
+    function applyTheme(theme){
+      if(!theme) return;
+      const r = document.documentElement.style;
+      if(theme.brand) r.setProperty("--brand", theme.brand);
+      if(theme.bg)    r.setProperty("--bg", theme.bg);
+      if(theme.fg)    r.setProperty("--fg", theme.fg);
+      if(theme.muted) r.setProperty("--muted", theme.muted);
+      if(theme.font)  document.body.style.fontFamily = theme.font + ", Inter, system-ui, Arial";
+    }
+
+    /********* Block-Renderer (rekursiv) *********/
+    function renderPage(data){
+      console.log("🖼️ Render:", data);
+      if(!data || !Array.isArray(data.blocks)){ 
+        byId("app").innerHTML = `<div class="notice">Keine gültigen Blöcke gefunden.</div>`;
         return;
       }
 
       document.title = data.pageTitle || "Neue Seite";
-      const app = document.getElementById("app");
-      app.innerHTML = "";
+      applyTheme(data.theme);
 
-      data.blocks.forEach(block => {
-        switch (block.type) {
-          case "hero":
-            app.innerHTML += `
-              <section class="hero">
-                <h1>${block.headline || ""}</h1>
-                <p>${block.sub || ""}</p>
-                <a href="${block.ctaLink || "#"}" class="btn">${block.ctaText || ""}</a>
+      const parts = [];
+
+      const renderBlock = (b)=>{
+        if(!b || typeof b !== "object") return "";
+
+        // Verschachtelung unterstützen: b.children als Array von Blöcken
+        const children = Array.isArray(b.children) ? b.children.map(renderBlock).join("") : "";
+
+        switch(b.type){
+          case "navbar":{
+            const items = (b.items||[]).map(i=>`<a href="${esc(i.link||"#")}">${esc(i.text||"Link")}</a>`).join("");
+            const brand = b.brandImage ? `<img src="${esc(b.brandImage)}" alt="${esc(b.brand||"Logo")}" style="height:26px">` : esc(b.brand||"");
+            const cta   = b.cta ? `<a class="nav-cta" href="${esc(b.cta.link||"#")}">${esc(b.cta.text||"Los")}</a>` : "";
+            return `
+              <nav class="navbar" style="${b.sticky===false?"position:relative":""}">
+                <div class="brand">${brand}</div>
+                <div class="nav-items">${items}</div>
+                ${cta}
+              </nav>`;
+          }
+
+          case "logo":
+            return `<div class="navbar"><div class="brand">${esc(b.text||"Logo")}</div></div>`;
+
+          case "hero":{
+            const bg = b.backgroundGradient || "linear-gradient(135deg,#1a2a6c,#b21f1f,#fdbb2d)";
+            return `
+              <section class="hero" style="padding:110px 20px;color:#fff;background:${esc(bg)};text-align:${esc(b.align||"center")}">
+                <h1 style="font-size:${esc(b.h1Size||"46px")};margin:0 0 10px">${esc(b.headline||"")}</h1>
+                <p style="font-size:18px;opacity:.95">${esc(b.sub||"")}</p>
+                ${b.ctaText ? `<a href="${esc(b.ctaLink||"#")}" class="btn" style="background:${esc(b.ctaColor||"#fff")};color:${esc(b.ctaTextColor||"#1a2a6c")};margin-top:16px;display:inline-block">${esc(b.ctaText)}</a>` : ""}
               </section>`;
-            break;
+          }
+
+          case "section":
+            return `<section class="section"><h2>${esc(b.title||"")}</h2><p>${esc(b.body||"")}</p>${children}</section>`;
+
+          case "columns":{
+            const cols = (b.columns||[]).map(col=>`<div>${Array.isArray(col) ? col.map(renderBlock).join("") : renderBlock(col)}</div>`).join("");
+            const n = Math.min(3, Math.max(2, b.count || (b.columns||[]).length || 2));
+            return `<section class="section"><div class="grid cols-${n}">${cols}</div></section>`;
+          }
+
+          case "features":{
+            const items = (b.items||[]).map(i=>`
+              <div class="card center" style="gap:10px;flex-direction:column">
+                <div style="font-size:28px">${esc(i.icon||"✨")}</div>
+                <div style="font-weight:700">${esc(i.title||"Feature")}</div>
+                <div style="opacity:.8;text-align:center">${esc(i.text||"")}</div>
+              </div>`).join("");
+            return `<section class="section"><h2>${esc(b.title||"Features")}</h2><div class="grid cols-3">${items}</div></section>`;
+          }
+
+          case "cardGrid":{
+            const cards = (b.cards||[]).map(c=>`
+              <div class="card">
+                ${c.image?`<img src="${esc(c.image)}" alt="${esc(c.title||"")}" style="width:100%;height:160px;object-fit:cover;border-radius:10px">`:""}
+                <h3>${esc(c.title||"")}</h3>
+                <p>${esc(c.text||"")}</p>
+                ${c.link?`<a class="btn" href="${esc(c.link)}">Mehr</a>`:""}
+              </div>`).join("");
+            return `<section class="section"><h2>${esc(b.title||"")}</h2><div class="grid cols-3">${cards}</div></section>`;
+          }
+
+          case "pricing":{
+            const plans = (b.plans||[]).map(p=>`
+              <div class="card">
+                <div style="font-weight:800">${esc(p.name||"Plan")}</div>
+                <div class="price">${esc(p.price||"€0")}<span style="font-size:14px;font-weight:400">/Monat</span></div>
+                <ul style="padding-left:18px">${(p.features||[]).map(f=>`<li>${esc(f)}</li>`).join("")}</ul>
+                <a class="btn" href="${esc(p.ctaLink||"#")}">${esc(p.ctaText||"Wählen")}</a>
+              </div>`).join("");
+            return `<section class="section"><h2>${esc(b.title||"Preise")}</h2><div class="grid cols-3">${plans}</div></section>`;
+          }
+
+          case "testimonial":{
+            return `<section class="section"><blockquote class="testimonial">„${esc(b.quote||"")}”</blockquote><div>— ${esc(b.author||"")}</div></section>`;
+          }
+
+          case "gallery":{
+            const imgs=(b.images||[]).map(src=>`<img src="${esc(src)}" alt="" style="width:100%;height:220px;object-fit:cover;border-radius:12px">`).join("");
+            return `<section class="section"><h2>${esc(b.title||"Galerie")}</h2><div class="grid cols-3">${imgs}</div></section>`;
+          }
+
+          case "image":
+            return `<section class="section center image-block"><img src="${esc(b.src)}" alt="${esc(b.alt||"Bild")}" style="max-width:100%;border-radius:12px"></section>`;
+
+          case "video":{
+            const url = String(b.src||"");
+            let embed = "";
+            if(/youtube\.com|youtu\.be/.test(url)){
+              const id = url.match(/(?:v=|be\/)([A-Za-z0-9_-]{6,})/)?.[1] || "";
+              embed = `<iframe src="https://www.youtube.com/embed/${esc(id)}" allowfullscreen></iframe>`;
+            }else if(/vimeo\.com/.test(url)){
+              const id = url.match(/vimeo\.com\/(\d+)/)?.[1] || "";
+              embed = `<iframe src="https://player.vimeo.com/video/${esc(id)}" allowfullscreen></iframe>`;
+            }else{
+              embed = `<video controls src="${esc(url)}"></video>`;
+            }
+            return `<section class="section video"><h2>${esc(b.title||"Video")}</h2>${embed}</section>`;
+          }
+
+          case "faq":{
+            const faqs=(b.items||[]).map(i=>`
+              <details class="card"><summary>${esc(i.q||"Frage")}</summary><p>${esc(i.a||"")}</p></details>`).join("");
+            return `<section class="section"><h2>${esc(b.title||"Häufige Fragen")}</h2><div class="grid">${faqs}</div></section>`;
+          }
+
+          case "form":{
+            const fields = (b.fields||[]).map(f=>{
+              const t=f.type||"text";
+              const name=(f.name || f.label || "feld").toLowerCase().replace(/\s+/g,"_");
+              const base = `<label>${esc(f.label||name)}${t==="textarea"
+                ? `<textarea name="${esc(name)}" placeholder="${esc(f.placeholder||"")}"></textarea>`
+                : t==="select"
+                  ? `<select name="${esc(name)}">${(f.options||[]).map(o=>`<option>${esc(o)}</option>`).join("")}</select>`
+                  : `<input type="${esc(t)}" name="${esc(name)}" placeholder="${esc(f.placeholder||"")}">`
+              }</label>`;
+              return `<div>${base}</div>`;
+            }).join("");
+            return `
+              <section class="section form-section">
+                <h2>${esc(b.title||"Kontakt")}</h2>
+                <form onsubmit="event.preventDefault(); alert('Formulardaten wurden lokal abgefangen (Demo)');">
+                  ${fields}
+                  <button class="btn" type="submit">${esc(b.submitText||"Absenden")}</button>
+                </form>
+              </section>`;
+          }
 
           case "button":
-            app.innerHTML += `
-              <div class="center">
-                <button class="btn" style="background:${block.color || "blue"}">
-                  ${block.text || "Button"}
-                </button>
-              </div>`;
-            break;
+            return `<section class="section center"><a class="btn" style="background:${esc(b.color||"#1a2a6c")}" href="${esc(b.link||"#")}">${esc(b.text||"Button")}</a></section>`;
 
           case "footer":
-            app.innerHTML += `
-              <footer class="footer">
-                <p>${block.text || ""}</p>
-              </footer>`;
-            break;
+            return `<footer class="footer"><p>${esc(b.text||"")}</p></footer>`;
 
           default:
-            console.warn("⚠️ Unbekannter Blocktyp:", block);
-            app.innerHTML += `
-              <section>
-                <pre>${JSON.stringify(block, null, 2)}</pre>
-              </section>`;
+            console.warn("Unbekannter Block:", b);
+            return `<section class="section"><div class="notice"><strong>Unbekannter Blocktyp:</strong> <code>${esc(b.type)}</code><pre>${esc(JSON.stringify(b,null,2))}</pre></div></section>`;
         }
-      });
+      };
+
+      for(const b of data.blocks) parts.push(renderBlock(b));
+      byId("app").innerHTML = parts.join("");
     }
 
-    // =========================
-    // Chatbox-Logik
-    // =========================
-    document.getElementById("chatSend").addEventListener("click", async () => {
-      const input = document.getElementById("chatInput").value.trim();
-      if (!input) return alert("Bitte etwas eingeben.");
-
-      console.log("📤 Sende an API:", input);
-
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input })
-      });
-
-      const payload = await res.json();
-      console.log("📥 API Antwort:", payload);
-
-      if (!res.ok) {
-        alert("Fehler: " + (payload?.error || "Unbekannt"));
-        console.error(payload);
-        return;
+    /********* Chat → /api/generate *********/
+    byId("chatSend").addEventListener("click", async ()=>{
+      const input = byId("chatInput").value.trim();
+      if(!input) return alert("Bitte etwas eingeben.");
+      byId("spinner").style.display = "block";
+      try{
+        console.log("📤 Prompt:", input);
+        const res = await fetch("/api/generate",{
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ input })
+        });
+        const payload = await res.json();
+        console.log("📥 Response:", payload);
+        if(!res.ok) throw new Error(payload?.error || "Fehler von API");
+        localStorage.setItem("pageData", JSON.stringify(payload));
+        renderPage(payload);
+      }catch(e){
+        console.error(e);
+        alert("Fehler: " + e.message);
+      }finally{
+        byId("spinner").style.display = "none";
       }
-
-      localStorage.setItem("pageData", JSON.stringify(payload));
-      renderPage(payload);
     });
 
-    // =========================
-    // Initial: data.json laden oder Fallback
-    // =========================
-    const saved = localStorage.getItem("pageData");
-    if (saved) {
-      console.log("⚡ Lade gespeicherte Seite aus localStorage");
-      renderPage(JSON.parse(saved));
-    } else {
-      console.log("🌍 Lade data.json...");
+    /********* Initial laden: localStorage oder data.json *********/
+    (function init(){
+      const saved = localStorage.getItem("pageData");
+      if(saved){
+        console.log("⚡ Lade aus localStorage");
+        return renderPage(JSON.parse(saved));
+      }
+      console.log("🌍 Lade data.json …");
       fetch("data.json")
-        .then(r => {
-          if (!r.ok) {
-            console.warn("⚠️ Keine data.json gefunden, verwende Fallback");
-            return {
-              pageTitle: "Fallback-Seite",
-              blocks: [
-                { "type": "hero", "headline": "Hallo Ali", "sub": "Dies ist ein Fallback Hero", "ctaText": "Weiter", "ctaLink": "#" },
-                { "type": "button", "text": "Jetzt starten", "color": "red", "link": "#" },
-                { "type": "footer", "text": "© 2025 Lovable-Light" }
-              ]
-            };
-          }
-          return r.json();
-        })
-        .then(data => {
-          console.log("✅ data.json geladen oder Fallback genutzt:", data);
-          renderPage(data);
-        })
-        .catch(err => {
-          console.error("❌ Problem mit data.json:", err);
-          renderPage({
-            pageTitle: "Error-Seite",
-            blocks: [
-              { "type": "hero", "headline": "Fehler beim Laden", "sub": "data.json konnte nicht geladen werden", "ctaText": "Neu versuchen", "ctaLink": "#" },
-              { "type": "footer", "text": "© 2025 Lovable-Light" }
-            ]
-          });
+        .then(r=>r.ok?r.json():({pageTitle:"Start",blocks:[{type:"section",title:"Willkommen",body:"Kein data.json gefunden – Fallback."}] }))
+        .then(renderPage)
+        .catch(err=>{
+          console.error("data.json Fehler",err);
+          renderPage({pageTitle:"Fehler",blocks:[{type:"section",title:"Ladefehler",body:"data.json konnte nicht geladen werden."}]});
         });
-    }
+    })();
   </script>
 </body>
 </html>
