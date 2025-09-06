@@ -1,35 +1,35 @@
 export const config = { runtime: 'edge' };
 
 const SYSTEM_PROMPT = `
-Du bist ein Website-Architekt. Der User beschreibt ganz normal in Alltagssprache,
-was er auf seiner Website haben möchte. 
-
-Deine Aufgabe:
-- Antworte **nur mit JSON**, niemals mit Text oder Markdown.
-- Erzeuge eine Liste von "blocks", die die Website repräsentieren.
-- Erfinde Blocktypen frei, wenn es sinnvoll ist (z. B. "button", "image", "section", "navbar", "form").
-- Nutze sinnvolle Defaultwerte, falls etwas unklar ist.
-
-Schema:
+Du bist ein Website-Architekt. 
+Antworte ausschließlich mit JSON im folgenden Schema:
 
 {
   "pageTitle": string,
-  "blocks": [
-    { "type": "hero", "headline": string, "sub": string, "ctaText": string, "ctaLink": string },
-    { "type": "features", "items": [ { "icon": string, "title": string, "text": string } ] },
-    { "type": "text", "title": string, "body": string },
-    { "type": "gallery", "images": string[] },
-    { "type": "faq", "items": [ { "q": string, "a": string } ] },
-    { "type": "button", "text": string, "link": string, "color": string },
-    { "type": "image", "src": string, "alt": string },
-    { "type": "footer", "text": string }
-  ]
+  "blocks": Block[]
 }
 
+Block kann ALLES sein:
+- hero:    { "type":"hero","headline":string,"sub":string,"ctaText":string,"ctaLink":string }
+- features:{ "type":"features","items":[{"icon":string,"title":string,"text":string}] }
+- text:    { "type":"text","title":string,"body":string }
+- gallery: { "type":"gallery","images":string[] }
+- faq:     { "type":"faq","items":[{"q":string,"a":string}] }
+- footer:  { "type":"footer","text":string }
+- logo:    { "type":"logo","text":string,"position":"left"|"center"|"right" }
+- navbar:  { "type":"navbar","items":[{"text":string,"link":string}] }
+- button:  { "type":"button","text":string,"color":string,"link":string }
+- image:   { "type":"image","src":string,"alt":string }
+- video:   { "type":"video","src":string,"title":string }
+- form:    { "type":"form","fields":[{"label":string,"type":string}],"submitText":string }
+- testimonial: { "type":"testimonial","quote":string,"author":string }
+- cardGrid: { "type":"cardGrid","cards":[{"title":string,"text":string,"image":string}] }
+- ... oder andere Strukturen, die zur Anfrage passen.
+
 Regeln:
-1. Baue IMMER ein Array von "blocks".
-2. Wenn der User nur etwas Kleines sagt (z. B. "Button hinzufügen"), dann baue ein passendes JSON mit mind. einem Hero + Footer + dem neuen Block.
-3. Nutze nur gültiges JSON, kein Markdown, keine Kommentare.
+1. Antworte NUR mit JSON, niemals mit Text oder Markdown.
+2. Wenn der User vage ist, füge sinnvolle Defaults ein.
+3. Du darfst neue Blocktypen erfinden, wenn es nötig ist.
 `;
 
 export default async function handler(req) {
@@ -59,7 +59,7 @@ export default async function handler(req) {
     },
     body: JSON.stringify({
       model: 'gpt-4o-mini',
-      temperature: 0.3,
+      temperature: 0.4,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: input }
@@ -78,7 +78,7 @@ export default async function handler(req) {
   const data = await aiRes.json();
   let raw = data?.choices?.[0]?.message?.content?.trim() || '{}';
 
-  // Markdown-Block entfernen, falls GPT ihn liefert
+  // Entferne evtl. Markdown-Codeblöcke
   raw = raw.replace(/^```json\s*/g, '').replace(/```$/g, '');
 
   try {
