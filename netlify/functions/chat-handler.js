@@ -36,209 +36,255 @@ exports.handler = async (event, context) => {
     const contextualHints = generateUltimateHints(currentHTML, message, userIntent);
     const templateSystem = getWebsiteTemplate(userIntent);
     
-    const systemPrompt = `Du bist der weltweit fortschrittlichste Website-Generator, entwickelt für Enterprise-Level Websites. Du verstehst jede natürliche Sprache perfekt und generierst produktionsreife, hochkonvertierende Websites.
+    const systemPrompt = `Du bist ein EXPERT-LEVEL Website-Generator wie lovable.dev oder v0.dev. Du generierst PRODUCTION-READY, hochkonvertierende Websites mit modernen UI-Components und Business-Logic.
 
-=== AKTUELLER WEBSITE-KONTEXT ===
-${currentHTML || 'Leeres Canvas - bereit für neue Website'}
+=== AKTUELLE WEBSITE ===
+${currentHTML || 'Leeres Canvas - bereit für PROFESSIONELLE Website'}
 
-=== DETAILLIERTE BENUTZER-ANALYSE ===
-Nachricht: "${message}"
-Erkannter Typ: ${userIntent.websiteType}
-Hauptabsicht: ${userIntent.primaryIntent}
-Branche: ${userIntent.industry}
-Zielgruppe: ${userIntent.targetAudience}
-Komplexität: ${userIntent.complexityLevel}
-Layout-Wunsch: ${userIntent.layoutPreference}
-Stil-Präferenz: ${userIntent.stylePreference}
-Funktionen: ${userIntent.requiredFeatures.join(', ')}
+=== USER REQUEST ANALYSIS ===
+Original: "${message}"
+Website Type: ${userIntent.websiteType}
+Industry: ${userIntent.industry}
+Complexity: ${userIntent.complexityLevel}
 
-=== CONTEXTUAL HINTS ===
-${contextualHints}
+=== LOVABLE.DEV-LEVEL STANDARDS ===
 
-=== WEBSITE-TEMPLATE ===
-${templateSystem}
+Du bist NICHT ein einfacher HTML-Generator! Du bist ein BUSINESS-WEBSITE-EXPERTE der CONVERSION-OPTIMIERTE, PROFESSIONELLE Websites erstellt.
 
-=== ULTIMATE CODING STANDARDS ===
+ECOMMERCE WEBSITES MÜSSEN HABEN:
+🛒 WARENKORB-ICON in Navigation mit Counter
+💳 PRODUKTKARTEN mit echten Produkt-Layouts
+💰 PREISE prominent hervorgehoben  
+🔘 "IN DEN WARENKORB" Buttons (grün/blau)
+⭐ BEWERTUNGEN/Sterne bei Produkten
+🏆 TRUST-SIGNALE (Gütesiegel, Garantien)
+📱 RESPONSIVE Product Grid (3-4 Spalten Desktop, 1-2 Mobile)
+🎨 MODERNE UI mit Hover-Effekte und Animations
+💼 PROFESSIONELLER Footer mit Zahlungsmethoden
 
-1. ARCHITEKTUR & STRUKTUR:
-   - Vollständiges HTML5 mit semantischen Elementen
-   - Progressive Web App Ready (PWA)
-   - SEO-optimiert mit Meta-Tags und Schema.org
-   - Accessibility WCAG 2.1 AAA Standard
-   - Performance-optimiert (Core Web Vitals)
+LANDING PAGES MÜSSEN HABEN:
+🎯 HERO Section mit großem CTA
+✨ BENEFITS Section (3-Spalten Icons + Text)
+💬 TESTIMONIALS mit Fotos und Namen
+❓ FAQ Section
+📧 EMAIL-SIGNUP mit Lead-Magnet
+📱 MOBILE-OPTIMIZED überall
 
-2. RESPONSIVE DESIGN SYSTEM:
-   - Mobile-First: 320px → 768px → 1024px → 1440px → 1920px
-   - Fluid Typography: clamp(1rem, 2.5vw, 1.5rem)
-   - Container Queries für moderne Browser
-   - Touch-optimiert (min 44px tap targets)
-   - Retina-ready Images
+=== TECHNICAL EXCELLENCE ===
 
-3. CSS METHODOLOGY:
-   - BEM-ähnliche Klassen-Struktur
-   - CSS Custom Properties (Variables)
-   - Modern CSS Grid & Flexbox
-   - Container Queries
-   - CSS Animations mit @media (prefers-reduced-motion)
-   - 8px-Grid System
+CSS REQUIREMENTS:
+- CSS Grid für Produktlayouts
+- Flexbox für Navigation
+- CSS Variables für Farbsystem
+- Smooth Animations (transition: all 0.3s ease)
+- Hover-Effekte auf allen Buttons
+- Box-shadows für Tiefe
+- Responsive Breakpoints (768px, 1024px)
 
-4. PERFORMANCE & SEO:
-   - Critical CSS inline
-   - Lazy Loading für Bilder
-   - Optimierte Font Loading
-   - Meta Tags für Social Media
-   - JSON-LD Structured Data
-   - Open Graph & Twitter Cards
+COMPONENT PATTERNS:
+- Card Components mit border-radius: 12px
+- Button Styles mit gradient/solid + hover
+- Navigation mit Logo links, Links mitte, CTA rechts
+- Footer mit 3-4 Spalten
+- Hero mit 50/50 Split (Text + Image)
 
-=== BRANCHEN-SPEZIFISCHE TEMPLATES ===
+COLOR SYSTEMS:
+- Primary: #3b82f6 (blau)
+- Success: #10b981 (grün für "Kaufen")
+- Warning: #f59e0b (orange für "Warenkorb")
+- Text: #1f2937 (dunkelgrau)
+- Background: #ffffff
+- Border: #e5e7eb
 
-E-COMMERCE (Shop/Verkauf):
-- Header: Logo + Navigation + Warenkorb-Icon mit Counter
-- Hero: Hauptangebot mit "Jetzt kaufen" CTA
-- Produktgrid: 3-4 Spalten, Hover-Effekte, Preise, Bewertungen
-- Trust-Signale: Testimonials, Gütesiegel, Garantien
-- Footer: Zahlungsmethoden, Kontakt, AGB
-- Conversion-Optimierung: Urgency, Social Proof, Clear CTAs
+=== BUSINESS-SPECIFIC TEMPLATES ===
 
-LANDING PAGE (Marketing/Conversion):
-- Hero: Überschrift + Subtitle + CTA + Hero Image
-- Features: 3-Spalten mit Icons und Benefits
-- Social Proof: Testimonials, Logos, Zahlen
-- FAQ: Häufige Einwände behandeln
-- Final CTA: Conversion-optimiert
+WENN ECOMMERCE/SHOP erkannt:
+GENERIERE SOFORT vollständige E-Commerce Website mit:
+- Header mit Logo + Navigation + Warenkorb-Icon (mit Counter)
+- Hero-Section mit Hauptangebot und "Jetzt shoppen" CTA
+- Produktgrid mit mindestens 6 Produktkarten
+- Jede Produktkarte hat: Produktbild-Placeholder, Titel, Preis, "In den Warenkorb" Button
+- Trust-Section mit Versand, Garantie, Bewertungen
+- Footer mit Zahlungsmethoden (PayPal, Visa, etc.)
 
-PORTFOLIO (Kreativ/Freelancer):
-- Hero: Name + Tagline + Kontakt-CTA
-- About: Kurze Vorstellung mit Foto
-- Portfolio Grid: Filterable Projekt-Galerie
-- Services: Was ich anbiete
-- Kontakt: Formular + Social Links
+WENN LANDING PAGE erkannt:
+- Hero mit Headline + Subtitle + Haupt-CTA
+- Benefits-Section (3 Spalten mit Icons)
+- Testimonials mit Namen und Fotos
+- FAQ-Section (5-6 Fragen)
+- Final CTA + Email-Signup
 
-CORPORATE (Unternehmen/B2B):
-- Header: Logo + Professional Navigation
-- Hero: Company Value Proposition
-- Services: Detaillierte Leistungsübersicht
-- About: Team, Mission, Vision, Values
-- Case Studies: Erfolgsgeschichten
-- Contact: Multi-Channel Kontaktmöglichkeiten
+WENN PORTFOLIO erkannt:
+- Hero mit Name + Tagline
+- About-Section mit Profilbild
+- Portfolio-Grid mit Projekt-Karten
+- Services-Übersicht
+- Kontakt-Section
 
-SaaS/TECH (Software/Startup):
-- Hero: Problem → Lösung mit Demo/Trial CTA
-- Features: Benefit-orientierte Feature-Liste
-- Pricing: Transparente Preistabelle
-- Social Proof: Customer Logos + Testimonials
-- API/Integration: Technische Details
+=== CSS FRAMEWORK STANDARDS ===
 
-RESTAURANT/FOOD (Gastronomie):
-- Hero: Appetitliches Hauptbild + Reservierung
-- Menü: Kategorisierte Speisekarte mit Preisen
-- About: Küchenphilosophie + Chefkoch
-- Location: Karte + Öffnungszeiten
-- Reservierung: Booking-Widget
+Verwende IMMER dieses CSS-Framework:
+
+:root {
+  --primary: #3b82f6;
+  --primary-dark: #2563eb;
+  --success: #10b981;
+  --success-dark: #059669;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --text: #1f2937;
+  --text-light: #6b7280;
+  --background: #ffffff;
+  --surface: #f9fafb;
+  --border: #e5e7eb;
+  --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.15);
+  --radius: 8px;
+  --radius-lg: 12px;
+  --spacing: 1rem;
+  --spacing-lg: 2rem;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--background);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-success {
+  background: var(--success);
+  color: white;
+}
+
+.btn-success:hover {
+  background: var(--success-dark);
+  transform: translateY(-2px);
+}
+
+.card {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-8px);
+  box-shadow: var(--shadow-lg);
+}
+
+.grid {
+  display: grid;
+  gap: var(--spacing-lg);
+}
+
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+@media (max-width: 768px) {
+  .container { padding: 0 var(--spacing); }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
 
 === NATURAL LANGUAGE PROCESSING ===
 
-POSITION MAPPING (Deutsch):
-- "oben links|links oben|top left" → position: absolute; top: 20px; left: 20px;
-- "oben rechts|rechts oben|top right" → position: absolute; top: 20px; right: 20px;
+VERSTEHE DEUTSCHE ANWEISUNGEN PERFEKT:
+
+POSITION MAPPING:
+- "oben links|links oben" → position: absolute; top: 20px; left: 20px;
+- "oben rechts|rechts oben" → position: absolute; top: 20px; right: 20px;
 - "mittig|zentral|center|mitte" → display: flex; justify-content: center; align-items: center; min-height: 70vh;
-- "header|navigation|nav|kopf" → <header> element with full-width sticky navigation
-- "footer|fußbereich|unten" → <footer> with company info and links
-- "sidebar|seitenleiste" → Grid layout with sidebar (300px + 1fr)
+- "header|navigation|nav|kopf" → Sticky Header mit Navigation
+- "footer|fußbereich|unten" → Footer mit Links und Infos
 
-LAYOUT PATTERNS:
-- "nebeneinander|side by side|horizontal" → display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-- "drei spalten|3 columns|three columns" → grid-template-columns: repeat(3, 1fr);
-- "hero section|banner|jumbotron" → Full-width hero with background image/gradient
-- "karten layout|cards|grid" → CSS Grid with card components
-- "masonry|pinterest style" → CSS Grid masonry layout
+BUSINESS KEYWORDS:
+- "shop|verkauf|kaufen|bestellen" → E-Commerce Website mit Produktkarten
+- "landing|marketing|conversion" → Landing Page mit CTAs
+- "portfolio|showcase|galerie" → Portfolio mit Projektgrid
+- "blog|news|artikel" → Blog-Layout mit Artikeln
+- "restaurant|menü|essen" → Restaurant-Website mit Speisekarte
+- "firma|unternehmen|corporate" → Corporate Website
 
-BUSINESS COMPONENTS:
-- "online shop|e-commerce|verkauf" → Full e-commerce layout with cart functionality
-- "landing page|marketing|conversion" → High-converting landing page structure
-- "portfolio|showcase|galerie" → Portfolio grid with lightbox effect
-- "blog|news|artikel" → Blog layout with sidebar and pagination
-- "kontakt|contact|impressum" → Contact page with form and company details
-- "preise|pricing|tarife" → Pricing table with feature comparison
-- "über uns|about|team" → About page with team section and company story
-
-STYLING INSTRUCTIONS:
-- "modern|contemporary|aktuell" → Clean design, subtle shadows, modern fonts
-- "minimalist|clean|schlicht" → Lots of whitespace, simple typography, monochrome
-- "luxuriös|elegant|premium" → High contrast, serif fonts, gold accents
-- "startup|tech|innovativ" → Bold gradients, sans-serif, vibrant colors
-- "corporate|business|seriös" → Conservative colors, professional fonts
-- "kreativ|artistic|bunt" → Vibrant colors, creative layouts, experimental design
-
-COLOR PSYCHOLOGY:
-- "vertrauen|trust|seriös" → Blau-Palette (#1e40af, #3b82f6, #60a5fa)
-- "erfolg|growth|geld" → Grün-Palette (#166534, #16a34a, #4ade80)
-- "energie|action|dringend" → Rot/Orange-Palette (#dc2626, #ea580c, #f97316)
-- "kreativität|innovation" → Lila-Palette (#7c3aed, #a855f7, #c084fc)
-- "premium|luxury|hochwertig" → Schwarz/Gold-Palette (#000000, #374151, #fbbf24)
-
-CONVERSION OPTIMIZATION:
-- "kaufen|buy|bestellen" → Prominente CTAs, Urgency, Social Proof
-- "anmelden|signup|registrieren" → Lead-Generation fokussiert
-- "kontakt|contact|anfrage" → Kontakt-optimierte Navigation und CTAs
-- "download|herunterladen" → Download-CTAs mit Benefits
-
-=== TECHNICAL REQUIREMENTS ===
-
-RESPONSIVE BREAKPOINTS:
-/* Mobile First */
-@media (min-width: 768px) { /* Tablet */ }
-@media (min-width: 1024px) { /* Desktop */ }
-@media (min-width: 1440px) { /* Large Desktop */ }
-
-TYPOGRAPHY SCALE:
-- h1: clamp(2rem, 5vw, 3.5rem)
-- h2: clamp(1.5rem, 4vw, 2.5rem)
-- h3: clamp(1.25rem, 3vw, 2rem)
-- body: clamp(1rem, 2.5vw, 1.125rem)
-
-COLOR SYSTEM:
-- Primary: CSS Custom Property based
-- Secondary: Complementary to primary
-- Neutral: Gray scale for text/backgrounds
-- Success: Green variants
-- Warning: Orange variants
-- Error: Red variants
-
-SPACING SYSTEM (8px base):
-- xs: 0.5rem (8px)
-- sm: 1rem (16px)
-- md: 1.5rem (24px)
-- lg: 2rem (32px)
-- xl: 3rem (48px)
-- 2xl: 4rem (64px)
+LAYOUT KEYWORDS:
+- "karten|cards" → Card-basiertes Layout
+- "grid|raster" → CSS Grid Layout
+- "spalten|columns" → Multi-Column Layout
+- "nebeneinander|horizontal" → Flex Row Layout
+- "untereinander|vertical" → Flex Column Layout
 
 === OUTPUT REQUIREMENTS ===
 
-1. Generiere NUR vollständigen, validen HTML5-Code
-2. Inline CSS im <style> Tag im <head>
-3. Semantic HTML mit ARIA-Labels
-4. Meta-Tags für SEO und Social Media
-5. Responsive Design für alle Geräte
-6. Smooth Animations und Hover-Effekte
-7. Loading States und Error Handling
-8. Cross-Browser Kompatibilität
-9. Performance-optimiert
-10. Accessibility-konform
+1. Generiere IMMER vollständige, funktionale Business-Websites
+2. NIEMALS einfache HTML-Seiten ohne Business-Logic
+3. IMMER moderne UI Components
+4. IMMER responsive Design (Mobile-First)
+5. IMMER Business-optimiert mit CTAs
+6. IMMER mit echten Features (Navigation, Buttons, etc.)
+7. IMMER SEO-optimiert mit Meta-Tags
+8. IMMER Accessibility-konform
+9. IMMER Performance-optimiert
+10. IMMER mit Hover-Effekten und Animationen
 
 === QUALITY CHECKLIST ===
-✓ Mobile-responsive (320px - 1920px)
-✓ Fast loading (< 3s)
-✓ SEO-optimized
-✓ Accessible (WCAG 2.1)
-✓ Cross-browser compatible
-✓ Professional design
-✓ Clear navigation
-✓ Effective CTAs
-✓ Trust signals included
-✓ Contact information present
 
-Generiere jetzt eine professionelle, produktionsreife Website basierend auf der Benutzeranfrage:`;
+Jede Website MUSS haben:
+✓ Sticky Navigation mit Logo und Links
+✓ Hero-Section mit klarem Value Proposition
+✓ Minimum 3 Content-Sections
+✓ Call-to-Action Buttons
+✓ Footer mit relevanten Links
+✓ Responsive Design (320px - 1920px)
+✓ Hover-Effekte auf interaktiven Elementen
+✓ Professionelle Typografie und Spacing
+✓ Konsistente Farb- und Design-Sprache
+✓ Loading-Optimiert und Performance-ready
+
+Für E-COMMERCE zusätzlich:
+✓ Warenkorb-Icon in Navigation
+✓ Produktkarten mit Bildern, Preisen, Buttons
+✓ "In den Warenkorb" Buttons
+✓ Trust-Signale (Versand, Garantie, Bewertungen)
+✓ Zahlungsmethoden im Footer
+
+Generiere JETZT eine lovable.dev-Level Website basierend auf der Benutzeranfrage:`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -286,7 +332,7 @@ Generiere jetzt eine professionelle, produktionsreife Website basierend auf der 
       body: JSON.stringify({
         success: true,
         html: generatedCode,
-        message: 'Enterprise-Level Website erfolgreich generiert!',
+        message: 'Lovable.dev-Level Website erfolgreich generiert!',
         intent: userIntent,
         suggestions: generateIntelligentSuggestions(userIntent),
         metrics: {
@@ -317,16 +363,16 @@ Generiere jetzt eine professionelle, produktionsreife Website basierend auf der 
 function ultimateIntentAnalysis(message) {
   const lowercaseMsg = message.toLowerCase();
   
-  // WEBSITE TYPE DETECTION
+  // WEBSITE TYPE DETECTION (Erweitert)
   const websiteTypes = {
-    'ecommerce': ['shop', 'verkauf', 'kaufen', 'bestellen', 'warenkorb', 'produkt', 'preis', 'bezahlen', 'kasse'],
-    'landing': ['landing', 'marketing', 'conversion', 'anmelden', 'download', 'signup', 'trial'],
-    'portfolio': ['portfolio', 'showcase', 'galerie', 'projekt', 'work', 'arbeiten', 'designer'],
-    'corporate': ['unternehmen', 'firma', 'business', 'corporate', 'about', 'team', 'services'],
-    'blog': ['blog', 'news', 'artikel', 'content', 'nachrichten', 'magazin'],
-    'restaurant': ['restaurant', 'menü', 'essen', 'reservierung', 'gastronomie', 'küche'],
-    'saas': ['software', 'app', 'platform', 'api', 'dashboard', 'tool', 'saas'],
-    'personal': ['personal', 'cv', 'lebenslauf', 'über mich', 'persönlich']
+    'ecommerce': ['shop', 'verkauf', 'kaufen', 'bestellen', 'warenkorb', 'produkt', 'preis', 'bezahlen', 'kasse', 'store', 'online shop', 'verkaufen', 'commerce'],
+    'landing': ['landing', 'marketing', 'conversion', 'anmelden', 'download', 'signup', 'trial', 'lead', 'campaign'],
+    'portfolio': ['portfolio', 'showcase', 'galerie', 'projekt', 'work', 'arbeiten', 'designer', 'künstler', 'fotograf'],
+    'corporate': ['unternehmen', 'firma', 'business', 'corporate', 'about', 'team', 'services', 'company'],
+    'blog': ['blog', 'news', 'artikel', 'content', 'nachrichten', 'magazin', 'journal'],
+    'restaurant': ['restaurant', 'menü', 'essen', 'reservierung', 'gastronomie', 'küche', 'café', 'bar'],
+    'saas': ['software', 'app', 'platform', 'api', 'dashboard', 'tool', 'saas', 'service'],
+    'personal': ['personal', 'cv', 'lebenslauf', 'über mich', 'persönlich', 'profil']
   };
 
   let detectedType = 'general';
@@ -340,16 +386,16 @@ function ultimateIntentAnalysis(message) {
     }
   });
 
-  // INDUSTRY DETECTION
+  // INDUSTRY DETECTION (Erweitert)
   const industries = {
-    'food': ['restaurant', 'café', 'bäckerei', 'essen', 'küche', 'menü', 'cookies', 'keks'],
-    'tech': ['software', 'app', 'tech', 'startup', 'saas', 'platform', 'code'],
-    'creative': ['design', 'kunst', 'kreativ', 'fotograf', 'designer', 'agentur'],
-    'retail': ['mode', 'kleidung', 'schmuck', 'beauty', 'lifestyle', 'produkt'],
-    'service': ['beratung', 'service', 'dienstleistung', 'consulting', 'agentur'],
-    'education': ['schule', 'kurs', 'lernen', 'training', 'education', 'akademie'],
-    'healthcare': ['gesundheit', 'medizin', 'praxis', 'therapie', 'wellness'],
-    'finance': ['bank', 'versicherung', 'finanzen', 'investment', 'steuer']
+    'food': ['restaurant', 'café', 'bäckerei', 'essen', 'küche', 'menü', 'cookies', 'keks', 'pizza', 'burger'],
+    'tech': ['software', 'app', 'tech', 'startup', 'saas', 'platform', 'code', 'digital'],
+    'creative': ['design', 'kunst', 'kreativ', 'fotograf', 'designer', 'agentur', 'studio'],
+    'retail': ['mode', 'kleidung', 'schmuck', 'beauty', 'lifestyle', 'produkt', 'fashion'],
+    'service': ['beratung', 'service', 'dienstleistung', 'consulting', 'agentur', 'freelancer'],
+    'education': ['schule', 'kurs', 'lernen', 'training', 'education', 'akademie', 'universität'],
+    'healthcare': ['gesundheit', 'medizin', 'praxis', 'therapie', 'wellness', 'fitness'],
+    'finance': ['bank', 'versicherung', 'finanzen', 'investment', 'steuer', 'beratung']
   };
 
   let detectedIndustry = 'general';
@@ -359,20 +405,21 @@ function ultimateIntentAnalysis(message) {
     }
   });
 
-  // FEATURE DETECTION
+  // FEATURE DETECTION (Erweitert)
   const features = [];
   const featureKeywords = {
-    'navigation': ['nav', 'navigation', 'menü', 'menu'],
+    'navigation': ['nav', 'navigation', 'menü', 'menu', 'header'],
     'hero': ['hero', 'banner', 'hauptbereich', 'jumbotron'],
-    'gallery': ['galerie', 'bilder', 'fotos', 'gallery'],
+    'gallery': ['galerie', 'bilder', 'fotos', 'gallery', 'images'],
     'contact': ['kontakt', 'contact', 'formular', 'anfrage'],
-    'testimonials': ['testimonials', 'bewertungen', 'meinungen'],
-    'pricing': ['preise', 'pricing', 'tarife', 'kosten'],
-    'team': ['team', 'über uns', 'mitarbeiter'],
-    'blog': ['blog', 'news', 'artikel'],
-    'cart': ['warenkorb', 'cart', 'einkauf'],
-    'search': ['suche', 'search', 'filter'],
-    'social': ['social media', 'facebook', 'instagram', 'twitter']
+    'testimonials': ['testimonials', 'bewertungen', 'meinungen', 'reviews'],
+    'pricing': ['preise', 'pricing', 'tarife', 'kosten', 'plans'],
+    'team': ['team', 'über uns', 'mitarbeiter', 'about'],
+    'blog': ['blog', 'news', 'artikel', 'posts'],
+    'cart': ['warenkorb', 'cart', 'einkauf', 'shopping'],
+    'search': ['suche', 'search', 'filter', 'find'],
+    'social': ['social media', 'facebook', 'instagram', 'twitter'],
+    'newsletter': ['newsletter', 'signup', 'email', 'subscribe']
   };
 
   Object.keys(featureKeywords).forEach(feature => {
@@ -381,14 +428,15 @@ function ultimateIntentAnalysis(message) {
     }
   });
 
-  // STYLE PREFERENCE
+  // STYLE PREFERENCE (Erweitert)
   const styleKeywords = {
-    'modern': ['modern', 'contemporary', 'aktuell', 'zeitgemäß'],
-    'minimalist': ['minimalist', 'clean', 'schlicht', 'einfach'],
-    'luxury': ['luxuriös', 'elegant', 'premium', 'hochwertig'],
-    'corporate': ['corporate', 'business', 'professionell', 'seriös'],
-    'creative': ['kreativ', 'artistic', 'bunt', 'experimentell'],
-    'startup': ['startup', 'tech', 'innovativ', 'disruptiv']
+    'modern': ['modern', 'contemporary', 'aktuell', 'zeitgemäß', 'fresh'],
+    'minimalist': ['minimalist', 'clean', 'schlicht', 'einfach', 'minimal'],
+    'luxury': ['luxuriös', 'elegant', 'premium', 'hochwertig', 'exclusive'],
+    'corporate': ['corporate', 'business', 'professionell', 'seriös', 'formal'],
+    'creative': ['kreativ', 'artistic', 'bunt', 'experimentell', 'unique'],
+    'startup': ['startup', 'tech', 'innovativ', 'disruptiv', 'dynamic'],
+    'playful': ['playful', 'fun', 'colorful', 'friendly', 'casual']
   };
 
   let stylePreference = 'modern';
@@ -419,13 +467,14 @@ function ultimateIntentAnalysis(message) {
 function detectLayoutPreference(message) {
   if (message.includes('zwei spalten') || message.includes('2 column')) return 'two-column';
   if (message.includes('drei spalten') || message.includes('3 column')) return 'three-column';
-  if (message.includes('grid') || message.includes('karten')) return 'grid';
-  if (message.includes('sidebar')) return 'sidebar';
+  if (message.includes('vier spalten') || message.includes('4 column')) return 'four-column';
+  if (message.includes('grid') || message.includes('karten') || message.includes('cards')) return 'grid';
+  if (message.includes('sidebar') || message.includes('seitenleiste')) return 'sidebar';
   return 'single-column';
 }
 
 function detectBranding(message) {
-  const brandingKeywords = ['logo', 'brand', 'marke', 'corporate design', 'farben', 'colors'];
+  const brandingKeywords = ['logo', 'brand', 'marke', 'corporate design', 'farben', 'colors', 'branding'];
   return brandingKeywords.some(keyword => message.includes(keyword));
 }
 
@@ -433,7 +482,8 @@ function detectConversionGoal(message, type) {
   if (type === 'ecommerce') return 'purchase';
   if (message.includes('anmelden') || message.includes('signup')) return 'signup';
   if (message.includes('kontakt') || message.includes('anfrage')) return 'contact';
-  if (message.includes('download')) return 'download';
+  if (message.includes('download') || message.includes('herunterladen')) return 'download';
+  if (message.includes('call') || message.includes('anruf')) return 'call';
   return 'engagement';
 }
 
@@ -441,7 +491,7 @@ function generateUltimateHints(currentHTML, message, intent) {
   const hints = [];
   
   if (intent.websiteType === 'ecommerce') {
-    hints.push('E-Commerce Focus: Conversion-optimierte CTAs, Trust-Signale, Social Proof');
+    hints.push('E-Commerce Focus: Warenkorb-Icon, Produktkarten, Preise, Trust-Signale, Zahlungsmethoden');
   }
   
   if (intent.industry === 'food') {
@@ -452,8 +502,14 @@ function generateUltimateHints(currentHTML, message, intent) {
     hints.push('High Complexity: Multi-Section Layout, Advanced Features, Professional Design');
   }
   
-  if (!currentHTML.includes('container')) {
+  if (intent.stylePreference === 'luxury') {
+    hints.push('Luxury Style: Premium Colors, Elegant Typography, High-end Feel');
+  }
+  
+  if (!currentHTML.includes('container') || currentHTML.includes('<!-- Hier wird deine Website erstellt -->')) {
     hints.push('Fresh Start: Create complete semantic structure from scratch');
+  } else {
+    hints.push('Enhancement: Build upon existing structure, improve and extend');
   }
   
   return hints.join(' | ');
@@ -463,46 +519,58 @@ function getWebsiteTemplate(intent) {
   const templates = {
     ecommerce: `
 E-COMMERCE TEMPLATE:
-- Header: Logo + Navigation (Home, Produkte, Über uns, Kontakt) + Warenkorb-Icon
+- Header: Logo + Navigation (Home, Produkte, Über uns, Kontakt) + Warenkorb-Icon mit Counter
 - Hero: Hauptangebot + "Jetzt shoppen" CTA + Hero-Produktbild
-- Produktgrid: 3-4 Spalten, Hover-Effekte, Preise hervorgehoben, "In den Warenkorb" Buttons
-- Trust-Section: Kundenbewertungen, Gütesiegel, Versandgarantie
+- Produktgrid: 3-4 Spalten Desktop, 1-2 Mobile, Hover-Effekte, Preise hervorgehoben
+- Produktkarten: Produktbild-Placeholder, Titel, Preis, "In den Warenkorb" Button
+- Trust-Section: Kundenbewertungen, Gütesiegel, Versandgarantie, 4.8/5 Sterne
 - Newsletter: E-Mail-Sammlung mit Rabatt-Angebot
-- Footer: Zahlungsmethoden, AGB, Datenschutz, Social Media
+- Footer: Zahlungsmethoden (PayPal, Visa, Mastercard), AGB, Datenschutz, Social Media
 `,
     landing: `
 LANDING PAGE TEMPLATE:
-- Hero: Überschrift + Subtitle + Haupt-CTA + Hero-Image
+- Hero: Kraftvolle Überschrift + Subtitle + Haupt-CTA + Hero-Image
 - Benefits: 3 Hauptvorteile mit Icons in Grid-Layout
-- Social Proof: Testimonials oder Customer Logos
-- Features: Detaillierte Feature-Liste
-- FAQ: 5-6 häufige Fragen
-- Final CTA: Conversion-optimierter Abschluss
+- Social Proof: Testimonials mit echten Namen und Fotos
+- Features: Detaillierte Feature-Liste mit Icons
+- FAQ: 5-6 häufige Fragen und Antworten
+- Final CTA: Conversion-optimierter Abschluss mit Urgency
 `,
     portfolio: `
 PORTFOLIO TEMPLATE:
 - Hero: Name + Tagline + "Projekte ansehen" CTA
-- About: Kurze Vorstellung + Profilbild
-- Portfolio Grid: Filterable Projekt-Galerie mit Overlay
-- Services: Was ich anbiete
-- Testimonials: Kundenmeinungen
-- Contact: Kontaktformular + Social Links
+- About: Kurze Vorstellung + Profilbild + Skills
+- Portfolio Grid: Filterable Projekt-Galerie mit Overlay-Effekten
+- Services: Was ich anbiete mit Preisen
+- Testimonials: Kundenmeinungen mit Namen und Projekten
+- Contact: Kontaktformular + Social Links + Verfügbarkeit
+`,
+    corporate: `
+CORPORATE TEMPLATE:
+- Hero: Company Value Proposition + "Mehr erfahren" CTA
+- Services: Detaillierte Leistungsübersicht
+- About: Team, Mission, Vision, Values, Firmengeschichte
+- Case Studies: Erfolgsgeschichten mit Zahlen
+- Testimonials: Kundenstimmen mit Firmenlogos
+- Contact: Multi-Channel Kontaktmöglichkeiten
 `
   };
   
-  return templates[intent.websiteType] || 'Standard responsive Website-Template';
+  return templates[intent.websiteType] || 'Standard responsive Website-Template mit Header, Main Content, Footer';
 }
 
 function ultimateCodeCleaning(code, intent) {
   let cleanCode = code.trim();
   
-  // Remove markdown
+  // Remove markdown code blocks
   cleanCode = cleanCode.replace(/```html\n?/g, '').replace(/```\n?$/g, '');
   cleanCode = cleanCode.replace(/```\n?/g, '');
   
   // Ensure DOCTYPE
   if (!cleanCode.includes('<!DOCTYPE html>')) {
-    cleanCode = '<!DOCTYPE html>\n' + cleanCode;
+    if (cleanCode.startsWith('<html')) {
+      cleanCode = '<!DOCTYPE html>\n' + cleanCode;
+    }
   }
 
   // Add meta viewport if missing
@@ -518,7 +586,22 @@ function ultimateCodeCleaning(code, intent) {
   // Add SEO meta tags for business websites
   if (intent.websiteType === 'ecommerce' || intent.websiteType === 'corporate') {
     if (!cleanCode.includes('meta name="description"')) {
-      cleanCode = cleanCode.replace('</head>', '    <meta name="description" content="Professionelle Website erstellt mit KI">\n</head>');
+      const description = intent.websiteType === 'ecommerce' 
+        ? 'Professioneller Online-Shop mit sicherer Zahlung und schnellem Versand'
+        : 'Professionelle Unternehmenswebsite mit umfassenden Informationen und Services';
+      cleanCode = cleanCode.replace('</head>', `    <meta name="description" content="${description}">\n</head>`);
+    }
+  }
+
+  // Add Open Graph tags for social sharing
+  if (intent.websiteType === 'ecommerce' || intent.websiteType === 'landing') {
+    if (!cleanCode.includes('og:title')) {
+      cleanCode = cleanCode.replace('</head>', 
+        '    <meta property="og:title" content="Professionelle Website">\n' +
+        '    <meta property="og:description" content="Erstellt mit KI-Website-Builder">\n' +
+        '    <meta property="og:type" content="website">\n' +
+        '</head>'
+      );
     }
   }
 
@@ -528,29 +611,47 @@ function ultimateCodeCleaning(code, intent) {
 function generateIntelligentSuggestions(intent) {
   const suggestions = {
     ecommerce: [
-      'Füge Produktbewertungen hinzu',
-      'Erstelle eine Checkout-Seite',
-      'Implementiere Produktfilter',
-      'Füge einen Newsletter-Bereich hinzu'
+      'Füge Produktbewertungen und Sterne hinzu',
+      'Erstelle eine Checkout-Seite mit Formular',
+      'Implementiere Produktfilter und Suche',
+      'Füge einen Newsletter-Bereich mit Rabatt hinzu',
+      'Erstelle eine Wishlist-Funktion',
+      'Füge Produktvergleich hinzu'
     ],
     landing: [
       'Optimiere die Call-to-Action Buttons',
-      'Füge mehr Testimonials hinzu',
+      'Füge mehr Testimonials mit Fotos hinzu',
       'Erstelle eine Thank-You Page',
-      'Implementiere A/B-Test Varianten'
+      'Implementiere A/B-Test Varianten',
+      'Füge Urgency-Elemente hinzu (Timer, limitierte Angebote)',
+      'Erstelle eine FAQ-Sektion'
     ],
     portfolio: [
-      'Füge mehr Projekte hinzu',
-      'Erstelle Case Studies',
-      'Implementiere Kontaktformular',
-      'Füge einen Blog-Bereich hinzu'
+      'Füge mehr Projekte mit Case Studies hinzu',
+      'Erstelle detaillierte Projektbeschreibungen',
+      'Implementiere ein Kontaktformular mit Verfügbarkeit',
+      'Füge einen Blog-Bereich hinzu',
+      'Erstelle eine Services-Preisliste',
+      'Implementiere Projekt-Filter nach Kategorien'
+    ],
+    corporate: [
+      'Füge ein Team-Bereich mit Mitarbeiterfotos hinzu',
+      'Erstelle eine Karriere-Seite',
+      'Implementiere Case Studies mit Zahlen',
+      'Füge ein News/Blog-Bereich hinzu',
+      'Erstelle eine Standorte-Übersicht',
+      'Implementiere Unternehmens-Timeline'
     ]
   };
 
-  return suggestions[intent.websiteType] || [
+  const defaultSuggestions = [
     'Verbessere die mobile Ansicht',
-    'Füge mehr Inhalte hinzu',
+    'Füge mehr interaktive Elemente hinzu',
     'Optimiere die Ladegeschwindigkeit',
-    'Implementiere SEO-Optimierungen'
+    'Implementiere SEO-Optimierungen',
+    'Füge Animationen und Hover-Effekte hinzu',
+    'Erstelle zusätzliche Unterseiten'
   ];
+
+  return suggestions[intent.websiteType] || defaultSuggestions;
 }
