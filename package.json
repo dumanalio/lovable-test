@@ -1,0 +1,29 @@
+{
+  "name": "no-code-website-builder",
+  "version": "1.0.0",
+  "description": "Eine No-Code Plattform zum Erstellen von Websites via Chat",
+  "main": "public/index.html",
+  "type": "module",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "npm run build:frontend",
+    "build:frontend": "echo 'Frontend build completed'",
+    "deploy": "netlify deploy --prod"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "marked": "^9.1.0",
+    "openai": "^4.0.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "keywords": [
+    "no-code",
+    "website-builder",
+    "chat",
+    "netlify"
+  ],
+  "author": "Dein Name",
+  "license": "MIT"
+}

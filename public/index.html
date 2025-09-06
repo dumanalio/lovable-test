@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>No-Code Website Builder</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>🚀 No-Code Website Builder</h1>
+            <p>Erstelle deine Website einfach durch Chat!</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Chat Interface -->
+            <div class="chat-panel">
+                <div class="chat-header">
+                    <h3>💬 Chat mit der KI</h3>
+                    <button id="clearChat" class="btn-secondary">Chat leeren</button>
+                </div>
+                
+                <div class="chat-messages" id="chatMessages">
+                    <!-- Messages werden hier dynamisch eingefügt -->
+                </div>
+
+                <div class="chat-input-container">
+                    <input 
+                        type="text" 
+                        id="chatInput" 
+                        placeholder="Beschreibe, was du auf deiner Website haben möchtest..."
+                        maxlength="500"
+                    >
+                    <button id="sendButton" class="btn-primary">Senden</button>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="preview-panel">
+                <div class="preview-header">
+                    <h3>👀 Live Preview</h3>
+                    <div class="preview-controls">
+                        <button id="downloadSite" class="btn-primary">Website herunterladen</button>
+                        <button id="publishSite" class="btn-success">Veröffentlichen</button>
+                    </div>
+                </div>
+                
+                <div class="preview-container">
+                    <iframe 
+                        id="previewFrame" 
+                        src="about:blank"
+                        title="Website Preview"
+                    ></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay hidden">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <p>KI arbeitet an deiner Website...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
