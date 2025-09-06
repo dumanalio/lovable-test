@@ -20,6 +20,8 @@
     // Render-Funktion
     // =========================
     function renderPage(data) {
+      console.log("🖼️ Rendere Seite mit JSON:", data);
+
       document.title = data.pageTitle || "Neue Seite";
       const app = document.getElementById("app");
       app.innerHTML = "";
@@ -95,57 +97,4 @@
               </div>`;
             break;
 
-          case "footer":
-            app.innerHTML += `
-              <footer class="footer">
-                <p>${block.text || ""}</p>
-              </footer>`;
-            break;
-
-          default:
-            app.innerHTML += `
-              <section>
-                <pre>${JSON.stringify(block, null, 2)}</pre>
-              </section>`;
-        }
-      });
-    }
-
-    // =========================
-    // Chatbox-Logik
-    // =========================
-    document.getElementById("chatSend").addEventListener("click", async () => {
-      const input = document.getElementById("chatInput").value.trim();
-      if (!input) return alert("Bitte etwas eingeben.");
-
-      const res = await fetch("/api/generate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ input })
-      });
-
-      const payload = await res.json();
-      if (!res.ok) {
-        alert("Fehler: " + (payload?.error || "Unbekannt"));
-        console.error(payload);
-        return;
-      }
-
-      localStorage.setItem("pageData", JSON.stringify(payload));
-      renderPage(payload);
-    });
-
-    // =========================
-    // Initial: data.json laden (falls vorhanden)
-    // =========================
-    const saved = localStorage.getItem("pageData");
-    if (saved) {
-      renderPage(JSON.parse(saved));
-    } else {
-      fetch("data.json")
-        .then(r => r.ok ? r.json() : { pageTitle: "Startseite", blocks: [] })
-        .then(renderPage);
-    }
-  </script>
-</body>
-</html>
+          case "
