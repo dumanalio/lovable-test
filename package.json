@@ -1,0 +1,28 @@
+{
+  "name": "my-lovable-light",
+  "version": "1.0.0",
+  "description": "No-Code Website Builder im Stil von Lovable Light",
+  "main": "src/index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'Build complete'",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "@vercel/node": "^3.0.0"
+  },
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "website-builder",
+    "no-code",
+    "ai",
+    "openai"
+  ],
+  "author": "SAAT",
+  "license": "MIT"
+}
