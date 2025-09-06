@@ -1,0 +1,48 @@
+{
+  "name": "enhanced-ai-website-builder",
+  "version": "2.0.0",
+  "description": "Enhanced AI-powered No-Code Website Builder mit intelligenter Intent-Erkennung",
+  "main": "public/index.html",
+  "type": "module",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "npm run build:frontend",
+    "build:frontend": "echo 'Frontend build completed'",
+    "deploy": "netlify deploy --prod",
+    "test": "echo 'No tests specified'",
+    "lint": "echo 'No linting configured'",
+    "start": "netlify dev"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "marked": "^11.0.0",
+    "openai": "^4.20.0"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.10.0"
+  },
+  "keywords": [
+    "ai",
+    "website-builder",
+    "no-code",
+    "chat",
+    "netlify",
+    "intent-recognition",
+    "professional",
+    "responsive",
+    "seo"
+  ],
+  "author": "Enhanced AI Website Builder",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/enhanced-ai-website-builder.git"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "netlify": {
+    "functions": "netlify/functions"
+  }
+}
