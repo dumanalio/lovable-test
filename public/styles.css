@@ -1,16 +1,138 @@
+/* Grundlayout */
 body {
-  font-family: Arial, sans-serif;
-  background: #f0f0f0;
-  text-align: center;
-  padding: 2rem;
-}
-
-h1 {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: #f7f7f9;
   color: #333;
 }
 
-button {
-  padding: 10px 20px;
-  margin-top: 20px;
+.app {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  height: 100vh;
+}
+
+/* Chat-Bereich */
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #ddd;
+  background: #fff;
+}
+
+.chat-header {
+  padding: 1rem;
+  border-bottom: 1px solid #eee;
+  background: #fafafa;
+}
+
+.messages {
+  flex: 1;
+  padding: 1rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.msg .bubble {
+  background: #f0f0f5;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  max-width: 80%;
+}
+
+.msg.you .bubble {
+  background: #e0f7fa;
+  align-self: flex-end;
+}
+
+.composer {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.composer input {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.composer button {
+  padding: 0.75rem 1rem;
+  border: none;
+  background: #4cafef;
+  color: white;
+  font-weight: bold;
+  border-radius: 8px;
   cursor: pointer;
+}
+
+.composer button:hover {
+  background: #3297dc;
+}
+
+/* Vorschau-Bereich */
+.preview-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.preview-header {
+  padding: 1rem;
+  border-bottom: 1px solid #ddd;
+  background: #fafafa;
+}
+
+.preview-content {
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.hero {
+  background: #eef7ff;
+  padding: 2rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+}
+
+.hero h1 {
+  margin: 0 0 0.5rem;
+}
+
+.hero p {
+  margin: 0 0 1rem;
+  color: #555;
+}
+
+.hero button {
+  padding: 0.75rem 1.25rem;
+  background: #4cafef;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.hero button:hover {
+  background: #3297dc;
+}
+
+/* Karten/Grid */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+}
+
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.25rem;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
