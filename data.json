@@ -1,36 +1,105 @@
 {
-  "pageTitle": "Meine erste Lovable-Light Seite",
+  "pageTitle": "Lovable-Light – Demo",
+  "theme": { "brand": "#5b5bd6", "bg": "#111", "fg": "#eee", "muted": "#f7f7fb", "font": "Inter" },
   "blocks": [
     {
+      "type": "navbar",
+      "brand": "Lovable-Light",
+      "items": [
+        { "text": "Features", "link": "#features" },
+        { "text": "Preise", "link": "#preise" },
+        { "text": "FAQ", "link": "#faq" }
+      ],
+      "cta": { "text": "Jetzt testen", "link": "#cta" },
+      "sticky": true
+    },
+    {
       "type": "hero",
-      "headline": "Willkommen auf meiner Website",
-      "sub": "Diese Seite wurde automatisch aus JSON gebaut.",
-      "ctaText": "Mehr erfahren",
-      "ctaLink": "#features"
+      "headline": "Baue Websites per Chat",
+      "sub": "Beschreibe, was du willst – der Rest passiert automatisch.",
+      "ctaText": "Loslegen",
+      "ctaLink": "#cta",
+      "ctaColor": "#fff",
+      "ctaTextColor": "#1a2a6c",
+      "backgroundGradient": "linear-gradient(135deg,#1a2a6c,#b21f1f,#fdbb2d)"
     },
     {
       "type": "features",
+      "title": "Warum Lovable-Light?",
       "items": [
-        { "icon": "⚡", "title": "Schnell", "text": "In Sekunden erstellt" },
-        { "icon": "🎨", "title": "Flexibel", "text": "Viele Layouts & Blöcke" },
-        { "icon": "🛠️", "title": "Einfach", "text": "Kein Coding nötig" }
+        { "icon": "⚡", "title": "Schnell", "text": "In Sekunden live." },
+        { "icon": "🧩", "title": "Flexibel", "text": "Viele Blöcke & Layouts." },
+        { "icon": "💸", "title": "Günstig", "text": "Keine Credits, volle Kontrolle." }
       ]
     },
     {
-      "type": "text",
-      "title": "Wie es funktioniert",
-      "body": "Beschreibe deine Website im Chat. Die KI wandelt deine Worte in JSON um. Unser System rendert daraus automatisch eine fertige Seite."
+      "type": "cardGrid",
+      "title": "Use-Cases",
+      "cards": [
+        { "title": "Landingpages", "text": "Mit Hero, CTA, Features.", "image": "https://picsum.photos/seed/land/600/400", "link": "#" },
+        { "title": "Shops", "text": "Produkte, Preisblöcke, CTA.", "image": "https://picsum.photos/seed/shop/600/400", "link": "#" },
+        { "title": "Portfolios", "text": "Galerie, Kontakt, Über mich.", "image": "https://picsum.photos/seed/folio/600/400", "link": "#" }
+      ]
+    },
+    {
+      "type": "columns",
+      "count": 2,
+      "columns": [
+        [
+          { "type": "section", "title": "Links: Textblock", "body": "Dieser Text steht in der linken Spalte." },
+          { "type": "button", "text": "Mehr erfahren", "link": "#", "color": "#1a2a6c" }
+        ],
+        [
+          { "type": "image", "src": "https://picsum.photos/seed/side/900/600", "alt": "Beispiel" }
+        ]
+      ]
+    },
+    {
+      "type": "pricing",
+      "title": "Preise",
+      "plans": [
+        { "name": "Starter", "price": "€0", "features": ["1 Projekt", "Basis-Blöcke"], "ctaText": "Starten", "ctaLink": "#" },
+        { "name": "Pro", "price": "€12", "features": ["Unlimitiert", "Alle Blöcke", "API"], "ctaText": "Wählen", "ctaLink": "#" },
+        { "name": "Team", "price": "€29", "features": ["Team-Features", "Rollen", "Logs"], "ctaText": "Kontakt", "ctaLink": "#" }
+      ]
+    },
+    {
+      "type": "video",
+      "title": "Kurzer Überblick",
+      "src": "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+    },
+    {
+      "type": "testimonial",
+      "quote": "Wir haben in 30 Minuten eine komplette Launch-Seite gebaut.",
+      "author": "Mila, Gründerin"
+    },
+    {
+      "type": "gallery",
+      "title": "Screens",
+      "images": [
+        "https://picsum.photos/seed/s1/800/500",
+        "https://picsum.photos/seed/s2/800/500",
+        "https://picsum.photos/seed/s3/800/500"
+      ]
     },
     {
       "type": "faq",
+      "title": "Häufige Fragen",
       "items": [
-        { "q": "Brauche ich Programmierkenntnisse?", "a": "Nein, alles läuft automatisch." },
-        { "q": "Was kostet es?", "a": "Nur deine Hostingkosten – keine Credits wie bei Lovable." }
+        { "q": "Brauche ich Code-Skills?", "a": "Nein, du beschreibst einfach, was du willst." },
+        { "q": "Kann ich selbst hosten?", "a": "Ja – Vercel/Netlify oder eigener Server." }
       ]
     },
     {
-      "type": "footer",
-      "text": "© 2025 Lovable-Light Demo"
-    }
+      "type": "form",
+      "title": "Kontakt",
+      "fields": [
+        { "label": "Name", "type": "text", "placeholder": "Dein Name" },
+        { "label": "E-Mail", "type": "email", "placeholder": "name@mail.com" },
+        { "label": "Nachricht", "type": "textarea", "placeholder": "Worum geht's?" }
+      ],
+      "submitText": "Senden"
+    },
+    { "type": "footer", "text": "© 2025 Lovable-Light" }
   ]
 }
