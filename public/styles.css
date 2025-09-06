@@ -79,3 +79,25 @@ body {
   border: none;
   width: 100%;
 }
+/* Nachrichten im Chat */
+.message {
+  margin: 0.4rem 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 8px;
+  max-width: 90%;
+  line-height: 1.4;
+}
+
+.message.user {
+  background: #0070f3;
+  color: white;
+  align-self: flex-end;
+  text-align: right;
+}
+
+.message.bot {
+  background: #eaeaea;
+  color: #222;
+  align-self: flex-start;
+  text-align: left;
+}
