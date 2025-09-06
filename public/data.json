@@ -1,0 +1,59 @@
+{
+  "blocks": [
+    {
+      "type": "navbar",
+      "brand": "Lovable Light",
+      "items": [
+        { "text": "Features", "link": "#features" },
+        { "text": "Preise", "link": "#preise" },
+        { "text": "Kontakt", "link": "#kontakt" }
+        ],
+      "cta": { "text": "Jetzt testen", "link": "#kontakt" }
+    },
+    {
+      "type": "hero",
+      "headline": "Websites per Chat bauen",
+      "sub": "Beschreibe, was du willst – ich baue die Seite live für dich.",
+      "ctaText": "Loslegen",
+      "ctaLink": "#features",
+      "backgroundGradient": "linear-gradient(135deg,#6d6df6,#ff5c8a)"
+    },
+    {
+      "type": "features",
+      "items": [
+        { "icon": "⚡", "title": "Schnell", "text": "In Sekunden live." },
+        { "icon": "🎨", "title": "Flexibel", "text": "Viele Blöcke & Layouts." },
+        { "icon": "🤖", "title": "Smart", "text": "KI versteht natürliche Sprache." }
+      ]
+    },
+    {
+      "type": "pricing",
+      "title": "Preise",
+      "plans": [
+        { "name": "Starter", "price": "€0", "features": ["1 Projekt", "Basis-Blöcke"], "ctaText": "Starten" },
+        { "name": "Pro", "price": "€12", "features": ["Unlimitiert", "Alle Blöcke", "API"], "ctaText": "Wählen" },
+        { "name": "Team", "price": "€29", "features": ["Zusammenarbeit", "Rollen", "Logs"], "ctaText": "Kontakt" }
+      ]
+    },
+    {
+      "type": "faq",
+      "title": "Häufige Fragen",
+      "items": [
+        { "q": "Brauche ich Code-Skills?", "a": "Nein. Du beschreibst einfach deine Idee." },
+        { "q": "Kann ich selbst hosten?", "a": "Ja. Z. B. Vercel, Netlify oder eigener Server." }
+      ]
+    },
+    {
+      "type": "form",
+      "title": "Kontakt",
+      "fields": [
+        { "label": "Name", "type": "text", "required": true },
+        { "label": "E-Mail", "type": "email", "required": true },
+        { "label": "Art der Website", "type": "select", "required": true, "options": ["Landingpage", "Portfolio", "Unternehmen", "Shop", "Blog"] },
+        { "label": "Nachricht", "type": "textarea" }
+      ],
+      "submitButtonText": "Senden"
+    },
+    { "type": "footer", "text": "© 2025 Lovable Light" }
+  ]
+}
