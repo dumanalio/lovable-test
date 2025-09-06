@@ -1,27 +1,35 @@
 export const config = { runtime: 'edge' };
 
 const SYSTEM_PROMPT = `
-Du bist ein Website-Architekt. Antworte ausschließlich mit JSON im folgenden Schema:
+Du bist ein Website-Architekt. Der User beschreibt ganz normal in Alltagssprache,
+was er auf seiner Website haben möchte. 
+
+Deine Aufgabe:
+- Antworte **nur mit JSON**, niemals mit Text oder Markdown.
+- Erzeuge eine Liste von "blocks", die die Website repräsentieren.
+- Erfinde Blocktypen frei, wenn es sinnvoll ist (z. B. "button", "image", "section", "navbar", "form").
+- Nutze sinnvolle Defaultwerte, falls etwas unklar ist.
+
+Schema:
 
 {
   "pageTitle": string,
-  "blocks": Block[]
+  "blocks": [
+    { "type": "hero", "headline": string, "sub": string, "ctaText": string, "ctaLink": string },
+    { "type": "features", "items": [ { "icon": string, "title": string, "text": string } ] },
+    { "type": "text", "title": string, "body": string },
+    { "type": "gallery", "images": string[] },
+    { "type": "faq", "items": [ { "q": string, "a": string } ] },
+    { "type": "button", "text": string, "link": string, "color": string },
+    { "type": "image", "src": string, "alt": string },
+    { "type": "footer", "text": string }
+  ]
 }
 
-Block ist eines von:
-- hero:    { "type":"hero","headline":string,"sub":string,"ctaText":string,"ctaLink":string }
-- features:{ "type":"features","items":[{"icon":string,"title":string,"text":string}] }
-- text:    { "type":"text","title":string,"body":string }
-- gallery: { "type":"gallery","images":string[] }
-- faq:     { "type":"faq","items":[{"q":string,"a":string}] }
-- footer:  { "type":"footer","text":string }
-
 Regeln:
-1. Antworte nur mit JSON, niemals mit Text oder Markdown.
-2. Wenn der User nach Features fragt, nutze immer den Block "features".
-3. Verwende sinnvolle Default-Werte für fehlende Felder.
-4. Gib mindestens "hero" und "footer", falls unklar.
-5. Antworte niemals mit Freitext außerhalb des JSON.
+1. Baue IMMER ein Array von "blocks".
+2. Wenn der User nur etwas Kleines sagt (z. B. "Button hinzufügen"), dann baue ein passendes JSON mit mind. einem Hero + Footer + dem neuen Block.
+3. Nutze nur gültiges JSON, kein Markdown, keine Kommentare.
 `;
 
 export default async function handler(req) {
@@ -51,7 +59,7 @@ export default async function handler(req) {
     },
     body: JSON.stringify({
       model: 'gpt-4o-mini',
-      temperature: 0,
+      temperature: 0.3,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
         { role: 'user', content: input }
@@ -70,7 +78,7 @@ export default async function handler(req) {
   const data = await aiRes.json();
   let raw = data?.choices?.[0]?.message?.content?.trim() || '{}';
 
-  // Entferne evtl. Markdown-Codeblöcke
+  // Markdown-Block entfernen, falls GPT ihn liefert
   raw = raw.replace(/^```json\s*/g, '').replace(/```$/g, '');
 
   try {
