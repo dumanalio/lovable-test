@@ -186,48 +186,45 @@ CONVERSION OPTIMIZATION:
 === TECHNICAL REQUIREMENTS ===
 
 RESPONSIVE BREAKPOINTS:
-```css
 /* Mobile First */
 @media (min-width: 768px) { /* Tablet */ }
 @media (min-width: 1024px) { /* Desktop */ }
 @media (min-width: 1440px) { /* Large Desktop */ }
-TYPOGRAPHY SCALE:
 
-h1: clamp(2rem, 5vw, 3.5rem)
-h2: clamp(1.5rem, 4vw, 2.5rem)
-h3: clamp(1.25rem, 3vw, 2rem)
-body: clamp(1rem, 2.5vw, 1.125rem)
+TYPOGRAPHY SCALE:
+- h1: clamp(2rem, 5vw, 3.5rem)
+- h2: clamp(1.5rem, 4vw, 2.5rem)
+- h3: clamp(1.25rem, 3vw, 2rem)
+- body: clamp(1rem, 2.5vw, 1.125rem)
 
 COLOR SYSTEM:
-
-Primary: CSS Custom Property based
-Secondary: Complementary to primary
-Neutral: Gray scale for text/backgrounds
-Success: Green variants
-Warning: Orange variants
-Error: Red variants
+- Primary: CSS Custom Property based
+- Secondary: Complementary to primary
+- Neutral: Gray scale for text/backgrounds
+- Success: Green variants
+- Warning: Orange variants
+- Error: Red variants
 
 SPACING SYSTEM (8px base):
-
-xs: 0.5rem (8px)
-sm: 1rem (16px)
-md: 1.5rem (24px)
-lg: 2rem (32px)
-xl: 3rem (48px)
-2xl: 4rem (64px)
+- xs: 0.5rem (8px)
+- sm: 1rem (16px)
+- md: 1.5rem (24px)
+- lg: 2rem (32px)
+- xl: 3rem (48px)
+- 2xl: 4rem (64px)
 
 === OUTPUT REQUIREMENTS ===
 
-Generiere NUR vollständigen, validen HTML5-Code
-Inline CSS im <style> Tag im <head>
-Semantic HTML mit ARIA-Labels
-Meta-Tags für SEO und Social Media
-Responsive Design für alle Geräte
-Smooth Animations und Hover-Effekte
-Loading States und Error Handling
-Cross-Browser Kompatibilität
-Performance-optimiert
-Accessibility-konform
+1. Generiere NUR vollständigen, validen HTML5-Code
+2. Inline CSS im <style> Tag im <head>
+3. Semantic HTML mit ARIA-Labels
+4. Meta-Tags für SEO und Social Media
+5. Responsive Design für alle Geräte
+6. Smooth Animations und Hover-Effekte
+7. Loading States und Error Handling
+8. Cross-Browser Kompatibilität
+9. Performance-optimiert
+10. Accessibility-konform
 
 === QUALITY CHECKLIST ===
 ✓ Mobile-responsive (320px - 1920px)
@@ -240,283 +237,320 @@ Accessibility-konform
 ✓ Effective CTAs
 ✓ Trust signals included
 ✓ Contact information present
-Generiere jetzt eine professionelle, produktionsreife Website basierend auf der Benutzeranfrage:`;
-const response = await fetch('https://api.openai.com/v1/chat/completions', {
-  method: 'POST',
-  headers: {
-    'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
-    'Content-Type': 'application/json',
-  },
-  body: JSON.stringify({
-    model: 'gpt-4',
-    messages: [
-      {
-        role: 'system',
-        content: systemPrompt
-      }
-    ],
-    max_tokens: 4000,
-    temperature: 0.1,
-    top_p: 0.9,
-    presence_penalty: 0.1,
-    frequency_penalty: 0.1
-  })
-});
 
-if (!response.ok) {
-  const errorData = await response.json();
+Generiere jetzt eine professionelle, produktionsreife Website basierend auf der Benutzeranfrage:`;
+
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4',
+        messages: [
+          {
+            role: 'system',
+            content: systemPrompt
+          }
+        ],
+        max_tokens: 4000,
+        temperature: 0.1,
+        top_p: 0.9,
+        presence_penalty: 0.1,
+        frequency_penalty: 0.1
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      return {
+        statusCode: response.status,
+        headers,
+        body: JSON.stringify({
+          success: false,
+          error: `OpenAI API Fehler: ${errorData.error?.message || 'Unbekannter Fehler'}`
+        })
+      };
+    }
+
+    const data = await response.json();
+    let generatedCode = data.choices[0].message.content.trim();
+
+    // ULTIMATE CODE CLEANING
+    generatedCode = ultimateCodeCleaning(generatedCode, userIntent);
+
+    return {
+      statusCode: 200,
+      headers,
+      body: JSON.stringify({
+        success: true,
+        html: generatedCode,
+        message: 'Enterprise-Level Website erfolgreich generiert!',
+        intent: userIntent,
+        suggestions: generateIntelligentSuggestions(userIntent),
+        metrics: {
+          processingTime: Date.now(),
+          complexity: userIntent.complexityLevel,
+          features: userIntent.requiredFeatures.length
+        }
+      })
+    };
+
+  } catch (error) {
+    console.error('Ultimate Chat Handler Error:', error);
+    
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({
+        success: false,
+        error: 'Fehler beim Verarbeiten der Anfrage',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      })
+    };
+  }
+};
+
+// ========== ULTIMATE HELPER FUNCTIONS ==========
+
+function ultimateIntentAnalysis(message) {
+  const lowercaseMsg = message.toLowerCase();
+  
+  // WEBSITE TYPE DETECTION
+  const websiteTypes = {
+    'ecommerce': ['shop', 'verkauf', 'kaufen', 'bestellen', 'warenkorb', 'produkt', 'preis', 'bezahlen', 'kasse'],
+    'landing': ['landing', 'marketing', 'conversion', 'anmelden', 'download', 'signup', 'trial'],
+    'portfolio': ['portfolio', 'showcase', 'galerie', 'projekt', 'work', 'arbeiten', 'designer'],
+    'corporate': ['unternehmen', 'firma', 'business', 'corporate', 'about', 'team', 'services'],
+    'blog': ['blog', 'news', 'artikel', 'content', 'nachrichten', 'magazin'],
+    'restaurant': ['restaurant', 'menü', 'essen', 'reservierung', 'gastronomie', 'küche'],
+    'saas': ['software', 'app', 'platform', 'api', 'dashboard', 'tool', 'saas'],
+    'personal': ['personal', 'cv', 'lebenslauf', 'über mich', 'persönlich']
+  };
+
+  let detectedType = 'general';
+  let maxMatches = 0;
+  
+  Object.keys(websiteTypes).forEach(type => {
+    const matches = websiteTypes[type].filter(keyword => lowercaseMsg.includes(keyword)).length;
+    if (matches > maxMatches) {
+      maxMatches = matches;
+      detectedType = type;
+    }
+  });
+
+  // INDUSTRY DETECTION
+  const industries = {
+    'food': ['restaurant', 'café', 'bäckerei', 'essen', 'küche', 'menü', 'cookies', 'keks'],
+    'tech': ['software', 'app', 'tech', 'startup', 'saas', 'platform', 'code'],
+    'creative': ['design', 'kunst', 'kreativ', 'fotograf', 'designer', 'agentur'],
+    'retail': ['mode', 'kleidung', 'schmuck', 'beauty', 'lifestyle', 'produkt'],
+    'service': ['beratung', 'service', 'dienstleistung', 'consulting', 'agentur'],
+    'education': ['schule', 'kurs', 'lernen', 'training', 'education', 'akademie'],
+    'healthcare': ['gesundheit', 'medizin', 'praxis', 'therapie', 'wellness'],
+    'finance': ['bank', 'versicherung', 'finanzen', 'investment', 'steuer']
+  };
+
+  let detectedIndustry = 'general';
+  Object.keys(industries).forEach(industry => {
+    if (industries[industry].some(keyword => lowercaseMsg.includes(keyword))) {
+      detectedIndustry = industry;
+    }
+  });
+
+  // FEATURE DETECTION
+  const features = [];
+  const featureKeywords = {
+    'navigation': ['nav', 'navigation', 'menü', 'menu'],
+    'hero': ['hero', 'banner', 'hauptbereich', 'jumbotron'],
+    'gallery': ['galerie', 'bilder', 'fotos', 'gallery'],
+    'contact': ['kontakt', 'contact', 'formular', 'anfrage'],
+    'testimonials': ['testimonials', 'bewertungen', 'meinungen'],
+    'pricing': ['preise', 'pricing', 'tarife', 'kosten'],
+    'team': ['team', 'über uns', 'mitarbeiter'],
+    'blog': ['blog', 'news', 'artikel'],
+    'cart': ['warenkorb', 'cart', 'einkauf'],
+    'search': ['suche', 'search', 'filter'],
+    'social': ['social media', 'facebook', 'instagram', 'twitter']
+  };
+
+  Object.keys(featureKeywords).forEach(feature => {
+    if (featureKeywords[feature].some(keyword => lowercaseMsg.includes(keyword))) {
+      features.push(feature);
+    }
+  });
+
+  // STYLE PREFERENCE
+  const styleKeywords = {
+    'modern': ['modern', 'contemporary', 'aktuell', 'zeitgemäß'],
+    'minimalist': ['minimalist', 'clean', 'schlicht', 'einfach'],
+    'luxury': ['luxuriös', 'elegant', 'premium', 'hochwertig'],
+    'corporate': ['corporate', 'business', 'professionell', 'seriös'],
+    'creative': ['kreativ', 'artistic', 'bunt', 'experimentell'],
+    'startup': ['startup', 'tech', 'innovativ', 'disruptiv']
+  };
+
+  let stylePreference = 'modern';
+  Object.keys(styleKeywords).forEach(style => {
+    if (styleKeywords[style].some(keyword => lowercaseMsg.includes(keyword))) {
+      stylePreference = style;
+    }
+  });
+
+  // COMPLEXITY LEVEL
+  const complexityIndicators = features.length + (lowercaseMsg.split(' ').length > 10 ? 2 : 0);
+  const complexityLevel = complexityIndicators > 5 ? 'high' : complexityIndicators > 2 ? 'medium' : 'low';
+
   return {
-    statusCode: response.status,
-    headers,
-    body: JSON.stringify({
-      success: false,
-      error: `OpenAI API Fehler: ${errorData.error?.message || 'Unbekannter Fehler'}`
-    })
+    websiteType: detectedType,
+    industry: detectedIndustry,
+    primaryIntent: maxMatches > 0 ? detectedType : 'general',
+    targetAudience: detectedType === 'ecommerce' ? 'customers' : detectedType === 'corporate' ? 'business' : 'general',
+    complexityLevel,
+    layoutPreference: detectLayoutPreference(lowercaseMsg),
+    stylePreference,
+    requiredFeatures: features,
+    hasSpecificBranding: detectBranding(lowercaseMsg),
+    conversionGoal: detectConversionGoal(lowercaseMsg, detectedType)
   };
 }
 
-const data = await response.json();
-let generatedCode = data.choices[0].message.content.trim();
-
-// ULTIMATE CODE CLEANING
-generatedCode = ultimateCodeCleaning(generatedCode, userIntent);
-
-return {
-  statusCode: 200,
-  headers,
-  body: JSON.stringify({
-    success: true,
-    html: generatedCode,
-    message: 'Enterprise-Level Website erfolgreich generiert!',
-    intent: userIntent,
-    suggestions: generateIntelligentSuggestions(userIntent),
-    metrics: {
-      processingTime: Date.now(),
-      complexity: userIntent.complexityLevel,
-      features: userIntent.requiredFeatures.length
-    }
-  })
-};
-} catch (error) {
-console.error('Ultimate Chat Handler Error:', error);
-return {
-  statusCode: 500,
-  headers,
-  body: JSON.stringify({
-    success: false,
-    error: 'Fehler beim Verarbeiten der Anfrage',
-    details: process.env.NODE_ENV === 'development' ? error.message : undefined
-  })
-};
-}
-};
-// ========== ULTIMATE HELPER FUNCTIONS ==========
-function ultimateIntentAnalysis(message) {
-const lowercaseMsg = message.toLowerCase();
-// WEBSITE TYPE DETECTION
-const websiteTypes = {
-'ecommerce': ['shop', 'verkauf', 'kaufen', 'bestellen', 'warenkorb', 'produkt', 'preis', 'bezahlen', 'kasse'],
-'landing': ['landing', 'marketing', 'conversion', 'anmelden', 'download', 'signup', 'trial'],
-'portfolio': ['portfolio', 'showcase', 'galerie', 'projekt', 'work', 'arbeiten', 'designer'],
-'corporate': ['unternehmen', 'firma', 'business', 'corporate', 'about', 'team', 'services'],
-'blog': ['blog', 'news', 'artikel', 'content', 'nachrichten', 'magazin'],
-'restaurant': ['restaurant', 'menü', 'essen', 'reservierung', 'gastronomie', 'küche'],
-'saas': ['software', 'app', 'platform', 'api', 'dashboard', 'tool', 'saas'],
-'personal': ['personal', 'cv', 'lebenslauf', 'über mich', 'persönlich']
-};
-let detectedType = 'general';
-let maxMatches = 0;
-Object.keys(websiteTypes).forEach(type => {
-const matches = websiteTypes[type].filter(keyword => lowercaseMsg.includes(keyword)).length;
-if (matches > maxMatches) {
-maxMatches = matches;
-detectedType = type;
-}
-});
-// INDUSTRY DETECTION
-const industries = {
-'food': ['restaurant', 'café', 'bäckerei', 'essen', 'küche', 'menü', 'cookies', 'keks'],
-'tech': ['software', 'app', 'tech', 'startup', 'saas', 'platform', 'code'],
-'creative': ['design', 'kunst', 'kreativ', 'fotograf', 'designer', 'agentur'],
-'retail': ['mode', 'kleidung', 'schmuck', 'beauty', 'lifestyle', 'produkt'],
-'service': ['beratung', 'service', 'dienstleistung', 'consulting', 'agentur'],
-'education': ['schule', 'kurs', 'lernen', 'training', 'education', 'akademie'],
-'healthcare': ['gesundheit', 'medizin', 'praxis', 'therapie', 'wellness'],
-'finance': ['bank', 'versicherung', 'finanzen', 'investment', 'steuer']
-};
-let detectedIndustry = 'general';
-Object.keys(industries).forEach(industry => {
-if (industries[industry].some(keyword => lowercaseMsg.includes(keyword))) {
-detectedIndustry = industry;
-}
-});
-// FEATURE DETECTION
-const features = [];
-const featureKeywords = {
-'navigation': ['nav', 'navigation', 'menü', 'menu'],
-'hero': ['hero', 'banner', 'hauptbereich', 'jumbotron'],
-'gallery': ['galerie', 'bilder', 'fotos', 'gallery'],
-'contact': ['kontakt', 'contact', 'formular', 'anfrage'],
-'testimonials': ['testimonials', 'bewertungen', 'meinungen'],
-'pricing': ['preise', 'pricing', 'tarife', 'kosten'],
-'team': ['team', 'über uns', 'mitarbeiter'],
-'blog': ['blog', 'news', 'artikel'],
-'cart': ['warenkorb', 'cart', 'einkauf'],
-'search': ['suche', 'search', 'filter'],
-'social': ['social media', 'facebook', 'instagram', 'twitter']
-};
-Object.keys(featureKeywords).forEach(feature => {
-if (featureKeywords[feature].some(keyword => lowercaseMsg.includes(keyword))) {
-features.push(feature);
-}
-});
-// STYLE PREFERENCE
-const styleKeywords = {
-'modern': ['modern', 'contemporary', 'aktuell', 'zeitgemäß'],
-'minimalist': ['minimalist', 'clean', 'schlicht', 'einfach'],
-'luxury': ['luxuriös', 'elegant', 'premium', 'hochwertig'],
-'corporate': ['corporate', 'business', 'professionell', 'seriös'],
-'creative': ['kreativ', 'artistic', 'bunt', 'experimentell'],
-'startup': ['startup', 'tech', 'innovativ', 'disruptiv']
-};
-let stylePreference = 'modern';
-Object.keys(styleKeywords).forEach(style => {
-if (styleKeywords[style].some(keyword => lowercaseMsg.includes(keyword))) {
-stylePreference = style;
-}
-});
-// COMPLEXITY LEVEL
-const complexityIndicators = features.length + (lowercaseMsg.split(' ').length > 10 ? 2 : 0);
-const complexityLevel = complexityIndicators > 5 ? 'high' : complexityIndicators > 2 ? 'medium' : 'low';
-return {
-websiteType: detectedType,
-industry: detectedIndustry,
-primaryIntent: maxMatches > 0 ? detectedType : 'general',
-targetAudience: detectedType === 'ecommerce' ? 'customers' : detectedType === 'corporate' ? 'business' : 'general',
-complexityLevel,
-layoutPreference: detectLayoutPreference(lowercaseMsg),
-stylePreference,
-requiredFeatures: features,
-hasSpecificBranding: detectBranding(lowercaseMsg),
-conversionGoal: detectConversionGoal(lowercaseMsg, detectedType)
-};
-}
 function detectLayoutPreference(message) {
-if (message.includes('zwei spalten') || message.includes('2 column')) return 'two-column';
-if (message.includes('drei spalten') || message.includes('3 column')) return 'three-column';
-if (message.includes('grid') || message.includes('karten')) return 'grid';
-if (message.includes('sidebar')) return 'sidebar';
-return 'single-column';
+  if (message.includes('zwei spalten') || message.includes('2 column')) return 'two-column';
+  if (message.includes('drei spalten') || message.includes('3 column')) return 'three-column';
+  if (message.includes('grid') || message.includes('karten')) return 'grid';
+  if (message.includes('sidebar')) return 'sidebar';
+  return 'single-column';
 }
-function detectBranding(message) {
-const brandingKeywords = ['logo', 'brand', 'marke', 'corporate design', 'farben', 'colors'];
-return brandingKeywords.some(keyword => message.includes(keyword));
-}
-function detectConversionGoal(message, type) {
-if (type === 'ecommerce') return 'purchase';
-if (message.includes('anmelden') || message.includes('signup')) return 'signup';
-if (message.includes('kontakt') || message.includes('anfrage')) return 'contact';
-if (message.includes('download')) return 'download';
-return 'engagement';
-}
-function generateUltimateHints(currentHTML, message, intent) {
-const hints = [];
-if (intent.websiteType === 'ecommerce') {
-hints.push('E-Commerce Focus: Conversion-optimierte CTAs, Trust-Signale, Social Proof');
-}
-if (intent.industry === 'food') {
-hints.push('Food Industry: Appetitliche Bilder, Menü-Darstellung, Reservierungs-Option');
-}
-if (intent.complexityLevel === 'high') {
-hints.push('High Complexity: Multi-Section Layout, Advanced Features, Professional Design');
-}
-if (!currentHTML.includes('container')) {
-hints.push('Fresh Start: Create complete semantic structure from scratch');
-}
-return hints.join(' | ');
-}
-function getWebsiteTemplate(intent) {
-const templates = {
-ecommerce: `
-E-COMMERCE TEMPLATE:
 
-Header: Logo + Navigation (Home, Produkte, Über uns, Kontakt) + Warenkorb-Icon
-Hero: Hauptangebot + "Jetzt shoppen" CTA + Hero-Produktbild
-Produktgrid: 3-4 Spalten, Hover-Effekte, Preise hervorgehoben, "In den Warenkorb" Buttons
-Trust-Section: Kundenbewertungen, Gütesiegel, Versandgarantie
-Newsletter: E-Mail-Sammlung mit Rabatt-Angebot
-Footer: Zahlungsmethoden, AGB, Datenschutz, Social Media
-,   landing: 
+function detectBranding(message) {
+  const brandingKeywords = ['logo', 'brand', 'marke', 'corporate design', 'farben', 'colors'];
+  return brandingKeywords.some(keyword => message.includes(keyword));
+}
+
+function detectConversionGoal(message, type) {
+  if (type === 'ecommerce') return 'purchase';
+  if (message.includes('anmelden') || message.includes('signup')) return 'signup';
+  if (message.includes('kontakt') || message.includes('anfrage')) return 'contact';
+  if (message.includes('download')) return 'download';
+  return 'engagement';
+}
+
+function generateUltimateHints(currentHTML, message, intent) {
+  const hints = [];
+  
+  if (intent.websiteType === 'ecommerce') {
+    hints.push('E-Commerce Focus: Conversion-optimierte CTAs, Trust-Signale, Social Proof');
+  }
+  
+  if (intent.industry === 'food') {
+    hints.push('Food Industry: Appetitliche Bilder, Menü-Darstellung, Reservierungs-Option');
+  }
+  
+  if (intent.complexityLevel === 'high') {
+    hints.push('High Complexity: Multi-Section Layout, Advanced Features, Professional Design');
+  }
+  
+  if (!currentHTML.includes('container')) {
+    hints.push('Fresh Start: Create complete semantic structure from scratch');
+  }
+  
+  return hints.join(' | ');
+}
+
+function getWebsiteTemplate(intent) {
+  const templates = {
+    ecommerce: `
+E-COMMERCE TEMPLATE:
+- Header: Logo + Navigation (Home, Produkte, Über uns, Kontakt) + Warenkorb-Icon
+- Hero: Hauptangebot + "Jetzt shoppen" CTA + Hero-Produktbild
+- Produktgrid: 3-4 Spalten, Hover-Effekte, Preise hervorgehoben, "In den Warenkorb" Buttons
+- Trust-Section: Kundenbewertungen, Gütesiegel, Versandgarantie
+- Newsletter: E-Mail-Sammlung mit Rabatt-Angebot
+- Footer: Zahlungsmethoden, AGB, Datenschutz, Social Media
+`,
+    landing: `
 LANDING PAGE TEMPLATE:
-Hero: Überschrift + Subtitle + Haupt-CTA + Hero-Image
-Benefits: 3 Hauptvorteile mit Icons in Grid-Layout
-Social Proof: Testimonials oder Customer Logos
-Features: Detaillierte Feature-Liste
-FAQ: 5-6 häufige Fragen
-Final CTA: Conversion-optimierter Abschluss
-,   portfolio: 
+- Hero: Überschrift + Subtitle + Haupt-CTA + Hero-Image
+- Benefits: 3 Hauptvorteile mit Icons in Grid-Layout
+- Social Proof: Testimonials oder Customer Logos
+- Features: Detaillierte Feature-Liste
+- FAQ: 5-6 häufige Fragen
+- Final CTA: Conversion-optimierter Abschluss
+`,
+    portfolio: `
 PORTFOLIO TEMPLATE:
-Hero: Name + Tagline + "Projekte ansehen" CTA
-About: Kurze Vorstellung + Profilbild
-Portfolio Grid: Filterable Projekt-Galerie mit Overlay
-Services: Was ich anbiete
-Testimonials: Kundenmeinungen
-Contact: Kontaktformular + Social Links
+- Hero: Name + Tagline + "Projekte ansehen" CTA
+- About: Kurze Vorstellung + Profilbild
+- Portfolio Grid: Filterable Projekt-Galerie mit Overlay
+- Services: Was ich anbiete
+- Testimonials: Kundenmeinungen
+- Contact: Kontaktformular + Social Links
 `
-};
-return templates[intent.websiteType] || 'Standard responsive Website-Template';
+  };
+  
+  return templates[intent.websiteType] || 'Standard responsive Website-Template';
 }
 
 function ultimateCodeCleaning(code, intent) {
-let cleanCode = code.trim();
-// Remove markdown
-cleanCode = cleanCode.replace(/html\n?/g, '').replace(/\n?$/g, '');
-cleanCode = cleanCode.replace(/```\n?/g, '');
-// Ensure DOCTYPE
-if (!cleanCode.includes('<!DOCTYPE html>')) {
-cleanCode = '<!DOCTYPE html>\n' + cleanCode;
+  let cleanCode = code.trim();
+  
+  // Remove markdown
+  cleanCode = cleanCode.replace(/```html\n?/g, '').replace(/```\n?$/g, '');
+  cleanCode = cleanCode.replace(/```\n?/g, '');
+  
+  // Ensure DOCTYPE
+  if (!cleanCode.includes('<!DOCTYPE html>')) {
+    cleanCode = '<!DOCTYPE html>\n' + cleanCode;
+  }
+
+  // Add meta viewport if missing
+  if (!cleanCode.includes('viewport')) {
+    cleanCode = cleanCode.replace('<head>', '<head>\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">');
+  }
+
+  // Add charset if missing
+  if (!cleanCode.includes('charset')) {
+    cleanCode = cleanCode.replace('<head>', '<head>\n    <meta charset="UTF-8">');
+  }
+
+  // Add SEO meta tags for business websites
+  if (intent.websiteType === 'ecommerce' || intent.websiteType === 'corporate') {
+    if (!cleanCode.includes('meta name="description"')) {
+      cleanCode = cleanCode.replace('</head>', '    <meta name="description" content="Professionelle Website erstellt mit KI">\n</head>');
+    }
+  }
+
+  return cleanCode.trim();
 }
-// Add meta viewport if missing
-if (!cleanCode.includes('viewport')) {
-cleanCode = cleanCode.replace('<head>', '<head>\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">');
-}
-// Add charset if missing
-if (!cleanCode.includes('charset')) {
-cleanCode = cleanCode.replace('<head>', '<head>\n    <meta charset="UTF-8">');
-}
-// Add SEO meta tags for business websites
-if (intent.websiteType === 'ecommerce' || intent.websiteType === 'corporate') {
-if (!cleanCode.includes('meta name="description"')) {
-cleanCode = cleanCode.replace('</head>', '    <meta name="description" content="Professionelle Website erstellt mit KI">\n</head>');
-}
-}
-return cleanCode.trim();
-}
+
 function generateIntelligentSuggestions(intent) {
-const suggestions = {
-ecommerce: [
-'Füge Produktbewertungen hinzu',
-'Erstelle eine Checkout-Seite',
-'Implementiere Produktfilter',
-'Füge einen Newsletter-Bereich hinzu'
-],
-landing: [
-'Optimiere die Call-to-Action Buttons',
-'Füge mehr Testimonials hinzu',
-'Erstelle eine Thank-You Page',
-'Implementiere A/B-Test Varianten'
-],
-portfolio: [
-'Füge mehr Projekte hinzu',
-'Erstelle Case Studies',
-'Implementiere Kontaktformular',
-'Füge einen Blog-Bereich hinzu'
-]
-};
-return suggestions[intent.websiteType] || [
-'Verbessere die mobile Ansicht',
-'Füge mehr Inhalte hinzu',
-'Optimiere die Ladegeschwindigkeit',
-'Implementiere SEO-Optimierungen'
-];
+  const suggestions = {
+    ecommerce: [
+      'Füge Produktbewertungen hinzu',
+      'Erstelle eine Checkout-Seite',
+      'Implementiere Produktfilter',
+      'Füge einen Newsletter-Bereich hinzu'
+    ],
+    landing: [
+      'Optimiere die Call-to-Action Buttons',
+      'Füge mehr Testimonials hinzu',
+      'Erstelle eine Thank-You Page',
+      'Implementiere A/B-Test Varianten'
+    ],
+    portfolio: [
+      'Füge mehr Projekte hinzu',
+      'Erstelle Case Studies',
+      'Implementiere Kontaktformular',
+      'Füge einen Blog-Bereich hinzu'
+    ]
+  };
+
+  return suggestions[intent.websiteType] || [
+    'Verbessere die mobile Ansicht',
+    'Füge mehr Inhalte hinzu',
+    'Optimiere die Ladegeschwindigkeit',
+    'Implementiere SEO-Optimierungen'
+  ];
 }
