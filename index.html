@@ -2,104 +2,121 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Lovable-Light Demo</title>
+  <title>Lovable-Light</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Container für die generierte Seite -->
+  <!-- Container für Blöcke -->
   <div id="app">Lade Website...</div>
 
   <!-- Chatbox -->
   <div id="chatbox">
-    <textarea id="chatInput" placeholder="Beschreibe deine Website..."></textarea>
+    <textarea id="chatInput" placeholder="Beschreibe deine Website wie ein Mensch..."></textarea>
     <button id="chatSend">Absenden</button>
   </div>
 
   <script>
     // =========================
-    // Funktion zum Rendern der Blöcke
+    // Render-Funktion
     // =========================
     function renderPage(data) {
-      document.title = data.pageTitle;
+      document.title = data.pageTitle || "Neue Seite";
       const app = document.getElementById("app");
       app.innerHTML = "";
 
       data.blocks.forEach(block => {
-        if (block.type === "hero") {
-          app.innerHTML += `
-            <section class="hero">
-              <h1>${block.headline}</h1>
-              <p>${block.sub}</p>
-              <a href="${block.ctaLink}" class="btn">${block.ctaText}</a>
-            </section>`;
-        }
+        switch (block.type) {
+          case "hero":
+            app.innerHTML += `
+              <section class="hero">
+                <h1>${block.headline || ""}</h1>
+                <p>${block.sub || ""}</p>
+                <a href="${block.ctaLink || "#"}" class="btn">${block.ctaText || ""}</a>
+              </section>`;
+            break;
 
-        if (block.type === "features") {
-          const items = block.items.map(i => `
-            <div class="feature">
-              <div class="icon">${i.icon}</div>
-              <h3>${i.title}</h3>
-              <p>${i.text}</p>
-            </div>
-          `).join("");
-          app.innerHTML += `
-            <section id="features" class="features">
-              <h2>Features</h2>
-              <div class="features-grid">${items}</div>
-            </section>`;
-        }
+          case "features":
+            const items = (block.items || []).map(i => `
+              <div class="feature">
+                <div class="icon">${i.icon || ""}</div>
+                <h3>${i.title || ""}</h3>
+                <p>${i.text || ""}</p>
+              </div>`).join("");
+            app.innerHTML += `
+              <section class="features">
+                <h2>Features</h2>
+                <div class="features-grid">${items}</div>
+              </section>`;
+            break;
 
-        if (block.type === "text") {
-          app.innerHTML += `
-            <section class="text-block">
-              <h2>${block.title}</h2>
-              <p>${block.body}</p>
-            </section>`;
-        }
+          case "text":
+            app.innerHTML += `
+              <section class="text-block">
+                <h2>${block.title || ""}</h2>
+                <p>${block.body || ""}</p>
+              </section>`;
+            break;
 
-        if (block.type === "gallery") {
-          const imgs = block.images.map(img => `<img src="${img}" alt="Bild">`).join("");
-          app.innerHTML += `
-            <section id="gallery" class="gallery">
-              <h2>Galerie</h2>
-              <div class="grid">${imgs}</div>
-            </section>`;
-        }
+          case "gallery":
+            const imgs = (block.images || []).map(img => `<img src="${img}" alt="Bild">`).join("");
+            app.innerHTML += `
+              <section class="gallery">
+                <h2>Galerie</h2>
+                <div class="grid">${imgs}</div>
+              </section>`;
+            break;
 
-        if (block.type === "faq") {
-          const faqs = block.items.map(i => `
-            <details>
-              <summary>${i.q}</summary>
-              <p>${i.a}</p>
-            </details>
-          `).join("");
-          app.innerHTML += `
-            <section class="faq">
-              <h2>Häufige Fragen</h2>
-              ${faqs}
-            </section>`;
-        }
+          case "faq":
+            const faqs = (block.items || []).map(i => `
+              <details>
+                <summary>${i.q || ""}</summary>
+                <p>${i.a || ""}</p>
+              </details>`).join("");
+            app.innerHTML += `
+              <section class="faq">
+                <h2>Häufige Fragen</h2>
+                ${faqs}
+              </section>`;
+            break;
 
-        if (block.type === "footer") {
-          app.innerHTML += `
-            <footer class="footer">
-              <p>${block.text}</p>
-            </footer>`;
+          case "button":
+            app.innerHTML += `
+              <div class="center">
+                <button class="btn" style="background:${block.color || "blue"}">
+                  ${block.text || "Button"}
+                </button>
+              </div>`;
+            break;
+
+          case "image":
+            app.innerHTML += `
+              <div class="image-block">
+                <img src="${block.src}" alt="${block.alt || "Bild"}" />
+              </div>`;
+            break;
+
+          case "footer":
+            app.innerHTML += `
+              <footer class="footer">
+                <p>${block.text || ""}</p>
+              </footer>`;
+            break;
+
+          default:
+            app.innerHTML += `
+              <section>
+                <pre>${JSON.stringify(block, null, 2)}</pre>
+              </section>`;
         }
       });
     }
 
     // =========================
-    // Chatbox-Logik mit API
+    // Chatbox-Logik
     // =========================
     document.getElementById("chatSend").addEventListener("click", async () => {
       const input = document.getElementById("chatInput").value.trim();
-      if (!input) {
-        alert("Bitte eine Beschreibung eingeben.");
-        return;
-      }
-
-      console.log("👉 Sende an API:", input);
+      if (!input) return alert("Bitte etwas eingeben.");
 
       const res = await fetch("/api/generate", {
         method: "POST",
@@ -108,42 +125,26 @@
       });
 
       const payload = await res.json();
-
       if (!res.ok) {
         alert("Fehler: " + (payload?.error || "Unbekannt"));
         console.error(payload);
         return;
       }
 
-      console.log("✅ API Antwort:", payload);
-
       localStorage.setItem("pageData", JSON.stringify(payload));
       renderPage(payload);
     });
 
     // =========================
-    // Beim Laden: data.json oder gespeicherte Daten anzeigen
+    // Initial: data.json laden (falls vorhanden)
     // =========================
     const saved = localStorage.getItem("pageData");
     if (saved) {
-      console.log("⚡ Lade gespeicherte Seite aus localStorage");
       renderPage(JSON.parse(saved));
     } else {
-      console.log("🌍 Lade data.json...");
       fetch("data.json")
-        .then(r => {
-          if (!r.ok) throw new Error("Fehler beim Laden von data.json");
-          return r.json();
-        })
-        .then(data => {
-          console.log("✅ data.json geladen:", data);
-          renderPage(data);
-        })
-        .catch(err => {
-          console.error("❌ Problem mit data.json:", err);
-          document.getElementById("app").innerHTML =
-            "<p style='color:red'>Fehler: Konnte data.json nicht laden.</p>";
-        });
+        .then(r => r.ok ? r.json() : { pageTitle: "Startseite", blocks: [] })
+        .then(renderPage);
     }
   </script>
 </body>
