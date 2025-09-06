@@ -1,35 +1,49 @@
 export const config = { runtime: 'edge' };
 
+/**
+ * Lovable-Style System Prompt:
+ * - natürliche Sprache → Website-Blöcke
+ * - striktes JSON, keine Markdown-Codeblöcke, kein Freitext
+ * - frei definierbare Blocktypen, sinnvolle Defaults
+ */
 const SYSTEM_PROMPT = `
-Du bist ein Website-Architekt. 
-Antworte ausschließlich mit JSON im folgenden Schema:
+Du bist ein Website-Architekt (Lovable-Style).
+Der Nutzer schreibt in Alltagssprache, was er will (z. B. "Logo links, Hero, roter Button, Galerie...").
+Du wandelst das in JSON um.
+
+WICHTIG:
+- Antworte AUSSCHLIESSLICH mit gültigem JSON, KEIN Markdown, KEIN Text außerhalb des JSON.
+- Nutze dieses Top-Level-Schema:
 
 {
   "pageTitle": string,
+  "theme"?: { "brand"?: string, "bg"?: string, "fg"?: string, "muted"?: string, "font"?: string },
   "blocks": Block[]
 }
 
-Block kann ALLES sein:
-- hero:    { "type":"hero","headline":string,"sub":string,"ctaText":string,"ctaLink":string }
-- features:{ "type":"features","items":[{"icon":string,"title":string,"text":string}] }
-- text:    { "type":"text","title":string,"body":string }
-- gallery: { "type":"gallery","images":string[] }
-- faq:     { "type":"faq","items":[{"q":string,"a":string}] }
-- footer:  { "type":"footer","text":string }
-- logo:    { "type":"logo","text":string,"position":"left"|"center"|"right" }
-- navbar:  { "type":"navbar","items":[{"text":string,"link":string}] }
-- button:  { "type":"button","text":string,"color":string,"link":string }
-- image:   { "type":"image","src":string,"alt":string }
-- video:   { "type":"video","src":string,"title":string }
-- form:    { "type":"form","fields":[{"label":string,"type":string}],"submitText":string }
-- testimonial: { "type":"testimonial","quote":string,"author":string }
-- cardGrid: { "type":"cardGrid","cards":[{"title":string,"text":string,"image":string}] }
-- ... oder andere Strukturen, die zur Anfrage passen.
+"Block" ist flexibel. Erlaubte (nicht abschließende) Beispiele:
+- { "type": "navbar",  "brand"?: string, "brandImage"?: string, "items"?: [{ "text": string, "link": string }], "cta"?: { "text": string, "link": string }, "sticky"?: boolean }
+- { "type": "logo",    "text": string, "position"?: "left" | "center" | "right" }
+- { "type": "hero",    "headline": string, "sub"?: string, "ctaText"?: string, "ctaLink"?: string, "ctaColor"?: string, "ctaTextColor"?: string, "backgroundGradient"?: string, "align"?: "left" | "center" | "right", "h1Size"?: string }
+- { "type": "section", "title"?: string, "body"?: string, "children"?: Block[] }
+- { "type": "columns", "count"?: number, "columns": (Block | Block[])[] }
+- { "type": "features","title"?: string, "items": [{ "icon"?: string, "title": string, "text"?: string }] }
+- { "type": "cardGrid","title"?: string, "cards": [{ "title": string, "text"?: string, "image"?: string, "link"?: string }] }
+- { "type": "pricing", "title"?: string, "plans": [{ "name": string, "price": string, "features"?: string[], "ctaText"?: string, "ctaLink"?: string }] }
+- { "type": "testimonial","quote": string, "author"?: string }
+- { "type": "gallery", "title"?: string, "images": string[] }
+- { "type": "image",   "src": string, "alt"?: string }
+- { "type": "video",   "title"?: string, "src": string }
+- { "type": "faq",     "title"?: string, "items": [{ "q": string, "a": string }] }
+- { "type": "form",    "title"?: string, "fields": [{ "label": string, "type": "text" | "email" | "textarea" | "select" | "tel" | "url" | "number", "placeholder"?: string, "options"?: string[], "name"?: string }], "submitText"?: string }
+- { "type": "button",  "text": string, "link"?: string, "color"?: string }
+- { "type": "footer",  "text": string }
 
 Regeln:
-1. Antworte NUR mit JSON, niemals mit Text oder Markdown.
-2. Wenn der User vage ist, füge sinnvolle Defaults ein.
-3. Du darfst neue Blocktypen erfinden, wenn es nötig ist.
+1) Immer "pageTitle" + ein "blocks"-Array liefern.
+2) Wenn der Nutzer nur Teilwünsche äußert (z. B. "Button hinzufügen"), liefere trotzdem eine KONSISTENTE Seite (mind. Hero + Footer + gewünschter Block).
+3) Verwende sinnvolle Defaultwerte und halte dich an einfache Felder (Strings/Arrays), vermeide HTML im JSON.
+4) KEIN Markdown, KEINE \`\`\`-Fences – nur JSON.
 `;
 
 export default async function handler(req) {
@@ -78,8 +92,8 @@ export default async function handler(req) {
   const data = await aiRes.json();
   let raw = data?.choices?.[0]?.message?.content?.trim() || '{}';
 
-  // Entferne evtl. Markdown-Codeblöcke
-  raw = raw.replace(/^```json\s*/g, '').replace(/```$/g, '');
+  // Falls die KI doch Fences liefert, entfernen
+  raw = raw.replace(/^\s*```json\s*/i, '').replace(/\s*```\s*$/i, '');
 
   try {
     const json = JSON.parse(raw);
@@ -87,6 +101,15 @@ export default async function handler(req) {
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (e) {
+    // Notfall: bestmöglichen JSON-Chunk extrahieren
+    const start = raw.indexOf('{');
+    const end   = raw.lastIndexOf('}');
+    if (start >= 0 && end > start) {
+      try {
+        const fixed = JSON.parse(raw.slice(start, end + 1));
+        return new Response(JSON.stringify(fixed), { headers: { 'Content-Type': 'application/json' } });
+      } catch(_) {}
+    }
     return new Response(JSON.stringify({ error: 'Bad JSON', raw }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' }
