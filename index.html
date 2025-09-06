@@ -2,265 +2,393 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8" />
-  <title>Lovable-Light</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lovable-Light Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <style>
-    /* Mini-Erweiterungen, falls deine styles.css noch nicht alles hat */
-    :root{--bg:#111;--fg:#eee;--brand:#1a2a6c;--muted:#f5f5f7;}
+    /* Minimaler „sichere Defaults“-Look, falls styles.css fehlt/leer ist */
+    :root{--bg:#0f1115;--panel:#151924;--muted:#222736;--fg:#e8eaf0;--sub:#aab1c5;--brand:#6d6df6;--accent:#ff5c8a;--ok:#27c07d;--warn:#ffd166;--err:#ff5d5d}
     *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial}
-    .navbar{position:sticky;top:0;z-index:30;display:flex;gap:16px;align-items:center;justify-content:space-between;padding:12px 20px;background:#fff;border-bottom:1px solid #eaeaea}
-    .navbar .brand{font-weight:700}
-    .nav-items{display:flex;gap:14px;flex-wrap:wrap}
-    .nav-items a{color:#222;text-decoration:none;padding:6px 8px;border-radius:8px}
-    .nav-cta{background:#111;color:#fff;padding:8px 12px;border-radius:10px;text-decoration:none}
-    .center{display:flex;justify-content:center;align-items:center}
-    .btn{display:inline-block;background:#1a2a6c;color:#fff;padding:10px 16px;border-radius:8px;text-decoration:none;border:0;cursor:pointer}
-    .section{padding:56px 20px;max-width:1080px;margin:0 auto}
+    html,body{height:100%}
+    body{margin:0;background:linear-gradient(180deg,#0f1115,#121622 35%,#0f1115);color:var(--fg);font-family:Inter,system-ui,Arial}
+    a{color:var(--brand)}
+    .wrap{display:grid;grid-template-rows:auto 1fr auto;min-height:100%}
+    header{position:sticky;top:0;z-index:30;background:#0f1115a8;backdrop-filter:blur(10px);border-bottom:1px solid #20263a}
+    .nav{max-width:1200px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:16px}
+    .brand{font-weight:800;letter-spacing:.2px}
+    .badge{font-size:12px;background:var(--muted);padding:4px 8px;border-radius:999px;color:#c9cfe3}
+    .toolbar{margin-left:auto;display:flex;gap:10px;align-items:center}
+    .btn{background:var(--brand);color:#fff;border:0;border-radius:10px;padding:10px 14px;cursor:pointer;font-weight:700}
+    .btn.secondary{background:var(--muted);color:#c9cfe3}
+    main{max-width:1200px;margin:0 auto;padding:24px 20px;display:grid;grid-template-columns: 1.1fr .9fr;gap:24px}
+    @media (max-width:1000px){main{grid-template-columns:1fr}}
+    .canvas{background:var(--panel);border:1px solid #20263a;border-radius:16px;min-height:540px;overflow:clip}
+    .stage{padding:22px}
+    .hero{padding:100px 20px;text-align:center;background:linear-gradient(135deg,#1a2a6c,#b21f1f,#fdbb2d);color:#fff;border-radius:14px}
+    .hero h1{font-size:44px;margin:0 0 6px}
+    .hero p{opacity:.95;margin:0 0 14px}
     .grid{display:grid;gap:16px}
-    .grid.cols-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
-    .grid.cols-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
-    .card{background:#fff;border:1px solid #eee;border-radius:14px;padding:18px;box-shadow:0 6px 14px rgba(0,0,0,.06)}
-    .price{font-size:32px;font-weight:800;margin:4px 0}
-    .testimonial{font-style:italic}
-    .video iframe,.video video{width:100%;max-width:960px;aspect-ratio:16/9;border:0;border-radius:14px;box-shadow:0 6px 14px rgba(0,0,0,.08)}
-    .form-section form{display:grid;gap:12px;max-width:520px;margin:0 auto}
-    .form-section input,.form-section textarea, .form-section select{width:100%;padding:10px;border:1px solid #ddd;border-radius:10px}
-    .footer{background:var(--bg);color:var(--fg);text-align:center;padding:24px;margin-top:56px}
-    .notice{background:#fff3cd;border:1px solid #ffe69c;color:#5f4b00;border-radius:12px;padding:12px 14px}
-    /* Chatbox */
-    #chatbox{position:fixed;bottom:0;left:0;right:0;background:#f1f1f1;border-top:1px solid #ddd;display:flex;gap:10px;padding:8px}
-    #chatInput{flex:1;min-height:56px;padding:10px;border:1px solid #ccc;border-radius:10px;font-size:15px}
-    #chatSend{background:#1a2a6c;color:#fff;border:0;padding:0 18px;border-radius:10px;font-weight:700}
-    #spinner{display:none;margin-left:8px}
+    .cols-2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+    .cols-3{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+    .card{background:#0f1220;border:1px solid #1f2436;border-radius:12px;padding:16px;box-shadow:0 6px 16px rgba(0,0,0,.18)}
+    .price{font-size:30px;font-weight:800}
+    .video iframe,.video video{width:100%;aspect-ratio:16/9;border:0;border-radius:12px}
+    .footer{background:#0c0f18;border-radius:12px;margin-top:18px;padding:16px;text-align:center;border:1px solid #1b2133}
+    .notice{background:#161b2a;border:1px solid #2b3550;border-radius:12px;padding:12px 14px;color:#cdd3e8}
+    /* Chat */
+    .side{display:flex;flex-direction:column;gap:16px}
+    .panel{background:var(--panel);border:1px solid #20263a;border-radius:16px}
+    .log{padding:16px;display:flex;flex-direction:column;gap:10px;max-height:420px;overflow:auto}
+    .msg{display:flex;gap:10px}
+    .msg.user .b{background:#1c2233}
+    .msg.ai .b{background:#12192a}
+    .b{padding:10px 12px;border-radius:12px;border:1px solid #222a40;color:#dbe1f7;max-width:85%}
+    .inputbar{border-top:1px solid #20263a;padding:10px;display:flex;gap:10px}
+    textarea{flex:1;background:#0f1220;color:#e2e6f7;border:1px solid #222a40;border-radius:12px;min-height:56px;padding:10px;resize:vertical}
+    .debug{padding:12px 14px;font-family:ui-monospace,Consolas,monospace;background:#0f1220;border-top:1px solid #20263a;color:#aab1c5;max-height:200px;overflow:auto}
+    .pill{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid #2b3550;background:#12182a;color:#c9cfe3}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .err{color:var(--err)}
   </style>
 </head>
 <body>
+<div class="wrap">
+  <header>
+    <div class="nav">
+      <div class="brand">Lovable-Light <span class="badge">Studio</span></div>
+      <span class="pill" id="status-pill">Bereit</span>
+      <div class="toolbar">
+        <button id="resetBtn" class="btn secondary" title="Lokale Seite & Gespräch zurücksetzen">Zurücksetzen</button>
+        <button id="saveBtn" class="btn secondary" title="JSON exportieren">Export JSON</button>
+        <button id="publishBtn" class="btn" title="Render neu laden">Neu rendern</button>
+      </div>
+    </div>
+  </header>
 
-  <!-- dynamischer Inhalt kommt hier rein -->
-  <div id="app" class="section">Lade Website…</div>
+  <main>
+    <!-- linke Seite: gerenderte Website -->
+    <section class="canvas">
+      <div id="stage" class="stage">Lade Website…</div>
+    </section>
 
-  <!-- Chat unten -->
-  <div id="chatbox">
-    <textarea id="chatInput" placeholder="Beschreibe deine Website wie ein Mensch: „Navbar mit Logo links, Hero mit großem Titel, roter Button, danach 3 Features…“"></textarea>
-    <button id="chatSend">Absenden</button>
-    <div id="spinner">⏳</div>
-  </div>
+    <!-- rechte Seite: Chat + Debug -->
+    <aside class="side">
+      <section class="panel">
+        <div class="log" id="chatlog"></div>
+        <div class="inputbar">
+          <textarea id="chatInput" placeholder="Beschreibe deine Seite wie ein Mensch: „Navbar mit Logo links, Hero mit großem Titel und rotem Button, dann 3 Features…“"></textarea>
+          <button id="sendBtn" class="btn">Absenden</button>
+        </div>
+        <div class="debug" id="debugbox">Debug-Ausgabe erscheint hier…</div>
+      </section>
+      <section class="panel" style="padding:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <strong>Seiten-Daten</strong>
+          <span id="metaInfo" class="pill">–</span>
+        </div>
+        <div id="quickActions" style="margin-top:10px;display:flex;flex-wrap:wrap;gap:8px">
+          <button class="btn secondary qa" data-q="Füge eine Features-Sektion mit 3 Punkten hinzu.">+ Features</button>
+          <button class="btn secondary qa" data-q="Füge ein Kontaktformular mit Name, E-Mail und Nachricht hinzu.">+ Formular</button>
+          <button class="btn secondary qa" data-q="Ersetze den Hero durch einen mit der Überschrift 'Willkommen Ali' und einem CTA-Button 'Loslegen' in #ff0066.">Hero ändern</button>
+          <button class="btn secondary qa" data-q="Füge eine Preisübersicht mit drei Plänen Starter, Pro, Team hinzu.">+ Preise</button>
+        </div>
+      </section>
+    </aside>
+  </main>
 
-  <script>
-    /********* kleine Helfer *********/
-    const esc = (s)=>String(s??"").replace(/[&<>"']/g,m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
-    const byId = (id)=>document.getElementById(id);
+  <footer style="max-width:1200px;margin:10px auto 24px;padding:0 20px;color:#8f96ad">
+    <small>Made with ♥ – Demo. Deine Inhalte werden lokal im Browser (localStorage) gespeichert.</small>
+  </footer>
+</div>
 
-    function applyTheme(theme){
-      if(!theme) return;
-      const r = document.documentElement.style;
-      if(theme.brand) r.setProperty("--brand", theme.brand);
-      if(theme.bg)    r.setProperty("--bg", theme.bg);
-      if(theme.fg)    r.setProperty("--fg", theme.fg);
-      if(theme.muted) r.setProperty("--muted", theme.muted);
-      if(theme.font)  document.body.style.fontFamily = theme.font + ", Inter, system-ui, Arial";
-    }
+<script>
+/* =============== Mini-Helpers =============== */
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 
-    /********* Block-Renderer (rekursiv) *********/
-    function renderPage(data){
-      console.log("🖼️ Render:", data);
-      if(!data || !Array.isArray(data.blocks)){ 
-        byId("app").innerHTML = `<div class="notice">Keine gültigen Blöcke gefunden.</div>`;
-        return;
+function setStatus(text, cls=""){ const p=$("status-pill"); p.textContent=text; p.className="pill "+cls; }
+function logDebug(obj){
+  $("debugbox").textContent = (typeof obj==='string') ? obj : JSON.stringify(obj, null, 2);
+}
+function addMsg(role, text){
+  const row = document.createElement("div");
+  row.className = "msg " + role;
+  row.innerHTML = `<div class="b">${esc(text)}</div>`;
+  $("chatlog").appendChild(row);
+  $("chatlog").scrollTop = $("chatlog").scrollHeight;
+}
+
+/* ===== Persistenz ===== */
+const LS_KEY_PAGE = "lovable_pageData_v2";
+const LS_KEY_CHAT = "lovable_chatlog_v2";
+function saveState(page){ localStorage.setItem(LS_KEY_PAGE, JSON.stringify(page)); }
+function loadState(){ try{ return JSON.parse(localStorage.getItem(LS_KEY_PAGE) || "null"); }catch{ return null; } }
+function saveChat(){ const msgs=[...document.querySelectorAll(".log .b")].map(n=>n.textContent); localStorage.setItem(LS_KEY_CHAT, JSON.stringify(msgs)); }
+function restoreChat(){
+  const msgs = JSON.parse(localStorage.getItem(LS_KEY_CHAT) || "[]");
+  $("chatlog").innerHTML = "";
+  msgs.forEach((t,i)=> addMsg(i%2===0?"user":"ai", t));
+}
+
+/* =============== Renderer =============== */
+/* Unterstützt:
+   – Klassisch: { pageTitle, blocks:[ {type,...}, ... ] }
+   – Schema: { metadata, design, structure:[ {sections:[ {type, content:{...}} ] } ] }
+*/
+function renderPage(data){
+  try{
+    document.title = data.pageTitle || data.metadata?.purpose || "Lovable-Light";
+  }catch{}
+  const stage = $("stage");
+  stage.innerHTML = "";
+
+  // kurze Zusammenfassung rechts
+  const meta = [];
+  if (data.metadata?.purpose) meta.push(data.metadata.purpose);
+  if (data.structure?.length) meta.push(`${data.structure.length} Seite(n)`);
+  $("metaInfo").textContent = meta.join(" · ") || "–";
+
+  const blocks = [];
+
+  // Format A (klassisch)
+  if (Array.isArray(data.blocks)) {
+    for (const b of data.blocks) blocks.push(b);
+  }
+
+  // Format B (Schema)
+  if (Array.isArray(data.structure)) {
+    for (const page of data.structure) {
+      if (!Array.isArray(page.sections)) continue;
+      for (const s of page.sections) {
+        blocks.push({ type: s.type, ...(s.content||{}) });
       }
-
-      document.title = data.pageTitle || "Neue Seite";
-      applyTheme(data.theme);
-
-      const parts = [];
-
-      const renderBlock = (b)=>{
-        if(!b || typeof b !== "object") return "";
-
-        // Verschachtelung unterstützen: b.children als Array von Blöcken
-        const children = Array.isArray(b.children) ? b.children.map(renderBlock).join("") : "";
-
-        switch(b.type){
-          case "navbar":{
-            const items = (b.items||[]).map(i=>`<a href="${esc(i.link||"#")}">${esc(i.text||"Link")}</a>`).join("");
-            const brand = b.brandImage ? `<img src="${esc(b.brandImage)}" alt="${esc(b.brand||"Logo")}" style="height:26px">` : esc(b.brand||"");
-            const cta   = b.cta ? `<a class="nav-cta" href="${esc(b.cta.link||"#")}">${esc(b.cta.text||"Los")}</a>` : "";
-            return `
-              <nav class="navbar" style="${b.sticky===false?"position:relative":""}">
-                <div class="brand">${brand}</div>
-                <div class="nav-items">${items}</div>
-                ${cta}
-              </nav>`;
-          }
-
-          case "logo":
-            return `<div class="navbar"><div class="brand">${esc(b.text||"Logo")}</div></div>`;
-
-          case "hero":{
-            const bg = b.backgroundGradient || "linear-gradient(135deg,#1a2a6c,#b21f1f,#fdbb2d)";
-            return `
-              <section class="hero" style="padding:110px 20px;color:#fff;background:${esc(bg)};text-align:${esc(b.align||"center")}">
-                <h1 style="font-size:${esc(b.h1Size||"46px")};margin:0 0 10px">${esc(b.headline||"")}</h1>
-                <p style="font-size:18px;opacity:.95">${esc(b.sub||"")}</p>
-                ${b.ctaText ? `<a href="${esc(b.ctaLink||"#")}" class="btn" style="background:${esc(b.ctaColor||"#fff")};color:${esc(b.ctaTextColor||"#1a2a6c")};margin-top:16px;display:inline-block">${esc(b.ctaText)}</a>` : ""}
-              </section>`;
-          }
-
-          case "section":
-            return `<section class="section"><h2>${esc(b.title||"")}</h2><p>${esc(b.body||"")}</p>${children}</section>`;
-
-          case "columns":{
-            const cols = (b.columns||[]).map(col=>`<div>${Array.isArray(col) ? col.map(renderBlock).join("") : renderBlock(col)}</div>`).join("");
-            const n = Math.min(3, Math.max(2, b.count || (b.columns||[]).length || 2));
-            return `<section class="section"><div class="grid cols-${n}">${cols}</div></section>`;
-          }
-
-          case "features":{
-            const items = (b.items||[]).map(i=>`
-              <div class="card center" style="gap:10px;flex-direction:column">
-                <div style="font-size:28px">${esc(i.icon||"✨")}</div>
-                <div style="font-weight:700">${esc(i.title||"Feature")}</div>
-                <div style="opacity:.8;text-align:center">${esc(i.text||"")}</div>
-              </div>`).join("");
-            return `<section class="section"><h2>${esc(b.title||"Features")}</h2><div class="grid cols-3">${items}</div></section>`;
-          }
-
-          case "cardGrid":{
-            const cards = (b.cards||[]).map(c=>`
-              <div class="card">
-                ${c.image?`<img src="${esc(c.image)}" alt="${esc(c.title||"")}" style="width:100%;height:160px;object-fit:cover;border-radius:10px">`:""}
-                <h3>${esc(c.title||"")}</h3>
-                <p>${esc(c.text||"")}</p>
-                ${c.link?`<a class="btn" href="${esc(c.link)}">Mehr</a>`:""}
-              </div>`).join("");
-            return `<section class="section"><h2>${esc(b.title||"")}</h2><div class="grid cols-3">${cards}</div></section>`;
-          }
-
-          case "pricing":{
-            const plans = (b.plans||[]).map(p=>`
-              <div class="card">
-                <div style="font-weight:800">${esc(p.name||"Plan")}</div>
-                <div class="price">${esc(p.price||"€0")}<span style="font-size:14px;font-weight:400">/Monat</span></div>
-                <ul style="padding-left:18px">${(p.features||[]).map(f=>`<li>${esc(f)}</li>`).join("")}</ul>
-                <a class="btn" href="${esc(p.ctaLink||"#")}">${esc(p.ctaText||"Wählen")}</a>
-              </div>`).join("");
-            return `<section class="section"><h2>${esc(b.title||"Preise")}</h2><div class="grid cols-3">${plans}</div></section>`;
-          }
-
-          case "testimonial":{
-            return `<section class="section"><blockquote class="testimonial">„${esc(b.quote||"")}”</blockquote><div>— ${esc(b.author||"")}</div></section>`;
-          }
-
-          case "gallery":{
-            const imgs=(b.images||[]).map(src=>`<img src="${esc(src)}" alt="" style="width:100%;height:220px;object-fit:cover;border-radius:12px">`).join("");
-            return `<section class="section"><h2>${esc(b.title||"Galerie")}</h2><div class="grid cols-3">${imgs}</div></section>`;
-          }
-
-          case "image":
-            return `<section class="section center image-block"><img src="${esc(b.src)}" alt="${esc(b.alt||"Bild")}" style="max-width:100%;border-radius:12px"></section>`;
-
-          case "video":{
-            const url = String(b.src||"");
-            let embed = "";
-            if(/youtube\.com|youtu\.be/.test(url)){
-              const id = url.match(/(?:v=|be\/)([A-Za-z0-9_-]{6,})/)?.[1] || "";
-              embed = `<iframe src="https://www.youtube.com/embed/${esc(id)}" allowfullscreen></iframe>`;
-            }else if(/vimeo\.com/.test(url)){
-              const id = url.match(/vimeo\.com\/(\d+)/)?.[1] || "";
-              embed = `<iframe src="https://player.vimeo.com/video/${esc(id)}" allowfullscreen></iframe>`;
-            }else{
-              embed = `<video controls src="${esc(url)}"></video>`;
-            }
-            return `<section class="section video"><h2>${esc(b.title||"Video")}</h2>${embed}</section>`;
-          }
-
-          case "faq":{
-            const faqs=(b.items||[]).map(i=>`
-              <details class="card"><summary>${esc(i.q||"Frage")}</summary><p>${esc(i.a||"")}</p></details>`).join("");
-            return `<section class="section"><h2>${esc(b.title||"Häufige Fragen")}</h2><div class="grid">${faqs}</div></section>`;
-          }
-
-          case "form":{
-            const fields = (b.fields||[]).map(f=>{
-              const t=f.type||"text";
-              const name=(f.name || f.label || "feld").toLowerCase().replace(/\s+/g,"_");
-              const base = `<label>${esc(f.label||name)}${t==="textarea"
-                ? `<textarea name="${esc(name)}" placeholder="${esc(f.placeholder||"")}"></textarea>`
-                : t==="select"
-                  ? `<select name="${esc(name)}">${(f.options||[]).map(o=>`<option>${esc(o)}</option>`).join("")}</select>`
-                  : `<input type="${esc(t)}" name="${esc(name)}" placeholder="${esc(f.placeholder||"")}">`
-              }</label>`;
-              return `<div>${base}</div>`;
-            }).join("");
-            return `
-              <section class="section form-section">
-                <h2>${esc(b.title||"Kontakt")}</h2>
-                <form onsubmit="event.preventDefault(); alert('Formulardaten wurden lokal abgefangen (Demo)');">
-                  ${fields}
-                  <button class="btn" type="submit">${esc(b.submitText||"Absenden")}</button>
-                </form>
-              </section>`;
-          }
-
-          case "button":
-            return `<section class="section center"><a class="btn" style="background:${esc(b.color||"#1a2a6c")}" href="${esc(b.link||"#")}">${esc(b.text||"Button")}</a></section>`;
-
-          case "footer":
-            return `<footer class="footer"><p>${esc(b.text||"")}</p></footer>`;
-
-          default:
-            console.warn("Unbekannter Block:", b);
-            return `<section class="section"><div class="notice"><strong>Unbekannter Blocktyp:</strong> <code>${esc(b.type)}</code><pre>${esc(JSON.stringify(b,null,2))}</pre></div></section>`;
-        }
-      };
-
-      for(const b of data.blocks) parts.push(renderBlock(b));
-      byId("app").innerHTML = parts.join("");
     }
+  }
 
-    /********* Chat → /api/generate *********/
-    byId("chatSend").addEventListener("click", async ()=>{
-      const input = byId("chatInput").value.trim();
-      if(!input) return alert("Bitte etwas eingeben.");
-      byId("spinner").style.display = "block";
-      try{
-        console.log("📤 Prompt:", input);
-        const res = await fetch("/api/generate",{
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ input })
-        });
-        const payload = await res.json();
-        console.log("📥 Response:", payload);
-        if(!res.ok) throw new Error(payload?.error || "Fehler von API");
-        localStorage.setItem("pageData", JSON.stringify(payload));
-        renderPage(payload);
-      }catch(e){
-        console.error(e);
-        alert("Fehler: " + e.message);
-      }finally{
-        byId("spinner").style.display = "none";
-      }
+  if (!blocks.length){
+    stage.innerHTML = `<div class="notice"><strong>Keine gültigen Blöcke gefunden.</strong><br>Die Antwort der KI war gültig, aber enthielt keine renderbaren Sektionen.</div>`;
+    return;
+  }
+
+  // Rendern
+  const htmlParts = blocks.map(renderBlock);
+  stage.innerHTML = htmlParts.join("");
+}
+
+function renderBlock(b){
+  const t = (b.type || "").toLowerCase();
+  // generische children-Unterstützung (falls vorhanden)
+  const children = Array.isArray(b.children) ? b.children.map(renderBlock).join("") : "";
+
+  if (t === "navbar"){
+    const items = (b.items||[]).map(i=>`<a href="${esc(i.link||"#")}" style="color:#c7cdf0;text-decoration:none">${esc(i.text||"Link")}</a>`).join(" · ");
+    const cta = b.cta ? `<a class="btn" href="${esc(b.cta.link||"#")}" style="margin-left:10px">${esc(b.cta.text||"Los")}</a>` : "";
+    return `<div class="card" style="display:flex;justify-content:space-between;align-items:center">
+      <strong>${esc(b.brand||"")}</strong>
+      <div>${items}${cta}</div>
+    </div>`;
+  }
+
+  if (t === "hero"){
+    return `<section class="hero" style="text-align:${esc(b.align||"center")}">
+      <h1>${esc(b.headline||"")}</h1>
+      <p>${esc(b.subheadline||b.sub||"")}</p>
+      ${b.cta?.text ? `<a href="${esc(b.cta.link||b.ctaLink||"#")}" class="btn" style="background:${esc(b.ctaColor||"#fff")};color:${esc(b.ctaTextColor||"#1a2a6c")}">${esc(b.cta.text||b.ctaText)}</a>`:""}
+    </section>`;
+  }
+
+  if (t === "text"){
+    return `<section class="card"><h3 style="margin:0 0 6px">${esc(b.title||"")}</h3><p style="margin:0">${esc(b.body||"")}</p>${children}</section>`;
+  }
+
+  if (t === "features"){
+    const items=(b.items||[]).map(i=>`
+      <div class="card" style="text-align:center">
+        <div style="font-size:26px">${esc(i.icon||"✨")}</div>
+        <div style="font-weight:700;margin:6px 0">${esc(i.title||"Feature")}</div>
+        <div style="opacity:.9">${esc(i.text||"")}</div>
+      </div>`).join("");
+    return `<section class="grid cols-3">${items}</section>`;
+  }
+
+  if (t === "columns"){
+    const cols=(b.columns||[]).map(col=>`<div>${Array.isArray(col)?col.map(renderBlock).join(""):renderBlock(col)}</div>`).join("");
+    const n = Math.min(3, Math.max(2, b.count || (b.columns||[]).length || 2));
+    return `<section class="grid cols-${n}">${cols}</section>`;
+  }
+
+  if (t === "cardgrid"){
+    const cards=(b.cards||[]).map(c=>`
+      <div class="card">
+        ${c.image?`<img src="${esc(c.image)}" alt="${esc(c.title||"")}" style="width:100%;height:160px;object-fit:cover;border-radius:8px">`:""}
+        <h3>${esc(c.title||"")}</h3>
+        <p>${esc(c.text||"")}</p>
+        ${c.link?`<a class="btn" href="${esc(c.link)}">Mehr</a>`:""}
+      </div>`).join("");
+    return `<section class="grid cols-3">${cards}</section>`;
+  }
+
+  if (t === "pricing"){
+    const plans=(b.plans||[]).map(p=>`
+      <div class="card" style="text-align:center">
+        <div style="font-weight:800">${esc(p.name||"Plan")}</div>
+        <div class="price">${esc(p.price||"€0")}<span style="font-size:12px;font-weight:400">/Monat</span></div>
+        <ul style="text-align:left;padding-left:18px">${(p.features||[]).map(f=>`<li>${esc(f)}</li>`).join("")}</ul>
+        <a class="btn" href="${esc(p.ctaLink||"#")}">${esc(p.ctaText||"Wählen")}</a>
+      </div>`).join("");
+    return `<section><h3>${esc(b.title||"Preise")}</h3><div class="grid cols-3">${plans}</div></section>`;
+  }
+
+  if (t === "testimonial"){
+    return `<section class="card"><blockquote style="font-style:italic;margin:0 0 6px">„${esc(b.quote||"")}”</blockquote><div>— ${esc(b.author||"")}</div></section>`;
+  }
+
+  if (t === "gallery"){
+    const imgs=(b.images||[]).map(x=>{
+      const src=typeof x==="string"?x:(x?.src||""); const alt=typeof x==="string"?"":(x?.alt||"");
+      return `<img src="${esc(src)}" alt="${esc(alt)}" style="width:100%;height:220px;object-fit:cover;border-radius:10px">`;
+    }).join("");
+    return `<section><h3>${esc(b.title||"Galerie")}</h3><div class="grid cols-3">${imgs}</div></section>`;
+  }
+
+  if (t === "image"){
+    return `<section class="card" style="text-align:center"><img src="${esc(b.src||"")}" alt="${esc(b.alt||"")}" style="max-width:100%;border-radius:10px"><div style="opacity:.9;margin-top:6px">${esc(b.caption||"")}</div></section>`;
+  }
+
+  if (t === "video"){
+    const url=String(b.src||""); let embed="";
+    if (/youtube\.com|youtu\.be/.test(url)){ const id=url.match(/(?:v=|be\/)([A-Za-z0-9_-]{6,})/)?.[1]||""; embed=`<iframe src="https://www.youtube.com/embed/${esc(id)}" allowfullscreen></iframe>`; }
+    else if (/vimeo\.com/.test(url)){ const id=url.match(/vimeo\.com\/(\d+)/)?.[1]||""; embed=`<iframe src="https://player.vimeo.com/video/${esc(id)}" allowfullscreen></iframe>`; }
+    else { embed=`<video controls src="${esc(url)}"></video>`; }
+    return `<section class="video card"><h3>${esc(b.title||"Video")}</h3>${embed}</section>`;
+  }
+
+  if (t === "faq"){
+    const items=(b.items||[]).map(i=>`<details class="card"><summary>${esc(i.question||i.q||"Frage")}</summary><p>${esc(i.answer||i.a||"")}</p></details>`).join("");
+    return `<section><h3>${esc(b.title||"FAQ")}</h3><div class="grid">${items}</div></section>`;
+  }
+
+  if (t === "form"){
+    const fields=(b.fields||[]).map(f=>{
+      const typ=(f.type||"text").toLowerCase();
+      const name=(f.label||"feld").toLowerCase().replace(/\s+/g,"_");
+      if (typ==="textarea") return `<label>${esc(f.label||name)}<br><textarea name="${esc(name)}" ${f.required?"required":""} placeholder="${esc(f.placeholder||"")}"></textarea></label>`;
+      if (typ==="checkbox") return `<label><input type="checkbox" name="${esc(name)}" ${f.required?"required":""}/> ${esc(f.label||name)}</label>`;
+      return `<label>${esc(f.label||name)}<br><input type="${esc(typ)}" name="${esc(name)}" ${f.required?"required":""} placeholder="${esc(f.placeholder||"")}"/></label>`;
+    }).join("<br>");
+    return `<section class="card"><h3>${esc(b.title||"Kontakt")}</h3><form onsubmit="event.preventDefault();alert('Demo: Daten nicht gesendet');">${fields}<br><button class="btn" type="submit">${esc(b.submitButtonText||b.submitText||"Absenden")}</button></form></section>`;
+  }
+
+  if (t === "cta"){
+    return `<section class="card center" style="text-align:center"><h3>${esc(b.description||"")}</h3><a class="btn" href="${esc(b.link||"#")}">${esc(b.text||"Jetzt starten")}</a></section>`;
+  }
+
+  if (t === "button"){
+    return `<section class="card center" style="text-align:center"><a class="btn" style="background:${esc(b.color||"var(--brand)")}" href="${esc(b.link||"#")}">${esc(b.text||"Button")}</a></section>`;
+  }
+
+  if (t === "footer"){
+    return `<div class="footer"><small>${esc(b.text||"© 2025")}</small></div>`;
+  }
+
+  if (t === "social-media"){
+    const links=(b.links||[]).map(l=>`<a href="${esc(l.url||"#")}">${esc(l.platform||"Link")}</a>`).join(" · ");
+    return `<section class="card"><h3>${esc(b.title||"Folge uns")}</h3><p>${links}</p></section>`;
+  }
+
+  if (t === "map"){
+    const addr = esc(b.address || "");
+    return `<section class="card"><h3>Karte</h3><p>${addr}</p><div class="notice">🌍 Karten-Embed ist in der Demo deaktiviert. (Adresse vorhanden.)</div></section>`;
+  }
+
+  if (t === "custom"){
+    return `<section class="card"><style>${b.css||""}</style>${b.html||""}<script>${b.js||""}<\/script></section>`;
+  }
+
+  // Fallback: unbekannter Block
+  return `<section class="notice"><strong>Unbekannter Blocktyp:</strong> ${esc(b.type||"")}</section>`;
+}
+
+/* =============== Chat / API =============== */
+async function callAI(prompt){
+  setStatus("Denke…",""); addMsg("user", prompt); saveChat();
+  try{
+    const res = await fetch("/api/generate",{
+      method:"POST", headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ input: prompt })
     });
+    const payload = await res.json().catch(async ()=>({ error:"Server gab kein JSON zurück", raw: await res.text() }));
+    logDebug(payload);
 
-    /********* Initial laden: localStorage oder data.json *********/
-    (function init(){
-      const saved = localStorage.getItem("pageData");
-      if(saved){
-        console.log("⚡ Lade aus localStorage");
-        return renderPage(JSON.parse(saved));
-      }
-      console.log("🌍 Lade data.json …");
-      fetch("data.json")
-        .then(r=>r.ok?r.json():({pageTitle:"Start",blocks:[{type:"section",title:"Willkommen",body:"Kein data.json gefunden – Fallback."}] }))
-        .then(renderPage)
-        .catch(err=>{
-          console.error("data.json Fehler",err);
-          renderPage({pageTitle:"Fehler",blocks:[{type:"section",title:"Ladefehler",body:"data.json konnte nicht geladen werden."}]});
-        });
-    })();
-  </script>
+    if (!res.ok || payload.error){
+      setStatus("Fehler","err");
+      addMsg("ai", "❌ " + (payload.error || "Unbekannter Fehler"));
+      saveChat();
+      return;
+    }
+
+    // Frontend erwartet JSON (Schema oder klassische Blocks)
+    setStatus("OK","ok");
+    addMsg("ai", "✅ Seite aktualisiert.");
+    saveChat();
+
+    saveState(payload);
+    renderPage(payload);
+
+  }catch(e){
+    setStatus("Fehler","err");
+    logDebug(String(e));
+    addMsg("ai", "❌ Netzwerk/Serverfehler");
+  }
+}
+
+/* =============== Init / Events =============== */
+$("sendBtn").addEventListener("click", ()=> {
+  const v = $("chatInput").value.trim();
+  if(!v) return;
+  $("chatInput").value = "";
+  callAI(v);
+});
+$("chatInput").addEventListener("keydown",(e)=> {
+  if (e.key==="Enter" && !e.shiftKey){ e.preventDefault(); $("sendBtn").click(); }
+});
+document.querySelectorAll(".qa").forEach(btn=>btn.addEventListener("click", ()=> callAI(btn.dataset.q)));
+$("publishBtn").addEventListener("click", ()=> {
+  const saved = loadState();
+  if (saved) renderPage(saved);
+});
+$("resetBtn").addEventListener("click", ()=> {
+  localStorage.removeItem(LS_KEY_PAGE);
+  localStorage.removeItem(LS_KEY_CHAT);
+  location.reload();
+});
+$("saveBtn").addEventListener("click", ()=> {
+  const data = loadState();
+  const blob = new Blob([JSON.stringify(data||{},null,2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "pageData.json";
+  a.click();
+});
+
+/* Erstladen: localStorage → data.json */
+(function init(){
+  restoreChat();
+  const saved = loadState();
+  if (saved){ renderPage(saved); setStatus("Geladen","ok"); return; }
+
+  setStatus("Lade Startdaten…","warn");
+  fetch("data.json")
+    .then(r=>r.ok ? r.json() : Promise.reject("data.json nicht gefunden"))
+    .then(d=>{ saveState(d); renderPage(d); setStatus("Bereit","ok"); logDebug("Startdaten geladen."); })
+    .catch(err=>{
+      logDebug(String(err));
+      renderPage({ pageTitle:"Start", blocks:[{type:"hero",headline:"Willkommen auf meiner Website",sub:"Hier ist ein kurzer Untertitel", ctaText:"Jetzt starten", ctaLink:"#"}, {type:"footer",text:"© 2025 Meine Website"}] });
+      setStatus("Fallback geladen","warn");
+    });
+})();
+</script>
 </body>
 </html>
