@@ -8,6 +8,9 @@ class WebsiteBuilder {
         this.attachEventListeners();
         this.updatePreview();
         
+        // Zeige hilfreiche Beispiele in der ersten Bot-Nachricht
+        this.showInitialExamples();
+        
         console.log('✅ WebsiteBuilder initialized');
     }
 
@@ -20,20 +23,6 @@ class WebsiteBuilder {
         this.clearChatButton = document.getElementById('clearChat');
         this.downloadButton = document.getElementById('downloadSite');
         this.publishButton = document.getElementById('publishSite');
-
-        // Prüfe ob alle Elemente gefunden wurden
-        const elements = {
-            chatInput: this.chatInput,
-            sendButton: this.sendButton,
-            chatMessages: this.chatMessagesContainer,
-            previewFrame: this.previewFrame
-        };
-
-        Object.keys(elements).forEach(key => {
-            if (!elements[key]) {
-                console.error(`❌ Element nicht gefunden: ${key}`);
-            }
-        });
     }
 
     attachEventListeners() {
@@ -69,7 +58,7 @@ class WebsiteBuilder {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meine Website</title>
+    <title>Neue Website</title>
     <style>
         * {
             margin: 0;
@@ -81,69 +70,60 @@ class WebsiteBuilder {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            background: #ffffff;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
         
         .container { 
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: white;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            text-align: center;
-        }
-
-        h1 {
-            color: #667eea;
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        p {
-            font-size: 1.2rem;
-            color: #666;
-            margin-bottom: 2rem;
-        }
-
-        .highlight {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px 30px;
-            border-radius: 25px;
-            display: inline-block;
-            font-weight: 600;
+            padding: 20px;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 Willkommen auf meiner Website!</h1>
-        <p>Diese Website wird durch KI erstellt. Gib Anweisungen im Chat ein, um sie zu bearbeiten.</p>
-        <div class="highlight">
-            Bereit für deine Anweisungen! ✨
-        </div>
+        <!-- Hier wird deine Website erstellt -->
     </div>
 </body>
 </html>`;
     }
 
+    showInitialExamples() {
+        // Entferne die Standard-Willkommensnachricht
+        const existingMessages = this.chatMessagesContainer.querySelectorAll('.message');
+        existingMessages.forEach(msg => msg.remove());
+
+        // Füge verbesserte Beispiele hinzu
+        const examples = [
+            "👋 Hallo! Ich helfe dir beim Erstellen deiner Website. Hier sind einige Beispiele:",
+            "",
+            "📍 **Position**: 'Schreibe oben links Willkommen' oder 'Erstelle mittig einen großen Titel'",
+            "",
+            "📝 **Content**: 'Füge eine Überschrift hinzu' oder 'Erstelle drei Spalten nebeneinander'",
+            "",
+            "🎨 **Design**: 'Mache den Hintergrund blau' oder 'Erstelle eine moderne Navigation'",
+            "",
+            "🏗️ **Layout**: 'Erstelle Header, Main und Footer' oder 'Zwei Bereiche nebeneinander'",
+            "",
+            "💡 **Tipp**: Sprich einfach natürlich! Zum Beispiel: 'Ich möchte eine Visitenkarte mit meinem Namen in der Mitte'"
+        ];
+
+        examples.forEach(example => {
+            if (example === "") {
+                // Leere Zeile für bessere Lesbarkeit
+                const spacer = document.createElement('div');
+                spacer.style.height = '5px';
+                this.chatMessagesContainer.appendChild(spacer);
+            } else {
+                this.addMessage(example, 'bot');
+            }
+        });
+    }
+
     async sendMessage() {
         const message = this.chatInput.value.trim();
-        if (!message) {
-            console.log('⚠️ Leere Nachricht');
-            return;
-        }
-
-        console.log('📤 Sende Nachricht:', message);
+        if (!message) return;
 
         // Benutzer-Nachricht hinzufügen
         this.addMessage(message, 'user');
@@ -151,9 +131,6 @@ class WebsiteBuilder {
         this.showLoading();
 
         try {
-            console.log('🔄 API-Aufruf startet...');
-            
-            // API-Aufruf an die Chat-Handler-Funktion
             const response = await fetch('/.netlify/functions/chat-handler', {
                 method: 'POST',
                 headers: {
@@ -165,33 +142,33 @@ class WebsiteBuilder {
                 })
             });
 
-            console.log('📡 Response Status:', response.status);
-
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
             }
 
             const data = await response.json();
-            console.log('📥 API Response:', data);
 
             if (data.success) {
                 this.currentHTML = data.html;
                 this.updatePreview();
                 this.addMessage('✅ Website wurde erfolgreich aktualisiert!', 'bot');
-                console.log('✅ Website aktualisiert');
+                
+                // Füge hilfreiche Nachfolge-Vorschläge hinzu
+                this.addFollowUpSuggestions();
             } else {
                 throw new Error(data.error || 'Unbekannter Fehler');
             }
 
         } catch (error) {
-            console.error('❌ Fehler beim Senden der Nachricht:', error);
+            console.error('❌ Fehler:', error);
             
-            let errorMessage = '❌ Entschuldigung, es gab einen Fehler: ';
-            
+            let errorMessage = '❌ ';
             if (error.message.includes('Failed to fetch')) {
-                errorMessage += 'Verbindung zur API fehlgeschlagen. Prüfe deine Internetverbindung.';
+                errorMessage += 'Verbindung fehlgeschlagen. Prüfe deine Internetverbindung.';
             } else if (error.message.includes('500')) {
-                errorMessage += 'Server-Fehler. Prüfe deine OpenAI API-Konfiguration.';
+                errorMessage += 'Server-Fehler. Prüfe die OpenAI API-Konfiguration.';
+            } else if (error.message.includes('401')) {
+                errorMessage += 'API-Key ungültig. Prüfe deine OpenAI Konfiguration.';
             } else {
                 errorMessage += error.message;
             }
@@ -202,41 +179,55 @@ class WebsiteBuilder {
         }
     }
 
+    addFollowUpSuggestions() {
+        const suggestions = [
+            "💡 Weitere Ideen: 'Ändere die Farbe', 'Füge ein Bild hinzu', 'Erstelle einen Button', 'Verbessere das Design'"
+        ];
+        
+        const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+        
+        setTimeout(() => {
+            this.addMessage(randomSuggestion, 'bot');
+        }, 1000);
+    }
+
     addMessage(content, sender) {
-        if (!this.chatMessagesContainer) {
-            console.error('❌ Chat Messages Container nicht gefunden');
-            return;
-        }
+        if (!this.chatMessagesContainer) return;
 
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}-message`;
         
         const messageContent = document.createElement('div');
         messageContent.className = 'message-content';
-        messageContent.textContent = content;
+        
+        // Unterstütze einfache Markdown-ähnliche Formatierung
+        let formattedContent = content
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\*(.*?)\*/g, '<em>$1</em>');
+        
+        if (formattedContent.includes('<strong>') || formattedContent.includes('<em>')) {
+            messageContent.innerHTML = formattedContent;
+        } else {
+            messageContent.textContent = content;
+        }
         
         messageDiv.appendChild(messageContent);
         this.chatMessagesContainer.appendChild(messageDiv);
         
-        // Scroll zum neuesten Message
+        // Smooth scroll zum neuesten Message
         this.chatMessagesContainer.scrollTop = this.chatMessagesContainer.scrollHeight;
     }
 
     updatePreview() {
-        if (!this.previewFrame) {
-            console.error('❌ Preview Frame nicht gefunden');
-            return;
-        }
+        if (!this.previewFrame) return;
 
         try {
             const blob = new Blob([this.currentHTML], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             this.previewFrame.src = url;
             
-            // Cleanup der alten URL nach kurzer Zeit
+            // Cleanup nach kurzer Zeit
             setTimeout(() => URL.revokeObjectURL(url), 1000);
-            
-            console.log('🖼️ Preview aktualisiert');
         } catch (error) {
             console.error('❌ Preview Update Fehler:', error);
         }
@@ -245,15 +236,15 @@ class WebsiteBuilder {
     clearChat() {
         if (!this.chatMessagesContainer) return;
 
-        // Alle Nachrichten außer der ersten (Willkommensnachricht) entfernen
-        const messages = this.chatMessagesContainer.querySelectorAll('.message');
-        for (let i = 1; i < messages.length; i++) {
-            messages[i].remove();
-        }
+        // Alle Nachrichten entfernen
+        this.chatMessagesContainer.innerHTML = '';
         
         // HTML zurücksetzen
         this.currentHTML = this.getInitialHTML();
         this.updatePreview();
+        
+        // Beispiele erneut anzeigen
+        this.showInitialExamples();
         
         console.log('🗑️ Chat geleert');
     }
@@ -265,14 +256,13 @@ class WebsiteBuilder {
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = `meine-website-${Date.now()}.html`;
+            a.download = `website-${new Date().toISOString().slice(0, 10)}.html`;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
             this.addMessage('📥 Website wurde heruntergeladen!', 'bot');
-            console.log('⬇️ Website heruntergeladen');
         } catch (error) {
             console.error('❌ Download-Fehler:', error);
             this.addMessage('❌ Fehler beim Herunterladen der Website.', 'bot');
@@ -290,7 +280,7 @@ class WebsiteBuilder {
                 },
                 body: JSON.stringify({
                     html: this.currentHTML,
-                    siteName: 'my-generated-site'
+                    siteName: 'generated-website'
                 })
             });
 
@@ -298,8 +288,7 @@ class WebsiteBuilder {
 
             if (data.success) {
                 this.currentSiteId = data.siteId;
-                this.addMessage(`🚀 Website wurde veröffentlicht! Vorschau: ${data.previewUrl}`, 'bot');
-                console.log('🌐 Website veröffentlicht');
+                this.addMessage(`🚀 Website wurde veröffentlicht! Preview-URL: ${data.previewUrl}`, 'bot');
             } else {
                 throw new Error(data.error || 'Fehler beim Veröffentlichen');
             }
@@ -333,12 +322,7 @@ class WebsiteBuilder {
     }
 }
 
-// App initialisieren wenn DOM geladen ist
+// App initialisieren
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('🚀 DOM geladen, initialisiere App...');
-    try {
-        new WebsiteBuilder();
-    } catch (error) {
-        console.error('❌ Fehler beim Initialisieren der App:', error);
-    }
+    new WebsiteBuilder();
 });
