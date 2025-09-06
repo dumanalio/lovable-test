@@ -22,6 +22,11 @@
     function renderPage(data) {
       console.log("🖼️ Rendere Seite mit JSON:", data);
 
+      if (!data || !data.blocks) {
+        document.getElementById("app").innerHTML = "<p style='color:red'>⚠️ Keine gültigen Daten zum Rendern.</p>";
+        return;
+      }
+
       document.title = data.pageTitle || "Neue Seite";
       const app = document.getElementById("app");
       app.innerHTML = "";
@@ -37,50 +42,6 @@
               </section>`;
             break;
 
-          case "features":
-            const items = (block.items || []).map(i => `
-              <div class="feature">
-                <div class="icon">${i.icon || ""}</div>
-                <h3>${i.title || ""}</h3>
-                <p>${i.text || ""}</p>
-              </div>`).join("");
-            app.innerHTML += `
-              <section class="features">
-                <h2>Features</h2>
-                <div class="features-grid">${items}</div>
-              </section>`;
-            break;
-
-          case "text":
-            app.innerHTML += `
-              <section class="text-block">
-                <h2>${block.title || ""}</h2>
-                <p>${block.body || ""}</p>
-              </section>`;
-            break;
-
-          case "gallery":
-            const imgs = (block.images || []).map(img => `<img src="${img}" alt="Bild">`).join("");
-            app.innerHTML += `
-              <section class="gallery">
-                <h2>Galerie</h2>
-                <div class="grid">${imgs}</div>
-              </section>`;
-            break;
-
-          case "faq":
-            const faqs = (block.items || []).map(i => `
-              <details>
-                <summary>${i.q || ""}</summary>
-                <p>${i.a || ""}</p>
-              </details>`).join("");
-            app.innerHTML += `
-              <section class="faq">
-                <h2>Häufige Fragen</h2>
-                ${faqs}
-              </section>`;
-            break;
-
           case "button":
             app.innerHTML += `
               <div class="center">
@@ -90,11 +51,90 @@
               </div>`;
             break;
 
-          case "image":
+          case "footer":
             app.innerHTML += `
-              <div class="image-block">
-                <img src="${block.src}" alt="${block.alt || "Bild"}" />
-              </div>`;
+              <footer class="footer">
+                <p>${block.text || ""}</p>
+              </footer>`;
             break;
 
-          case "
+          default:
+            console.warn("⚠️ Unbekannter Blocktyp:", block);
+            app.innerHTML += `
+              <section>
+                <pre>${JSON.stringify(block, null, 2)}</pre>
+              </section>`;
+        }
+      });
+    }
+
+    // =========================
+    // Chatbox-Logik
+    // =========================
+    document.getElementById("chatSend").addEventListener("click", async () => {
+      const input = document.getElementById("chatInput").value.trim();
+      if (!input) return alert("Bitte etwas eingeben.");
+
+      console.log("📤 Sende an API:", input);
+
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input })
+      });
+
+      const payload = await res.json();
+      console.log("📥 API Antwort:", payload);
+
+      if (!res.ok) {
+        alert("Fehler: " + (payload?.error || "Unbekannt"));
+        console.error(payload);
+        return;
+      }
+
+      localStorage.setItem("pageData", JSON.stringify(payload));
+      renderPage(payload);
+    });
+
+    // =========================
+    // Initial: data.json laden oder Fallback
+    // =========================
+    const saved = localStorage.getItem("pageData");
+    if (saved) {
+      console.log("⚡ Lade gespeicherte Seite aus localStorage");
+      renderPage(JSON.parse(saved));
+    } else {
+      console.log("🌍 Lade data.json...");
+      fetch("data.json")
+        .then(r => {
+          if (!r.ok) {
+            console.warn("⚠️ Keine data.json gefunden, verwende Fallback");
+            return {
+              pageTitle: "Fallback-Seite",
+              blocks: [
+                { "type": "hero", "headline": "Hallo Ali", "sub": "Dies ist ein Fallback Hero", "ctaText": "Weiter", "ctaLink": "#" },
+                { "type": "button", "text": "Jetzt starten", "color": "red", "link": "#" },
+                { "type": "footer", "text": "© 2025 Lovable-Light" }
+              ]
+            };
+          }
+          return r.json();
+        })
+        .then(data => {
+          console.log("✅ data.json geladen oder Fallback genutzt:", data);
+          renderPage(data);
+        })
+        .catch(err => {
+          console.error("❌ Problem mit data.json:", err);
+          renderPage({
+            pageTitle: "Error-Seite",
+            blocks: [
+              { "type": "hero", "headline": "Fehler beim Laden", "sub": "data.json konnte nicht geladen werden", "ctaText": "Neu versuchen", "ctaLink": "#" },
+              { "type": "footer", "text": "© 2025 Lovable-Light" }
+            ]
+          });
+        });
+    }
+  </script>
+</body>
+</html>
