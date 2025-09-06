@@ -31,53 +31,127 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Erweiterte Anweisungsinterpretation
-    const interpretedInstruction = interpretUserMessage(message);
+    // Enterprise-Level Intent Analysis
+    const userIntent = analyzeUserIntent(message);
+    const contextualHints = generateContextualHints(currentHTML, message);
     
-    const systemPrompt = `Du bist ein Experte für HTML/CSS/JavaScript und verstehst natürliche Sprache perfekt. 
+    const systemPrompt = `Du bist ein Elite-Level Web-Development-Assistent, der für moderne Unternehmen entwickelt wurde. Du verstehst natürliche Sprache perfekt und generierst professionelle, produktionsreife Websites.
 
-AKTUELLE WEBSITE:
-${currentHTML}
+=== CURRENT WEBSITE CONTEXT ===
+${currentHTML || 'Leeres Canvas - bereit für neue Website'}
 
-BENUTZERANWEISUNG: "${message}"
-INTERPRETATION: ${interpretedInstruction}
+=== USER REQUEST ANALYSIS ===
+Original Message: "${message}"
+Intent Classification: ${userIntent.category}
+Detected Elements: ${userIntent.elements.join(', ')}
+Layout Requirements: ${userIntent.layout}
+Styling Preferences: ${userIntent.styling}
 
-WICHTIGE REGELN:
-1. Generiere VOLLSTÄNDIGES HTML mit <!DOCTYPE html>
-2. Verwende inline CSS im <style> Tag
-3. Erstelle moderne, responsive Designs
-4. Verstehe Positionsangaben präzise:
-   - "oben links/links oben" → position: absolute; top: 20px; left: 20px;
-   - "oben rechts/rechts oben" → position: absolute; top: 20px; right: 20px;
-   - "unten links/links unten" → position: absolute; bottom: 20px; left: 20px;
-   - "unten rechts/rechts unten" → position: absolute; bottom: 20px; right: 20px;
-   - "mittig/zentral/mitte" → display: flex; justify-content: center; align-items: center; min-height: 100vh;
-   - "header/kopf/oben" → position: relative; top: 0; width: 100%;
-   - "footer/fußbereich/unten" → position: relative; bottom: 0; width: 100%;
+=== CONTEXTUAL HINTS ===
+${contextualHints}
 
-5. Verstehe Layout-Begriffe:
-   - "nebeneinander/side by side" → display: flex; flex-direction: row;
-   - "untereinander/übereinander" → display: flex; flex-direction: column;
-   - "zwei/drei/vier Spalten" → CSS Grid mit entsprechenden Spalten
-   - "zentriert" → margin: 0 auto; text-align: center;
+=== ENTERPRISE CODING STANDARDS ===
 
-6. Verstehe Content-Anweisungen:
-   - "schreibe/füge hinzu/erstelle" → Neuen Inhalt hinzufügen
-   - "ändere/bearbeite/modifiziere" → Bestehenden Inhalt ändern
-   - "lösche/entferne" → Content entfernen
-   - "verschiebe" → Position ändern
+1. ARCHITECTURE & STRUCTURE:
+   - Generate complete, valid HTML5 documents with proper DOCTYPE
+   - Use semantic HTML5 elements (header, nav, main, section, article, aside, footer)
+   - Implement responsive design patterns with mobile-first approach
+   - Follow accessibility guidelines (WCAG 2.1)
 
-7. Verstehe Design-Anweisungen:
-   - "groß/klein" → font-size anpassen
-   - "bunt/farbig" → Farben hinzufügen
-   - "modern/elegant" → Moderne CSS-Styles
-   - "dunkel/hell" → Dark/Light Theme
+2. CSS METHODOLOGY:
+   - Use modern CSS Grid and Flexbox for layouts
+   - Implement CSS custom properties (variables) for maintainability
+   - Apply consistent spacing scale (8px base unit: 8, 16, 24, 32, 48, 64px)
+   - Use professional color palettes and typography scales
 
-8. Berücksichtige bestehenden Content und ergänze intelligent
-9. Gib NUR den HTML-Code zurück, KEINE Erklärungen
-10. Stelle sicher, dass das HTML gültig und funktional ist
+3. RESPONSIVE DESIGN:
+   - Mobile-first breakpoints: 320px, 768px, 1024px, 1440px
+   - Fluid typography using clamp() functions
+   - Optimized images with responsive srcset
+   - Touch-friendly interactive elements (min 44px)
 
-Erstelle jetzt die Website basierend auf der Anweisung:`;
+4. PROFESSIONAL STYLING:
+   - Modern shadow systems: 0 1px 3px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.1)
+   - Smooth transitions and micro-animations
+   - Professional color schemes (avoid bright/neon colors unless requested)
+   - Consistent border-radius (4px, 8px, 12px, 16px)
+
+=== NATURAL LANGUAGE UNDERSTANDING ===
+
+POSITION MAPPING:
+- "oben links|links oben|top left" → position: absolute; top: 20px; left: 20px;
+- "oben rechts|rechts oben|top right" → position: absolute; top: 20px; right: 20px;
+- "unten links|links unten|bottom left" → position: absolute; bottom: 20px; left: 20px;
+- "unten rechts|rechts unten|bottom right" → position: absolute; bottom: 20px; right: 20px;
+- "mittig|zentral|center|mitte" → display: flex; justify-content: center; align-items: center;
+- "header|kopfbereich|navigation" → <header> with full width top positioning
+- "footer|fußbereich|bottom" → <footer> with full width bottom positioning
+
+LAYOUT PATTERNS:
+- "nebeneinander|side by side|horizontal" → display: grid; grid-template-columns: 1fr 1fr;
+- "untereinander|übereinander|vertical" → display: grid; grid-template-rows: auto auto;
+- "zwei spalten|2 columns" → grid-template-columns: 1fr 1fr;
+- "drei spalten|3 columns" → grid-template-columns: repeat(3, 1fr);
+- "vier spalten|4 columns" → grid-template-columns: repeat(4, 1fr);
+- "sidebar layout" → grid-template-columns: 300px 1fr;
+
+CONTENT ELEMENTS:
+- "navigation|nav|menu" → <nav> with proper list structure
+- "hero section|jumbotron|banner" → Large promotional section with CTA
+- "karten|cards" → CSS Grid card layout with shadows
+- "button|cta|call to action" → Professional button with hover states
+- "formular|form|contact" → Accessible form with proper labels
+- "galerie|gallery|bilder" → CSS Grid image gallery
+- "testimonials|bewertungen" → Customer testimonial section
+- "pricing|preise|tarife" → Pricing table with feature comparison
+
+STYLING INSTRUCTIONS:
+- "modern|contemporary" → Clean lines, whitespace, subtle shadows
+- "minimalist|clean" → Lots of whitespace, simple typography
+- "corporate|business|professional" → Conservative colors, serif fonts
+- "startup|tech|innovative" → Bold gradients, sans-serif, vibrant accents
+- "elegant|luxury|premium" → High contrast, sophisticated typography
+- "playful|creative|artistic" → Vibrant colors, creative layouts
+
+COLOR PROCESSING:
+- "blau|blue" → Primary: #3b82f6, Secondary: #1d4ed8
+- "grün|green" → Primary: #10b981, Secondary: #059669  
+- "rot|red" → Primary: #ef4444, Secondary: #dc2626
+- "grau|gray" → Primary: #6b7280, Secondary: #374151
+- "dunkel|dark" → Background: #1f2937, Text: #f9fafb
+- "hell|light" → Background: #f9fafb, Text: #111827
+
+BUSINESS COMPONENTS:
+- "landing page" → Hero + Features + Testimonials + CTA + Footer
+- "about page|über uns" → Company story, team, values, mission
+- "contact page|kontakt" → Contact form, address, map, social links
+- "portfolio|showcase" → Project gallery with filters and descriptions
+- "blog|news" → Article layout with sidebar and pagination
+- "e-commerce|shop" → Product grid with filters and shopping cart
+
+=== OUTPUT REQUIREMENTS ===
+
+1. Generate ONLY complete, functional HTML code
+2. Include comprehensive CSS within <style> tags in <head>
+3. Use semantic, accessible markup
+4. Implement responsive design for all screen sizes
+5. Add subtle animations and transitions for professional feel
+6. Ensure cross-browser compatibility
+7. Include meta tags for SEO when creating new pages
+8. Use professional typography (system fonts stack)
+9. Implement proper spacing and visual hierarchy
+10. NO explanations, comments, or markdown - just clean HTML
+
+=== QUALITY ASSURANCE ===
+- Code must be production-ready
+- All interactive elements must have hover states
+- Images must have alt attributes
+- Forms must have proper validation and labels
+- Color contrast must meet WCAG AA standards
+- Typography must follow professional scales
+- Layout must work on mobile, tablet, and desktop
+
+Generate the website now based on the user's request:`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -86,16 +160,18 @@ Erstelle jetzt die Website basierend auf der Anweisung:`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4',
         messages: [
           {
             role: 'system',
             content: systemPrompt
           }
         ],
-        max_tokens: 3000,
-        temperature: 0.3,
-        top_p: 0.9
+        max_tokens: 4000,
+        temperature: 0.1,
+        top_p: 0.95,
+        presence_penalty: 0.1,
+        frequency_penalty: 0.1
       })
     });
 
@@ -114,8 +190,8 @@ Erstelle jetzt die Website basierend auf der Anweisung:`;
     const data = await response.json();
     let generatedCode = data.choices[0].message.content.trim();
 
-    // Code bereinigen
-    generatedCode = cleanGeneratedCode(generatedCode);
+    // Enterprise-level code cleaning and validation
+    generatedCode = validateAndCleanCode(generatedCode);
 
     return {
       statusCode: 200,
@@ -123,12 +199,14 @@ Erstelle jetzt die Website basierend auf der Anweisung:`;
       body: JSON.stringify({
         success: true,
         html: generatedCode,
-        message: 'Website erfolgreich erstellt!'
+        message: 'Professionelle Website erfolgreich generiert!',
+        intent: userIntent,
+        suggestions: generateFollowUpSuggestions(userIntent)
       })
     };
 
   } catch (error) {
-    console.error('Chat Handler Error:', error);
+    console.error('Enterprise Chat Handler Error:', error);
     
     return {
       statusCode: 500,
@@ -142,91 +220,122 @@ Erstelle jetzt die Website basierend auf der Anweisung:`;
   }
 };
 
-// Hilfsfunktionen
-function interpretUserMessage(message) {
+// ENTERPRISE HELPER FUNCTIONS
+
+function analyzeUserIntent(message) {
   const lowercaseMsg = message.toLowerCase();
   
-  // Position Keywords
-  const positionKeywords = {
-    'oben links': 'position absolute top-left',
-    'links oben': 'position absolute top-left', 
-    'oben rechts': 'position absolute top-right',
-    'rechts oben': 'position absolute top-right',
-    'unten links': 'position absolute bottom-left',
-    'links unten': 'position absolute bottom-left',
-    'unten rechts': 'position absolute bottom-right',
-    'rechts unten': 'position absolute bottom-right',
-    'mittig': 'centered layout',
-    'mitte': 'centered layout',
-    'zentral': 'centered layout',
-    'header': 'top section header',
-    'kopf': 'top section header',
-    'footer': 'bottom section footer',
-    'fußbereich': 'bottom section footer'
+  // Advanced intent classification
+  const intentPatterns = {
+    layout: ['layout', 'structure', 'aufbau', 'anordnung', 'spalten', 'bereiche'],
+    content: ['text', 'inhalt', 'schreibe', 'füge hinzu', 'content'],
+    styling: ['farbe', 'color', 'design', 'aussehen', 'style', 'schön'],
+    navigation: ['navigation', 'nav', 'menü', 'menu', 'links'],
+    business: ['landing', 'about', 'contact', 'portfolio', 'shop', 'unternehmen'],
+    interactive: ['button', 'form', 'formular', 'click', 'hover', 'animation']
   };
 
-  // Layout Keywords
-  const layoutKeywords = {
-    'nebeneinander': 'horizontal flex layout',
-    'side by side': 'horizontal flex layout',
-    'untereinander': 'vertical flex layout',
-    'übereinander': 'vertical flex layout',
-    'zwei spalten': 'two column grid',
-    'drei spalten': 'three column grid',
-    'vier spalten': 'four column grid'
-  };
-
-  // Action Keywords
-  const actionKeywords = {
-    'schreibe': 'add text content',
-    'füge hinzu': 'add new element',
-    'erstelle': 'create new element',
-    'ändere': 'modify existing',
-    'bearbeite': 'edit existing', 
-    'lösche': 'remove element',
-    'entferne': 'remove element',
-    'verschiebe': 'move position'
-  };
-
-  let interpretation = [];
-
-  // Analysiere Keywords
-  Object.keys(positionKeywords).forEach(keyword => {
-    if (lowercaseMsg.includes(keyword)) {
-      interpretation.push(positionKeywords[keyword]);
+  const detectedIntents = [];
+  Object.keys(intentPatterns).forEach(intent => {
+    if (intentPatterns[intent].some(pattern => lowercaseMsg.includes(pattern))) {
+      detectedIntents.push(intent);
     }
   });
 
-  Object.keys(layoutKeywords).forEach(keyword => {
-    if (lowercaseMsg.includes(keyword)) {
-      interpretation.push(layoutKeywords[keyword]);
+  // Element detection
+  const elementPatterns = {
+    header: ['header', 'kopf', 'navigation', 'nav'],
+    hero: ['hero', 'banner', 'jumbotron', 'hauptbereich'],
+    cards: ['karten', 'cards', 'boxen', 'bereiche'],
+    footer: ['footer', 'fußbereich', 'unten'],
+    form: ['formular', 'form', 'kontakt', 'eingabe'],
+    gallery: ['galerie', 'gallery', 'bilder', 'fotos']
+  };
+
+  const detectedElements = [];
+  Object.keys(elementPatterns).forEach(element => {
+    if (elementPatterns[element].some(pattern => lowercaseMsg.includes(pattern))) {
+      detectedElements.push(element);
     }
   });
 
-  Object.keys(actionKeywords).forEach(keyword => {
-    if (lowercaseMsg.includes(keyword)) {
-      interpretation.push(actionKeywords[keyword]);
-    }
-  });
+  // Layout analysis
+  let layoutType = 'single-column';
+  if (lowercaseMsg.includes('zwei') || lowercaseMsg.includes('nebeneinander')) layoutType = 'two-column';
+  if (lowercaseMsg.includes('drei')) layoutType = 'three-column';
+  if (lowercaseMsg.includes('vier')) layoutType = 'four-column';
+  if (lowercaseMsg.includes('grid') || lowercaseMsg.includes('raster')) layoutType = 'grid';
 
-  return interpretation.length > 0 ? interpretation.join(', ') : 'general website modification';
+  // Styling preferences
+  let stylingPrefs = 'modern';
+  if (lowercaseMsg.includes('minimalist') || lowercaseMsg.includes('clean')) stylingPrefs = 'minimalist';
+  if (lowercaseMsg.includes('corporate') || lowercaseMsg.includes('business')) stylingPrefs = 'corporate';
+  if (lowercaseMsg.includes('startup') || lowercaseMsg.includes('tech')) stylingPrefs = 'startup';
+
+  return {
+    category: detectedIntents.length > 0 ? detectedIntents[0] : 'general',
+    allIntents: detectedIntents,
+    elements: detectedElements,
+    layout: layoutType,
+    styling: stylingPrefs,
+    complexity: detectedElements.length > 2 ? 'high' : detectedElements.length > 0 ? 'medium' : 'low'
+  };
 }
 
-function cleanGeneratedCode(code) {
-  let cleanCode = code.trim();
-  
-  // Entferne Markdown Code-Blöcke
-  if (cleanCode.startsWith('```html')) {
-    cleanCode = cleanCode.replace(/```html\n?/, '').replace(/```\n?$/, '');
-  } else if (cleanCode.startsWith('```')) {
-    cleanCode = cleanCode.replace(/```\n?/, '').replace(/```\n?$/, '');
+function generateContextualHints(currentHTML, message) {
+  const hasContent = currentHTML && !currentHTML.includes('<!-- Hier wird deine Website erstellt -->');
+  const hints = [];
+
+  if (!hasContent) {
+    hints.push('Building from scratch - recommend starting with semantic structure');
+  } else {
+    hints.push('Modifying existing content - preserve existing structure where possible');
   }
 
-  // Stelle sicher, dass DOCTYPE vorhanden ist
+  if (message.includes('professional') || message.includes('business')) {
+    hints.push('Use corporate color palette and conservative design patterns');
+  }
+
+  if (message.includes('mobile') || message.includes('responsive')) {
+    hints.push('Prioritize mobile-first responsive design');
+  }
+
+  return hints.join(' | ');
+}
+
+function generateFollowUpSuggestions(intent) {
+  const suggestions = {
+    layout: ['Möchtest du ein Navigation hinzufügen?', 'Soll ich einen Footer erstellen?'],
+    content: ['Weitere Abschnitte hinzufügen?', 'Bilder oder Icons einfügen?'],
+    styling: ['Andere Farbpalette wählen?', 'Typography anpassen?'],
+    business: ['Call-to-Action Buttons hinzufügen?', 'Kontaktformular erstellen?']
+  };
+
+  return suggestions[intent.category] || ['Weitere Verbesserungen?', 'Responsive Design optimieren?'];
+}
+
+function validateAndCleanCode(code) {
+  let cleanCode = code.trim();
+  
+  // Remove markdown code blocks
+  cleanCode = cleanCode.replace(/```html\n?/g, '').replace(/```\n?$/g, '');
+  cleanCode = cleanCode.replace(/```\n?/g, '');
+  
+  // Ensure DOCTYPE exists
   if (!cleanCode.includes('<!DOCTYPE html>')) {
     if (cleanCode.startsWith('<html')) {
       cleanCode = '<!DOCTYPE html>\n' + cleanCode;
     }
+  }
+
+  // Add meta viewport if missing
+  if (!cleanCode.includes('viewport')) {
+    cleanCode = cleanCode.replace('<head>', '<head>\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">');
+  }
+
+  // Ensure charset is UTF-8
+  if (!cleanCode.includes('charset')) {
+    cleanCode = cleanCode.replace('<head>', '<head>\n    <meta charset="UTF-8">');
   }
 
   return cleanCode.trim();
