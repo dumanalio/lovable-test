@@ -1,17 +1,16 @@
-class WebsiteBuilder {
+class ProfessionalWebsiteBuilder {
     constructor() {
         this.currentHTML = this.getInitialHTML();
-        this.chatMessages = [];
+        this.chatHistory = [];
         this.currentSiteId = null;
+        this.isGenerating = false;
         
         this.initializeElements();
         this.attachEventListeners();
         this.updatePreview();
+        this.showProfessionalWelcome();
         
-        // Zeige hilfreiche Beispiele in der ersten Bot-Nachricht
-        this.showInitialExamples();
-        
-        console.log('✅ WebsiteBuilder initialized');
+        console.log('🚀 Professional Website Builder initialized');
     }
 
     initializeElements() {
@@ -23,33 +22,62 @@ class WebsiteBuilder {
         this.clearChatButton = document.getElementById('clearChat');
         this.downloadButton = document.getElementById('downloadSite');
         this.publishButton = document.getElementById('publishSite');
+
+        // Validate critical elements
+        const criticalElements = [this.chatInput, this.sendButton, this.chatMessagesContainer, this.previewFrame];
+        const missingElements = criticalElements.filter(el => !el);
+        if (missingElements.length > 0) {
+            console.error('❌ Critical UI elements missing');
+        }
     }
 
     attachEventListeners() {
-        if (this.sendButton) {
-            this.sendButton.addEventListener('click', () => this.sendMessage());
-        }
-        
+        // Enhanced input handling
         if (this.chatInput) {
             this.chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                if (e.key === 'Enter' && !e.shiftKey && !this.isGenerating) {
                     e.preventDefault();
                     this.sendMessage();
                 }
             });
+
+            // Auto-resize and character counter
+            this.chatInput.addEventListener('input', () => {
+                this.updateInputState();
+            });
         }
-        
+
+        if (this.sendButton) {
+            this.sendButton.addEventListener('click', () => this.sendMessage());
+        }
+
         if (this.clearChatButton) {
             this.clearChatButton.addEventListener('click', () => this.clearChat());
         }
-        
+
         if (this.downloadButton) {
             this.downloadButton.addEventListener('click', () => this.downloadWebsite());
         }
-        
+
         if (this.publishButton) {
             this.publishButton.addEventListener('click', () => this.publishWebsite());
         }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'Enter':
+                        e.preventDefault();
+                        this.sendMessage();
+                        break;
+                    case 'k':
+                        e.preventDefault();
+                        this.clearChat();
+                        break;
+                }
+            }
+        });
     }
 
     getInitialHTML() {
@@ -60,6 +88,15 @@ class WebsiteBuilder {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Neue Website</title>
     <style>
+        :root {
+            --primary-color: #3b82f6;
+            --secondary-color: #1e293b;
+            --background-color: #ffffff;
+            --text-color: #334155;
+            --border-color: #e2e8f0;
+            --spacing-unit: 8px;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -67,70 +104,76 @@ class WebsiteBuilder {
         }
         
         body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: #ffffff;
+            color: var(--text-color);
+            background: var(--background-color);
             min-height: 100vh;
         }
         
         .container { 
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: calc(var(--spacing-unit) * 3);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Hier wird deine Website erstellt -->
+        <!-- Professionelle Website wird hier erstellt -->
     </div>
 </body>
 </html>`;
     }
 
-    showInitialExamples() {
-        // Entferne die Standard-Willkommensnachricht
-        const existingMessages = this.chatMessagesContainer.querySelectorAll('.message');
-        existingMessages.forEach(msg => msg.remove());
-
-        // Füge verbesserte Beispiele hinzu
-        const examples = [
-            "👋 Hallo! Ich helfe dir beim Erstellen deiner Website. Hier sind einige Beispiele:",
+    showProfessionalWelcome() {
+        const welcomeMessages = [
+            "👋 **Willkommen beim Professional Website Builder**",
             "",
-            "📍 **Position**: 'Schreibe oben links Willkommen' oder 'Erstelle mittig einen großen Titel'",
+            "🎯 **Was möchten Sie erstellen?**",
+            "• Landing Page: 'Erstelle eine moderne Landing Page für mein Startup'",
+            "• Unternehmensseite: 'Baue eine professionelle About-Us Seite'", 
+            "• Portfolio: 'Erstelle ein Portfolio mit Projekt-Galerie'",
+            "• E-Commerce: 'Baue einen Online-Shop mit Produktkarten'",
             "",
-            "📝 **Content**: 'Füge eine Überschrift hinzu' oder 'Erstelle drei Spalten nebeneinander'",
+            "💡 **Profi-Tipps:**",
+            "• Spezifisch sein: 'Header mit Navigation und Logo links'",
+            "• Layout definieren: 'Drei Spalten nebeneinander mit Karten'",
+            "• Stil angeben: 'Modern und minimalistisch mit blauer Farbpalette'",
             "",
-            "🎨 **Design**: 'Mache den Hintergrund blau' oder 'Erstelle eine moderne Navigation'",
-            "",
-            "🏗️ **Layout**: 'Erstelle Header, Main und Footer' oder 'Zwei Bereiche nebeneinander'",
-            "",
-            "💡 **Tipp**: Sprich einfach natürlich! Zum Beispiel: 'Ich möchte eine Visitenkarte mit meinem Namen in der Mitte'"
+            "⚡ **Shortcuts:** Strg+Enter (Senden) • Strg+K (Chat leeren)"
         ];
 
-        examples.forEach(example => {
-            if (example === "") {
-                // Leere Zeile für bessere Lesbarkeit
-                const spacer = document.createElement('div');
-                spacer.style.height = '5px';
-                this.chatMessagesContainer.appendChild(spacer);
+        this.chatMessagesContainer.innerHTML = '';
+        
+        welcomeMessages.forEach(msg => {
+            if (msg === "") {
+                this.addSpacer();
             } else {
-                this.addMessage(example, 'bot');
+                this.addMessage(msg, 'bot');
             }
         });
     }
 
     async sendMessage() {
         const message = this.chatInput.value.trim();
-        if (!message) return;
+        if (!message || this.isGenerating) return;
 
-        // Benutzer-Nachricht hinzufügen
+        // Validate input
+        if (message.length < 3) {
+            this.showToast('Beschreibung zu kurz. Bitte mehr Details angeben.', 'warning');
+            return;
+        }
+
+        this.isGenerating = true;
         this.addMessage(message, 'user');
         this.chatInput.value = '';
-        this.showLoading();
+        this.updateInputState();
+        this.showLoading('KI erstellt professionelle Website...');
 
         try {
+            const startTime = Date.now();
+            
             const response = await fetch('/.netlify/functions/chat-handler', {
                 method: 'POST',
                 headers: {
@@ -147,48 +190,62 @@ class WebsiteBuilder {
             }
 
             const data = await response.json();
+            const processingTime = ((Date.now() - startTime) / 1000).toFixed(1);
 
             if (data.success) {
                 this.currentHTML = data.html;
                 this.updatePreview();
-                this.addMessage('✅ Website wurde erfolgreich aktualisiert!', 'bot');
                 
-                // Füge hilfreiche Nachfolge-Vorschläge hinzu
-                this.addFollowUpSuggestions();
+                // Professional success message with metrics
+                this.addMessage(`✅ **Website erfolgreich generiert!** (${processingTime}s)`, 'bot');
+                
+                // Add intelligent suggestions
+                if (data.suggestions && data.suggestions.length > 0) {
+                    setTimeout(() => {
+                        const suggestion = data.suggestions[Math.floor(Math.random() * data.suggestions.length)];
+                        this.addMessage(`💡 **Vorschlag:** ${suggestion}`, 'bot');
+                    }, 1500);
+                }
+
+                // Track in history for context
+                this.chatHistory.push({
+                    message,
+                    intent: data.intent,
+                    timestamp: new Date().toISOString()
+                });
+
+                this.showToast('Website erfolgreich aktualisiert!', 'success');
             } else {
                 throw new Error(data.error || 'Unbekannter Fehler');
             }
 
         } catch (error) {
-            console.error('❌ Fehler:', error);
+            console.error('❌ Generation Error:', error);
             
-            let errorMessage = '❌ ';
+            let errorMessage = '❌ **Fehler aufgetreten:** ';
+            let errorType = 'error';
+            
             if (error.message.includes('Failed to fetch')) {
-                errorMessage += 'Verbindung fehlgeschlagen. Prüfe deine Internetverbindung.';
+                errorMessage += 'Netzwerkverbindung unterbrochen. Bitte erneut versuchen.';
             } else if (error.message.includes('500')) {
-                errorMessage += 'Server-Fehler. Prüfe die OpenAI API-Konfiguration.';
+                errorMessage += 'Server-Fehler. API-Konfiguration prüfen.';
+                errorType = 'warning';
             } else if (error.message.includes('401')) {
-                errorMessage += 'API-Key ungültig. Prüfe deine OpenAI Konfiguration.';
+                errorMessage += 'API-Authentifizierung fehlgeschlagen.';
+            } else if (error.message.includes('429')) {
+                errorMessage += 'API-Limit erreicht. Kurz warten und erneut versuchen.';
+                errorType = 'warning';
             } else {
                 errorMessage += error.message;
             }
             
             this.addMessage(errorMessage, 'bot');
+            this.showToast('Fehler beim Generieren der Website', errorType);
         } finally {
+            this.isGenerating = false;
             this.hideLoading();
+            this.updateInputState();
         }
-    }
-
-    addFollowUpSuggestions() {
-        const suggestions = [
-            "💡 Weitere Ideen: 'Ändere die Farbe', 'Füge ein Bild hinzu', 'Erstelle einen Button', 'Verbessere das Design'"
-        ];
-        
-        const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
-        
-        setTimeout(() => {
-            this.addMessage(randomSuggestion, 'bot');
-        }, 1000);
     }
 
     addMessage(content, sender) {
@@ -200,12 +257,13 @@ class WebsiteBuilder {
         const messageContent = document.createElement('div');
         messageContent.className = 'message-content';
         
-        // Unterstütze einfache Markdown-ähnliche Formatierung
+        // Enhanced markdown support
         let formattedContent = content
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/\*(.*?)\*/g, '<em>$1</em>');
+            .replace(/\*(.*?)\*/g, '<em>$1</em>')
+            .replace(/`(.*?)`/g, '<code>$1</code>');
         
-        if (formattedContent.includes('<strong>') || formattedContent.includes('<em>')) {
+        if (formattedContent !== content) {
             messageContent.innerHTML = formattedContent;
         } else {
             messageContent.textContent = content;
@@ -214,8 +272,16 @@ class WebsiteBuilder {
         messageDiv.appendChild(messageContent);
         this.chatMessagesContainer.appendChild(messageDiv);
         
-        // Smooth scroll zum neuesten Message
-        this.chatMessagesContainer.scrollTop = this.chatMessagesContainer.scrollHeight;
+        // Smooth scroll with animation
+        requestAnimationFrame(() => {
+            this.chatMessagesContainer.scrollTop = this.chatMessagesContainer.scrollHeight;
+        });
+    }
+
+    addSpacer() {
+        const spacer = document.createElement('div');
+        spacer.style.height = '8px';
+        this.chatMessagesContainer.appendChild(spacer);
     }
 
     updatePreview() {
@@ -224,53 +290,83 @@ class WebsiteBuilder {
         try {
             const blob = new Blob([this.currentHTML], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
+            
+            this.previewFrame.onload = () => {
+                // Add subtle loading indicator
+                this.previewFrame.style.opacity = '1';
+            };
+            
+            this.previewFrame.style.opacity = '0.8';
             this.previewFrame.src = url;
             
-            // Cleanup nach kurzer Zeit
-            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            // Cleanup
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+            
         } catch (error) {
-            console.error('❌ Preview Update Fehler:', error);
+            console.error('❌ Preview Update Error:', error);
+            this.showToast('Vorschau konnte nicht aktualisiert werden', 'error');
         }
+    }
+
+    updateInputState() {
+        if (!this.chatInput || !this.sendButton) return;
+
+        const hasContent = this.chatInput.value.trim().length > 0;
+        const isReady = hasContent && !this.isGenerating;
+
+        this.sendButton.disabled = !isReady;
+        this.sendButton.style.opacity = isReady ? '1' : '0.5';
+        
+        // Visual feedback for input state
+        this.chatInput.style.borderColor = hasContent ? '#3b82f6' : '#d1d5db';
     }
 
     clearChat() {
         if (!this.chatMessagesContainer) return;
 
-        // Alle Nachrichten entfernen
-        this.chatMessagesContainer.innerHTML = '';
+        // Smooth clear animation
+        this.chatMessagesContainer.style.opacity = '0.5';
         
-        // HTML zurücksetzen
-        this.currentHTML = this.getInitialHTML();
-        this.updatePreview();
-        
-        // Beispiele erneut anzeigen
-        this.showInitialExamples();
-        
-        console.log('🗑️ Chat geleert');
+        setTimeout(() => {
+            this.chatMessagesContainer.innerHTML = '';
+            this.chatHistory = [];
+            this.currentHTML = this.getInitialHTML();
+            this.updatePreview();
+            this.showProfessionalWelcome();
+            this.chatMessagesContainer.style.opacity = '1';
+        }, 150);
+
+        this.showToast('Chat zurückgesetzt', 'info');
     }
 
     async downloadWebsite() {
         try {
+            const timestamp = new Date().toISOString().slice(0, 16).replace(/:/g, '-');
+            const filename = `professional-website-${timestamp}.html`;
+            
             const blob = new Blob([this.currentHTML], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
             
             const a = document.createElement('a');
             a.href = url;
-            a.download = `website-${new Date().toISOString().slice(0, 10)}.html`;
+            a.download = filename;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
             
-            this.addMessage('📥 Website wurde heruntergeladen!', 'bot');
+            this.addMessage(`📥 **Website heruntergeladen:** ${filename}`, 'bot');
+            this.showToast('Website erfolgreich heruntergeladen!', 'success');
+            
         } catch (error) {
-            console.error('❌ Download-Fehler:', error);
-            this.addMessage('❌ Fehler beim Herunterladen der Website.', 'bot');
+            console.error('❌ Download Error:', error);
+            this.addMessage('❌ **Download fehlgeschlagen.** Browser-Einstellungen prüfen.', 'bot');
+            this.showToast('Download fehlgeschlagen', 'error');
         }
     }
 
     async publishWebsite() {
-        this.showLoading();
+        this.showLoading('Website wird veröffentlicht...');
         
         try {
             const response = await fetch('/.netlify/functions/website-generator', {
@@ -280,7 +376,7 @@ class WebsiteBuilder {
                 },
                 body: JSON.stringify({
                     html: this.currentHTML,
-                    siteName: 'generated-website'
+                    siteName: `professional-site-${Date.now()}`
                 })
             });
 
@@ -288,26 +384,25 @@ class WebsiteBuilder {
 
             if (data.success) {
                 this.currentSiteId = data.siteId;
-                this.addMessage(`🚀 Website wurde veröffentlicht! Preview-URL: ${data.previewUrl}`, 'bot');
+                this.addMessage(`🚀 **Website live!** Preview: ${data.previewUrl}`, 'bot');
+                this.showToast('Website erfolgreich veröffentlicht!', 'success');
             } else {
-                throw new Error(data.error || 'Fehler beim Veröffentlichen');
+                throw new Error(data.error || 'Veröffentlichung fehlgeschlagen');
             }
 
         } catch (error) {
-            console.error('❌ Publish-Fehler:', error);
-            this.addMessage('❌ Fehler beim Veröffentlichen der Website.', 'bot');
+            console.error('❌ Publish Error:', error);
+            this.addMessage('❌ **Veröffentlichung fehlgeschlagen.** Server-Konfiguration prüfen.', 'bot');
+            this.showToast('Veröffentlichung fehlgeschlagen', 'error');
         } finally {
             this.hideLoading();
         }
     }
 
-    showLoading() {
+    showLoading(message = 'Verarbeitung läuft...') {
         if (this.loadingOverlay) {
+            this.loadingOverlay.querySelector('p').textContent = message;
             this.loadingOverlay.classList.remove('hidden');
-        }
-        if (this.sendButton) {
-            this.sendButton.disabled = true;
-            this.sendButton.textContent = 'Lädt...';
         }
     }
 
@@ -315,14 +410,72 @@ class WebsiteBuilder {
         if (this.loadingOverlay) {
             this.loadingOverlay.classList.add('hidden');
         }
-        if (this.sendButton) {
-            this.sendButton.disabled = false;
-            this.sendButton.textContent = 'Senden';
+    }
+
+    showToast(message, type = 'info', duration = 3000) {
+        // Create toast container if doesn't exist
+        let toastContainer = document.getElementById('toast-container');
+        if (!toastContainer) {
+            toastContainer = document.createElement('div');
+            toastContainer.id = 'toast-container';
+            toastContainer.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 10000;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+                pointer-events: none;
+            `;
+            document.body.appendChild(toastContainer);
         }
+
+        // Create toast
+        const toast = document.createElement('div');
+        const colors = {
+            success: '#10b981',
+            error: '#ef4444',
+            warning: '#f59e0b',
+            info: '#3b82f6'
+        };
+
+        toast.style.cssText = `
+            background: ${colors[type] || colors.info};
+            color: white;
+            padding: 12px 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            max-width: 300px;
+            word-wrap: break-word;
+            font-size: 0.875rem;
+            font-weight: 500;
+            pointer-events: auto;
+        `;
+        toast.textContent = message;
+
+        toastContainer.appendChild(toast);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            toast.style.transform = 'translateX(0)';
+        });
+
+        // Remove after duration
+        setTimeout(() => {
+            toast.style.transform = 'translateX(100%)';
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 300);
+        }, duration);
     }
 }
 
-// App initialisieren
+// Initialize Professional Website Builder
 document.addEventListener('DOMContentLoaded', () => {
-    new WebsiteBuilder();
+    new ProfessionalWebsiteBuilder();
 });
