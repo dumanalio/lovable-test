@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lovable Light · No-Code Website Builder</title>
+  <link rel="stylesheet" href="/styles.css" />
+  <link rel="icon" href="/favicon.ico" />
+  <meta name="description" content="Lovable Light – Websites per Chat erstellen. Beschreibe deine Idee, die KI baut den Rest." />
+</head>
+<body>
+  <div class="layout">
+    <!-- Chat (links) -->
+    <aside class="chat" aria-label="Chatbereich für Website-Erstellung">
+      <header class="chat__header">
+        <div class="brand">Lovable&nbsp;<span class="light">Light</span></div>
+        <div id="status" class="status status--ok">Bereit</div>
+      </header>
+
+      <div id="chatlog" class="chat__log">
+        <div class="msg msg--ai">
+          <div class="msg__bubble">
+            👋 Hi! Beschreibe deine Wunsch-Website (z. B. „Landingpage für ein Café: großes Hero, 3 Features, Kontaktformular“).  
+            Ich antworte mit Baublöcken und rendere sie rechts live.
+          </div>
+        </div>
+      </div>
+
+      <div class="chat__input">
+        <textarea id="chatInput" rows="3" placeholder="Schreibe hier z. B.: „Hero mit Titel 'Willkommen Ali', pinker Button 'Jetzt starten', darunter 3 Features und ein Kontaktformular.“"></textarea>
+        <div class="chat__actions">
+          <button class="btn btn--ghost" id="quickFeatures">+ Features</button>
+          <button class="btn btn--ghost" id="quickForm">+ Formular</button>
+          <button class="btn" id="sendBtn" disabled>Absenden ⏎</button>
+        </div>
+      </div>
+
+      <footer class="chat__footer">
+        <button class="btn btn--ghost" id="resetBtn" title="Lokale Daten löschen">Zurücksetzen</button>
+        <button class="btn btn--ghost" id="exportBtn" title="JSON exportieren">Export JSON</button>
+      </footer>
+    </aside>
+
+    <!-- Vorschau (rechts) -->
+    <main class="preview" aria-label="Live-Vorschau">
+      <header class="preview__header">
+        <div class="preview__title">Vorschau</div>
+        <div class="preview__tools">
+          <button class="tool" id="reloadBtn" title="Gespeicherte Seite rendern">🔄</button>
+          <button class="tool" id="mobileBtn" title="Mobil-Ansicht umschalten">📱</button>
+        </div>
+      </header>
+
+      <section id="stage" class="stage">
+        <div class="loading">
+          <div class="dots"><span></span><span></span><span></span></div>
+          <p>Lade Startseite…</p>
+        </div>
+      </section>
+
+      <section id="debug" class="debug" hidden></section>
+    </main>
+  </div>
+
+  <script>
+  // ---------- Hilfen ----------
+  const $ = (id) => document.getElementById(id);
+  const htmlEsc = (s) => String(s ?? "").replace(/[&<>\"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const setStatus = (text, cls = "status--ok") => { const n=$("status"); n.textContent=text; n.className="status "+cls; };
+
+  const LS_KEY_DATA = "ll_data_v1";
+  const saveState = (data) => localStorage.setItem(LS_KEY_DATA, JSON.stringify(data));
+  const loadState = () => { try { return JSON.parse(localStorage.getItem(LS_KEY_DATA)||"null"); } catch { return null; } };
+
+  const addMsg = (role, text) => {
+    const row = document.createElement("div");
+    row.className = "msg " + (role === "user" ? "msg--user" : "msg--ai");
+    row.innerHTML = `<div class="msg__bubble">${htmlEsc(text)}</div>`;
+    $("chatlog").appendChild(row);
+    $("chatlog").scrollTop = $("chatlog").scrollHeight;
+  };
+
+  // ---------- Renderer ----------
+  function renderPage(data) {
+    const stage = $("stage");
+    stage.innerHTML = "";
+
+    // Unterstützt klassisches blocks[]-Format
+    const blocks = Array.isArray(data?.blocks) ? data.blocks : [];
+    if (!blocks.length) {
+      stage.innerHTML = `<div class="notice">⚠️ Keine renderbaren Blöcke erhalten.</div>`;
+      return;
+    }
+
+    const out = blocks.map(renderBlock).join("");
+    stage.innerHTML = out;
+    saveState(data);
+  }
+
+  function renderBlock(b) {
+    const t = String(b.type || "").toLowerCase();
+
+    // Navbar
+    if (t === "navbar") {
+      const items = (b.items||[]).map(i => `<a href="${htmlEsc(i.link||"#")}">${htmlEsc(i.text||"Link")}</a>`).join("");
+      const cta = b.cta ? `<a class="btn" href="${htmlEsc(b.cta.link||"#")}">${htmlEsc(b.cta.text||"Los")}</a>` : "";
+      return `
+        <nav class="navbar">
+          <div class="navbar__brand">${htmlEsc(b.brand||"")}</div>
+          <div class="navbar__items">${items}</div>
+          <div class="navbar__cta">${cta}</div>
+        </nav>`;
+    }
+
+    // Hero
+    if (t === "hero") {
+      const grad = b.backgroundGradient || "linear-gradient(135deg,#6d6df6,#ff5c8a)";
+      return `
+        <section class="hero" style="background:${htmlEsc(grad)}">
+          <h1>${htmlEsc(b.headline||"")}</h1>
+          <p>${htmlEsc(b.sub||b.subheadline||"")}</p>
+          ${b.ctaText||b.cta?.text ? `<a class="btn btn--inv" href="${htmlEsc(b.ctaLink||b.cta?.link||"#")}">${htmlEsc(b.ctaText||b.cta?.text||"Mehr")}</a>`:""}
+        </section>`;
+    }
+
+    // Features
+    if (t === "features") {
+      const items = (b.items||[]).map(i => `
+        <div class="feature">
+          <div class="feature__icon">${htmlEsc(i.icon||"✨")}</div>
+          <div class="feature__title">${htmlEsc(i.title||"")}</div>
+          <div class="feature__text">${htmlEsc(i.text||"")}</div>
+        </div>`).join("");
+      return `<section class="features">${items}</section>`;
+    }
+
+    // Text
+    if (t === "text") {
+      return `
+        <section class="text">
+          ${b.title?`<h3>${htmlEsc(b.title)}</h3>`:""}
+          <p>${htmlEsc(b.body||"")}</p>
+        </section>`;
+    }
+
+    // Gallery
+    if (t === "gallery") {
+      const imgs = (b.images||[]).map(x => {
+        const src = typeof x === "string" ? x : (x?.src || "");
+        const alt = typeof x === "string" ? "" : (x?.alt || "");
+        return `<img src="${htmlEsc(src)}" alt="${htmlEsc(alt)}" loading="lazy" />`;
+      }).join("");
+      return `
+        <section class="gallery">
+          ${b.title?`<h3>${htmlEsc(b.title)}</h3>`:""}
+          <div class="gallery__grid">${imgs}</div>
+        </section>`;
+    }
+
+    // Pricing
+    if (t === "pricing") {
+      const plans = (b.plans||[]).map(p => `
+        <div class="plan">
+          <div class="plan__name">${htmlEsc(p.name||"Plan")}</div>
+          <div class="plan__price">${htmlEsc(p.price||"€0")} <span>/Monat</span></div>
+          <ul class="plan__features">${(p.features||[]).map(f=>`<li>${htmlEsc(f)}</li>`).join("")}</ul>
+          <a class="btn" href="${htmlEsc(p.ctaLink||"#")}">${htmlEsc(p.ctaText||"Wählen")}</a>
+        </div>`).join("");
+      return `
+        <section class="pricing">
+          ${b.title?`<h3>${htmlEsc(b.title)}</h3>`:""}
+          <div class="pricing__grid">${plans}</div>
+        </section>`;
+    }
+
+    // FAQ
+    if (t === "faq") {
+      const rows = (b.items||[]).map(i => `
+        <details class="faq__item">
+          <summary>${htmlEsc(i.q||i.question||"Frage")}</summary>
+          <div class="faq__a">${htmlEsc(i.a||i.answer||"")}</div>
+        </details>`).join("");
+      return `<section class="faq">${b.title?`<h3>${htmlEsc(b.title)}</h3>`:""}${rows}</section>`;
+    }
+
+    // Form
+    if (t === "form") {
+      const fields = (b.fields||[]).map(f => renderField(f)).join("");
+      return `
+        <section class="form">
+          <h3>${htmlEsc(b.title||"Kontakt")}</h3>
+          <form onsubmit="event.preventDefault(); alert('Demo: Daten nicht gesendet');">
+            ${fields}
+            <button class="btn" type="submit">${htmlEsc(b.submitButtonText||"Absenden")}</button>
+          </form>
+        </section>`;
+    }
+
+    // Button (Standalone)
+    if (t === "button") {
+      return `<section class="block-center"><a class="btn" style="background:${htmlEsc(b.color||"var(--brand)")}" href="${htmlEsc(b.link||"#")}">${htmlEsc(b.text||"Button")}</a></section>`;
+    }
+
+    // Image
+    if (t === "image") {
+      return `<section class="image"><img src="${htmlEsc(b.src||"")}" alt="${htmlEsc(b.alt||"")}" /><div class="image__cap">${htmlEsc(b.caption||"")}</div></section>`;
+    }
+
+    // Video
+    if (t === "video") {
+      const url = String(b.src||"");
+      let embed = `<video controls src="${htmlEsc(url)}"></video>`;
+      if (/youtube\.com|youtu\.be/.test(url)) {
+        const id = url.match(/(?:v=|be\/)([A-Za-z0-9_-]{6,})/)?.[1] || "";
+        embed = `<iframe src="https://www.youtube.com/embed/${htmlEsc(id)}" allowfullscreen></iframe>`;
+      } else if (/vimeo\.com/.test(url)) {
+        const id = url.match(/vimeo\.com\/(\d+)/)?.[1] || "";
+        embed = `<iframe src="https://player.vimeo.com/video/${htmlEsc(id)}" allowfullscreen></iframe>`;
+      }
+      return `<section class="video">${b.title?`<h3>${htmlEsc(b.title)}</h3>`:""}${embed}</section>`;
+    }
+
+    // Footer
+    if (t === "footer") {
+      return `<footer class="footer"><small>${htmlEsc(b.text||"© 2025")}</small></footer>`;
+    }
+
+    // Fallback
+    return `<section class="notice">Unbekannter Blocktyp: ${htmlEsc(b.type||"")}</section>`;
+  }
+
+  function renderField(f) {
+    const type = String(f.type||"text").toLowerCase();
+    const label = htmlEsc(f.label||"Feld");
+    const name  = htmlEsc((f.name || label).toLowerCase().replace(/\s+/g,"_"));
+    const req   = f.required ? "required" : "";
+    const ph    = htmlEsc(f.placeholder||"");
+
+    if (type === "textarea") return `<label>${label}<textarea name="${name}" ${req} placeholder="${ph}"></textarea></label>`;
+    if (type === "checkbox") return `<label class="chk"><input type="checkbox" name="${name}" ${req}/> ${label}</label>`;
+    if (type === "select") {
+      const opts = (f.options||[]).map(o=>`<option value="${htmlEsc(o)}">${htmlEsc(o)}</option>`).join("");
+      return `<label>${label}<select name="${name}" ${req}>${opts}</select></label>`;
+    }
+    if (type === "radio") {
+      const opts = (f.options||[]).map(o=>`<label class="radio"><input type="radio" name="${name}" value="${htmlEsc(o)}" ${req}/> ${htmlEsc(o)}</label>`).join("");
+      return `<fieldset><legend>${label}</legend>${opts}</fieldset>`;
+    }
+    return `<label>${label}<input type="${htmlEsc(type)}" name="${name}" ${req} placeholder="${ph}"/></label>`;
+  }
+
+  // ---------- API / Chat ----------
+  async function callAI(prompt) {
+    setStatus("Denke…","status--warn");
+    addMsg("user", prompt);
+
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ input: prompt })
+      });
+
+      const payload = await res.json().catch(async () => ({ error: "Server gab kein JSON zurück", raw: await res.text() }));
+
+      if (!res.ok || payload.error) {
+        setStatus("Fehler","status--err");
+        addMsg("ai", "❌ " + (payload.error || "Unbekannter Fehler"));
+        $("debug").hidden = false;
+        $("debug").textContent = JSON.stringify(payload, null, 2);
+        return;
+      }
+
+      setStatus("OK","status--ok");
+      addMsg("ai", "✅ Seite aktualisiert.");
+      $("debug").hidden = true;
+      renderPage(payload);
+
+    } catch (e) {
+      setStatus("Netzwerkfehler","status--err");
+      addMsg("ai", "❌ Netzwerk/Serverfehler");
+      $("debug").hidden = false;
+      $("debug").textContent = String(e);
+    }
+  }
+
+  // ---------- Events / Init ----------
+  $("chatInput").addEventListener("input", (e)=> $("sendBtn").disabled = !e.target.value.trim());
+  $("chatInput").addEventListener("keydown", (e)=> {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); $("sendBtn").click(); }
+  });
+  $("sendBtn").addEventListener("click", ()=> {
+    const v = $("chatInput").value.trim();
+    if (!v) return;
+    $("chatInput").value = "";
+    $("sendBtn").disabled = true;
+    callAI(v);
+  });
+  $("reloadBtn").addEventListener("click", ()=> { const s = loadState(); if (s) renderPage(s); });
+  $("mobileBtn").addEventListener("click", ()=> document.body.classList.toggle("mobile"));
+  $("resetBtn").addEventListener("click", ()=> { localStorage.removeItem(LS_KEY_DATA); location.reload(); });
+  $("exportBtn").addEventListener("click", ()=> {
+    const data = loadState() || {};
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "pageData.json";
+    a.click();
+  });
+  $("quickFeatures").addEventListener("click", ()=> callAI("Füge eine Features-Sektion mit drei Punkten hinzu (Icon, Titel, Text)."));
+  $("quickForm").addEventListener("click", ()=> callAI("Füge ein Kontaktformular mit Name (text, required), E-Mail (email, required), Nachricht (textarea) hinzu."));
+
+  // Startdaten laden: erst localStorage, sonst /data.json
+  (function init(){
+    const saved = loadState();
+    if (saved) { renderPage(saved); return; }
+    fetch("/data.json")
+      .then(r => r.ok ? r.json() : Promise.reject("data.json fehlt"))
+      .then(renderPage)
+      .catch(()=> renderPage({
+        blocks: [
+          { type:"hero", headline:"Willkommen", sub:"Beschreibe links deine Seite – sie erscheint hier.", ctaText:"Jetzt starten", ctaLink:"#features" },
+          { type:"features", items:[ {icon:"⚡",title:"Schnell",text:"In Sekunden live."}, {icon:"🎨",title:"Flexibel",text:"Viele Blöcke."}, {icon:"🤖",title:"KI-gestützt",text:"Versteht natürliche Sprache."} ] },
+          { type:"footer", text:"© 2025 Lovable Light" }
+        ]
+      }));
+  })();
+  </script>
+</body>
+</html>
