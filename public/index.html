@@ -1,15 +1,251 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mein Netlify Projekt</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live-Editor · Chat links, Preview rechts</title>
+  <style>
+    :root{
+      --bg:#0b0c10;
+      --panel:#111217;
+      --panel-2:#0f1116;
+      --card:#161922;
+      --muted:#a7b0c0;
+      --text:#e9edf5;
+      --accent:#6ee7ff;
+      --accent-2:#8b5cf6;
+      --green:#45f2a9;
+      --red:#ff6b6b;
+      --radius:18px;
+      --shadow:0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.02);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;background: radial-gradient(1200px 800px at 80% -10%, rgba(139,92,246,.25),transparent 50%) , var(--bg);
+      color:var(--text); font: 15px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Inter, Helvetica, Arial, sans-serif;
+    }
+    .app{display:grid; grid-template-columns: minmax(340px, 520px) 1fr; gap:18px; height:100%; padding:18px}
+    .panel{background:linear-gradient(180deg, var(--panel), var(--panel-2)); border:1px solid rgba(255,255,255,.06); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden}
+    .header{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.06); background:linear-gradient(180deg, rgba(255,255,255,.03), transparent)}
+    .badge{font-size:12px; color:var(--muted); padding:4px 8px; border:1px solid rgba(255,255,255,.08); border-radius:999px}
+    .brand{display:flex; align-items:center; gap:10px}
+    .brand .dot{width:10px; height:10px; background:linear-gradient(135deg,var(--accent),var(--accent-2)); border-radius:50%; box-shadow:0 0 18px rgba(110,231,255,.6)}
+    .brand b{letter-spacing:.3px}
+    /* Chat column */
+    .chat{display:grid; grid-template-rows: auto 1fr auto}
+    .messages{padding:16px; overflow:auto; display:flex; flex-direction:column; gap:12px}
+    .msg{display:flex; gap:10px; align-items:flex-start}
+    .avatar{flex:0 0 32px; width:32px; height:32px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent-2))}
+    .bubble{
+      max-width:80%; padding:12px 14px; border-radius:14px; background:var(--card); border:1px solid rgba(255,255,255,.06);
+    }
+    .you .bubble{background:transparent; border-color:rgba(255,255,255,.12)}
+    .hints{display:flex; gap:8px; padding:10px 12px; border-top:1px dashed rgba(255,255,255,.06); flex-wrap:wrap}
+    .chip{padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.10); color:var(--muted); cursor:pointer; user-select:none}
+    .chip:hover{border-color:rgba(255,255,255,.16); color:#fff}
+    .composer{display:flex; gap:10px; padding:12px; border-top:1px solid rgba(255,255,255,.06); background:linear-gradient(180deg, rgba(255,255,255,.02), transparent)}
+    .composer input{
+      flex:1; background:#0e1015; border:1px solid rgba(255,255,255,.08); color:#fff;
+      padding:13px 14px; border-radius:12px; outline:none;
+    }
+    .composer button{
+      background:linear-gradient(135deg,var(--accent),var(--green));
+      border:none; color:#041119; padding:0 16px; border-radius:12px; font-weight:700; cursor:pointer;
+      box-shadow:0 10px 20px rgba(70,220,200,.18);
+    }
+    /* Preview column */
+    .preview{position:relative; overflow:hidden}
+    .surface{height:100%; overflow:auto; background:
+      radial-gradient(1200px 800px at 20% -10%, rgba(110,231,255,.15),transparent 60%),
+      linear-gradient(180deg, #0c0f16, #0b0d13);
+    }
+    .site{
+      max-width:1100px; margin:0 auto; padding:32px 26px 80px;
+      display:grid; gap:22px;
+    }
+    .hero{
+      display:grid; gap:12px; padding:30px; border-radius:18px; background:linear-gradient(180deg,#101522,#0d111b);
+      border:1px solid rgba(255,255,255,.06)
+    }
+    .hero h1{font-size:38px; line-height:1.15; margin:0}
+    .hero p{color:var(--muted); margin:0}
+    .cta{display:flex; gap:10px; margin-top:6px}
+    .btn{
+      background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:#041119; border:0; padding:12px 16px;
+      border-radius:12px; font-weight:700; cursor:pointer
+    }
+    .btn.secondary{background:transparent; color:#e7ebf7; border:1px solid rgba(255,255,255,.12)}
+    .grid{display:grid; grid-template-columns: repeat(3, 1fr); gap:14px}
+    .card{background:var(--card); border:1px solid rgba(255,255,255,.06); border-radius:14px; padding:16px; min-height:120px}
+    .note{position:absolute; right:14px; top:14px; color:var(--muted); font-size:12px}
+    /* Responsive */
+    @media (max-width: 980px){
+      .app{grid-template-columns:1fr; gap:14px}
+      .bubble{max-width:100%}
+      .grid{grid-template-columns:1fr}
+    }
+  </style>
 </head>
 <body>
-  <h1>Hallo von Netlify 🚀</h1>
-  <button onclick="callApi()">Teste API</button>
-  <pre id="output"></pre>
-  <script src="script.js"></script>
+  <div class="app">
+    <!-- LEFT: Chat -->
+    <section class="panel chat">
+      <div class="header">
+        <div class="brand"><span class="dot"></span><b>Editor Chat</b></div>
+        <span class="badge">Links chatten · Rechts sehen</span>
+      </div>
+
+      <div id="messages" class="messages">
+        <div class="msg ai">
+          <div class="avatar" aria-hidden="true"></div>
+          <div class="bubble">
+            Willkommen! Schreib z. B.:<br>
+            <code>title: NordCarta – Poster in Perfektion</code><br>
+            <code>subtitle: Minimal. Präzise. Farbtierig.</code><br>
+            <code>bg: #0a0f1a</code> · <code>accent: #6ee7ff</code> · <code>button: Jetzt entdecken</code>
+          </div>
+        </div>
+      </div>
+
+      <div class="hints">
+        <span class="chip" data-fill="title: Modernes Poster-Design">Titel setzen</span>
+        <span class="chip" data-fill="subtitle: Minimal, klar und luxuriös.">Untertitel</span>
+        <span class="chip" data-fill="bg: #0b1220">Hintergrund dunkel</span>
+        <span class="chip" data-fill="accent: #8b5cf6">Akzent violett</span>
+        <span class="chip" data-fill="button: Zum Shop">Button-Text</span>
+      </div>
+
+      <div class="composer">
+        <input id="input" placeholder="Schreibe Befehle wie: title: … | bg: #10151f | button: …" />
+        <button id="send">Senden</button>
+      </div>
+    </section>
+
+    <!-- RIGHT: Live Preview -->
+    <section class="panel preview">
+      <div class="note">Live-Vorschau</div>
+      <div class="surface">
+        <div class="site" id="site">
+          <div class="hero" id="hero">
+            <h1 id="title">Hallo von Netlify 🚀</h1>
+            <p id="subtitle">Diese Vorschau reagiert auf deine Chat-Befehle links.</p>
+            <div class="cta">
+              <button class="btn" id="primaryBtn">Los geht’s</button>
+              <button class="btn secondary">Mehr erfahren</button>
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="card">Abschnitt A – Inhalte, Cards, Module …</div>
+            <div class="card">Abschnitt B – Grid & Komponenten</div>
+            <div class="card">Abschnitt C – Frei gestaltbar</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Tiny helper: add a message bubble
+    const messages = document.getElementById('messages');
+    function addMsg(text, who='you'){
+      const wrap = document.createElement('div');
+      wrap.className = `msg ${who}`;
+      wrap.innerHTML = `
+        <div class="avatar" aria-hidden="true"></div>
+        <div class="bubble"></div>
+      `;
+      wrap.querySelector('.bubble').textContent = text;
+      messages.appendChild(wrap);
+      messages.scrollTop = messages.scrollHeight;
+    }
+
+    // Apply simple commands to the preview
+    function applyCommand(line){
+      const [rawKey, ...rest] = line.split(':');
+      if(!rawKey || !rest.length) return false;
+      const key = rawKey.trim().toLowerCase();
+      const value = rest.join(':').trim();
+
+      const hero = document.getElementById('hero');
+      const title = document.getElementById('title');
+      const subtitle = document.getElementById('subtitle');
+      const primaryBtn = document.getElementById('primaryBtn');
+
+      switch(key){
+        case 'title':
+          title.textContent = value || 'Titel';
+          return true;
+        case 'subtitle':
+        case 'sub':
+          subtitle.textContent = value || '';
+          return true;
+        case 'button':
+        case 'btn':
+          primaryBtn.textContent = value || 'Weiter';
+          return true;
+        case 'bg':
+        case 'background':
+          document.querySelector('.surface').style.background =
+            `linear-gradient(180deg, ${shade(value,0.12)}, ${value})`;
+          return true;
+        case 'accent':
+          document.documentElement.style.setProperty('--accent', value);
+          primaryBtn.style.background = `linear-gradient(135deg, ${value}, var(--accent-2))`;
+          document.querySelector('.brand .dot').style.background =
+            `linear-gradient(135deg, ${value}, var(--accent-2))`;
+          return true;
+        case 'color':
+          document.documentElement.style.setProperty('--text', value);
+          return true;
+        case 'radius':
+          document.documentElement.style.setProperty('--radius', value);
+          return true;
+        default: return false;
+      }
+    }
+
+    // Slight shade util for bg gradient
+    function shade(hex, amt){
+      try{
+        const h = hex.replace('#','');
+        const n = parseInt(h.length===3 ? h.split('').map(c=>c+c).join('') : h,16);
+        let r=(n>>16)&255, g=(n>>8)&255, b=n&255;
+        r=Math.min(255,Math.max(0,r+Math.round(255*amt)));
+        g=Math.min(255,Math.max(0,g+Math.round(255*amt)));
+        b=Math.min(255,Math.max(0,b+Math.round(255*amt)));
+        return `rgb(${r}, ${g}, ${b})`;
+      }catch{ return hex; }
+    }
+
+    // Send handling
+    const input = document.getElementById('input');
+    document.getElementById('send').addEventListener('click', handleSend);
+    input.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ handleSend(); }});
+
+    function handleSend(){
+      const text = input.value.trim();
+      if(!text) return;
+      addMsg(text,'you');
+      // support multi-line; apply each command line-by-line
+      let applied = false;
+      text.split('\n').forEach(line=>{
+        if(applyCommand(line)) applied = true;
+      });
+      if(!applied){
+        addMsg('Tipp: Nutze Befehle wie "title:", "subtitle:", "bg:", "accent:", "button:".','ai');
+      }
+      input.value='';
+    }
+
+    // Quick chips
+    document.querySelectorAll('.chip').forEach(chip=>{
+      chip.addEventListener('click', ()=>{
+        input.value = chip.getAttribute('data-fill');
+        input.focus();
+      });
+    });
+  </script>
 </body>
 </html>
