@@ -1,1 +1,29 @@
-<!DOCTYPE html><html><head><title>public/index.html</title></head><body><h1>public/index.html</h1></body></html>
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lovable Light</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- Chatbereich -->
+    <aside class="chat">
+      <h2>Chat</h2>
+      <div id="chat-messages"></div>
+      <div class="chat-input">
+        <input type="text" id="message-input" placeholder="Schreib hier..." />
+        <button id="send-btn">Senden</button>
+      </div>
+    </aside>
+
+    <!-- Vorschau -->
+    <main class="preview">
+      <iframe id="preview-frame" src="preview.html"></iframe>
+    </main>
+  </div>
+
+  <script src="chat.js"></script>
+</body>
+</html>
