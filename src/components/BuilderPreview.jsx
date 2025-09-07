@@ -3,16 +3,36 @@ import { motion } from "framer-motion";
 
 // Lightweight in-browser React runtime using Babel Standalone
 // We compile user-provided JSX to JS, then eval in a sandboxed Function scope.
+function normalizeAppCode(src) {
+  if (!src || typeof src !== "string") return "";
+  let s = src;
+  // remove import lines
+  s = s.replace(/^\s*import[^;]*;?\s*$/gm, "");
+  // handle common export default patterns
+  s = s.replace(/export\s+default\s+function\s+App\s*\(/g, "function App(");
+  s = s.replace(/export\s+default\s+class\s+App\s*/g, "class App ");
+  s = s.replace(/export\s+default\s*\(/g, "const App = (");
+  s = s.replace(/export\s+default\s+async\s*\(/g, "const App = async (");
+  s = s.replace(/export\s+default\s+([A-Za-z_$][\w$]*)\s*;/g, "const App = $1;");
+  // remove any remaining export statements
+  s = s.replace(/^\s*export\s+\{[^}]*\}\s*;?\s*$/gm, "");
+  s = s.replace(/^\s*export\s+default\s*;?\s*$/gm, "");
+  return s;
+}
+
 function useTranspiled(code) {
   return useMemo(() => {
     if (!code) return null;
     try {
-      // Babel standalone is provided via CDN in index.html? Not guaranteed.
-      // Fallback: basic passthrough if Babel isn't available.
+      const normalized = normalizeAppCode(code);
+      // Provide common React hooks without explicit imports
+      const preamble = `const { useState, useEffect, useMemo, useRef, useCallback } = React;`;
+      const source = `${preamble}\n${normalized}`;
+      // Babel standalone is provided via CDN in index.html? Not guaranteed. Fallback passthrough.
       const hasBabel = typeof window !== "undefined" && window.Babel && window.Babel.transform;
       const js = hasBabel
-        ? window.Babel.transform(code, { presets: ["react"] }).code
-        : code;
+        ? window.Babel.transform(source, { presets: ["react"] }).code
+        : source;
       return js;
     } catch (e) {
       console.error("Transpile error", e);
