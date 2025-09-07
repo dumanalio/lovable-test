@@ -4,6 +4,8 @@
 const SYSTEM_PROMPT =
   'You are a Senior React Developer. Generate modern, responsive React components with best practices.\n\nREQUIREMENTS:\n- Use functional components with React hooks\n- Use Tailwind CSS for styling\n- Ensure accessibility (WCAG 2.1 AA)\n- Mobile-first responsive design\n- Clean, semantic JSX structure\n\nOUTPUT FORMAT:\nReturn ONLY valid JSON:\n{\n  "title": "Component Name",\n  "code": "import React from \'react\';\\\\n\\\\nconst ComponentName = () => {\\\\n  return (\\\\n    <div className=\'p-4\'>\\\\n      <h1>Hello World</h1>\\\\n    </div>\\\\n  );\\\\n};\\\\n\\\\nexport default ComponentName;"\n}\n\nGenerate a complete React component based on the user\'s request.';
 
+const PROJECT_BRIEF = 'This is a modern React application using Vite, Tailwind CSS, and Framer Motion for animations. The app includes a landing page, admin panel, dashboard, and an AI-powered website builder.';
+
 function extractJson(text) {
   try {
     return JSON.parse(text);
@@ -77,7 +79,7 @@ exports.handler = async (event) => {
     try {
       const fs = require("fs");
       const path = require("path");
-      const p = path.join(__dirname, "fewshot.json");
+      const p = path.join(__dirname, "fewshot_new.json");
       if (fs.existsSync(p)) {
         const sample = fs.readFileSync(p, "utf-8");
         FEW_SHOT = { role: "assistant", content: sample };
@@ -124,7 +126,9 @@ exports.handler = async (event) => {
     }
 
     const responseBody = await response.json();
-    const extractedJson = extractJson(responseBody.choices[0].text);
+    const content = responseBody.choices[0].message.content;
+    const extractedJson = extractJson(content);
+
     if (!extractedJson) {
       console.error("Failed to extract JSON from response:", responseBody);
       return {
@@ -134,14 +138,7 @@ exports.handler = async (event) => {
       };
     }
 
-    let json = extractJson(content);
-    if (!json) {
-      // Fallback: wrap as generic component
-      json = {
-        title: "AI Generated Component",
-        code: content,
-      };
-    }
+    let json = extractedJson;
 
     if (!json.title) json.title = "AI Generated Component";
     if (!json.code) json.code = "<div />";
