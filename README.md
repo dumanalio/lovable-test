@@ -71,6 +71,7 @@ OPENAI_API_KEY=your_api_key_here
 ### Build Settings
 
 Die Netlify-Konfiguration ist in `netlify.toml` definiert:
+
 - Build Command: `npm run build`
 - Publish Directory: `dist`
 - Node Version: 18.17.0

@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { ArrowRight, Play, Sparkles, Zap, Heart } from 'lucide-react';
+import { motion } from "framer-motion";
+import { ArrowRight, Play, Sparkles, Zap, Heart } from "lucide-react";
 
 function Hero() {
   const containerVariants = {
@@ -39,8 +39,8 @@ function Hero() {
             variants={itemVariants}
             className="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-medium"
           >
-            <Sparkles className="w-4 h-4 mr-2 text-yellow-400" />
-            ✨ Powered by AI & Love
+            <Sparkles className="w-4 h-4 mr-2 text-yellow-400" />✨ Powered by
+            AI & Love
           </motion.div>
 
           {/* Main Heading */}
@@ -57,8 +57,9 @@ function Hero() {
             variants={itemVariants}
             className="text-xl sm:text-2xl text-gray-300 max-w-3xl mx-auto leading-relaxed"
           >
-            Create stunning, professional websites in minutes with our AI-powered platform.
-            No coding required, just your vision and our magic.
+            Create stunning, professional websites in minutes with our
+            AI-powered platform. No coding required, just your vision and our
+            magic.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -70,7 +71,7 @@ function Hero() {
               className="btn-primary text-lg px-8 py-4 flex items-center group"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => window.location.href = 'https://www.google.de'}
+              onClick={() => (window.location.href = "https://www.google.de")}
             >
               Start Building Free
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -92,15 +93,21 @@ function Hero() {
             className="grid grid-cols-1 sm:grid-cols-3 gap-8 pt-16 max-w-4xl mx-auto"
           >
             <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">50K+</div>
+              <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">
+                50K+
+              </div>
               <div className="text-gray-400">Websites Created</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">1M+</div>
+              <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">
+                1M+
+              </div>
               <div className="text-gray-400">Happy Users</div>
             </div>
             <div className="text-center">
-              <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">99.9%</div>
+              <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">
+                99.9%
+              </div>
               <div className="text-gray-400">Uptime</div>
             </div>
           </motion.div>

@@ -1,6 +1,6 @@
-import { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Upload, X, Image as ImageIcon } from 'lucide-react';
+import { useState, useRef } from "react";
+import { motion } from "framer-motion";
+import { Upload, X, Image as ImageIcon } from "lucide-react";
 
 function LogoUpload({ onLogoUpload, logoSize, onLogoSizeChange }) {
   const [isDragOver, setIsDragOver] = useState(false);
@@ -37,14 +37,14 @@ function LogoUpload({ onLogoUpload, logoSize, onLogoSizeChange }) {
 
   const handleFile = (file) => {
     // Check if file is an image
-    if (!file.type.startsWith('image/')) {
-      alert('Bitte wählen Sie eine Bilddatei aus.');
+    if (!file.type.startsWith("image/")) {
+      alert("Bitte wählen Sie eine Bilddatei aus.");
       return;
     }
 
     // Check file size (max 5MB)
     if (file.size > 5 * 1024 * 1024) {
-      alert('Die Datei ist zu groß. Maximale Größe: 5MB');
+      alert("Die Datei ist zu groß. Maximale Größe: 5MB");
       return;
     }
 
@@ -67,14 +67,16 @@ function LogoUpload({ onLogoUpload, logoSize, onLogoSizeChange }) {
     setUploadedLogo(null);
     setPreviewUrl(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
   return (
     <div className="w-full max-w-md mx-auto">
       <div className="text-center mb-6">
-        <h3 className="text-2xl font-bold gradient-text mb-2">Logo Hochladen</h3>
+        <h3 className="text-2xl font-bold gradient-text mb-2">
+          Logo Hochladen
+        </h3>
         <p className="text-gray-300">Laden Sie Ihr Logo für die Website hoch</p>
       </div>
 
@@ -82,8 +84,8 @@ function LogoUpload({ onLogoUpload, logoSize, onLogoSizeChange }) {
         <motion.div
           className={`relative border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 ${
             isDragOver
-              ? 'border-lovable-400 bg-lovable-400/10'
-              : 'border-white/20 hover:border-white/40'
+              ? "border-lovable-400 bg-lovable-400/10"
+              : "border-white/20 hover:border-white/40"
           }`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -139,7 +141,7 @@ function LogoUpload({ onLogoUpload, logoSize, onLogoSizeChange }) {
                 className={`object-contain rounded-lg transition-all duration-300`}
                 style={{
                   width: `${logoSize}px`,
-                  height: `${logoSize}px`
+                  height: `${logoSize}px`,
                 }}
               />
             </div>
@@ -147,7 +149,9 @@ function LogoUpload({ onLogoUpload, logoSize, onLogoSizeChange }) {
             {/* Logo Size Control */}
             <div className="mb-4">
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-medium text-gray-300">Logo Größe</label>
+                <label className="text-sm font-medium text-gray-300">
+                  Logo Größe
+                </label>
                 <span className="text-sm text-gray-400">{logoSize}px</span>
               </div>
               <input
@@ -158,7 +162,11 @@ function LogoUpload({ onLogoUpload, logoSize, onLogoSizeChange }) {
                 onChange={(e) => onLogoSizeChange(parseInt(e.target.value))}
                 className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider"
                 style={{
-                  background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${((logoSize - 20) / (100 - 20)) * 100}%, #e5e7eb ${((logoSize - 20) / (100 - 20)) * 100}%, #e5e7eb 100%)`
+                  background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${
+                    ((logoSize - 20) / (100 - 20)) * 100
+                  }%, #e5e7eb ${
+                    ((logoSize - 20) / (100 - 20)) * 100
+                  }%, #e5e7eb 100%)`,
                 }}
               />
               <div className="flex justify-between text-xs text-gray-500 mt-1">
@@ -169,7 +177,8 @@ function LogoUpload({ onLogoUpload, logoSize, onLogoSizeChange }) {
 
             <div className="mt-4 text-center">
               <p className="text-sm text-gray-400">
-                {uploadedLogo.name} ({(uploadedLogo.size / 1024 / 1024).toFixed(2)} MB)
+                {uploadedLogo.name} (
+                {(uploadedLogo.size / 1024 / 1024).toFixed(2)} MB)
               </p>
             </div>
           </div>

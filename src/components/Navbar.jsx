@@ -1,14 +1,14 @@
-import { motion } from 'framer-motion';
-import { Menu, X, Sparkles } from 'lucide-react';
-import { useLogo } from '../contexts/LogoContext';
+import { motion } from "framer-motion";
+import { Menu, X, Sparkles } from "lucide-react";
+import { useLogo } from "../contexts/LogoContext";
 
 function Navbar({ isMenuOpen, setIsMenuOpen, onAdminClick, onDashboardClick }) {
   const { logoUrl, logoSize } = useLogo();
   const navItems = [
-    { name: 'Features', href: '#features' },
-    { name: 'How it Works', href: '#how-it-works' },
-    { name: 'Testimonials', href: '#testimonials' },
-    { name: 'Pricing', href: '#pricing' },
+    { name: "Features", href: "#features" },
+    { name: "How it Works", href: "#how-it-works" },
+    { name: "Testimonials", href: "#testimonials" },
+    { name: "Pricing", href: "#pricing" },
   ];
 
   return (
@@ -32,7 +32,7 @@ function Navbar({ isMenuOpen, setIsMenuOpen, onAdminClick, onDashboardClick }) {
                 className="object-contain rounded transition-all duration-300"
                 style={{
                   width: `${logoSize}px`,
-                  height: `${logoSize}px`
+                  height: `${logoSize}px`,
                 }}
               />
             ) : (
@@ -73,7 +73,9 @@ function Navbar({ isMenuOpen, setIsMenuOpen, onAdminClick, onDashboardClick }) {
               Admin
             </motion.button>
             <motion.button
-              onClick={() => window.dispatchEvent(new CustomEvent('open-builder'))}
+              onClick={() =>
+                window.dispatchEvent(new CustomEvent("open-builder"))
+              }
               className="btn-primary text-sm"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -112,9 +114,7 @@ function Navbar({ isMenuOpen, setIsMenuOpen, onAdminClick, onDashboardClick }) {
                   {item.name}
                 </a>
               ))}
-              <button className="btn-primary text-sm w-fit">
-                Get Started
-              </button>
+              <button className="btn-primary text-sm w-fit">Get Started</button>
             </div>
           </motion.div>
         )}

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from "react";
 
 const LogoContext = createContext();
 
@@ -9,9 +9,9 @@ export function LogoProvider({ children }) {
 
   // Load logo and size from localStorage on mount
   useEffect(() => {
-    const savedLogo = localStorage.getItem('uploadedLogo');
-    const savedLogoUrl = localStorage.getItem('logoUrl');
-    const savedLogoSize = localStorage.getItem('logoSize');
+    const savedLogo = localStorage.getItem("uploadedLogo");
+    const savedLogoUrl = localStorage.getItem("logoUrl");
+    const savedLogoSize = localStorage.getItem("logoSize");
 
     if (savedLogoUrl) {
       setLogoUrl(savedLogoUrl);
@@ -29,29 +29,31 @@ export function LogoProvider({ children }) {
     setLogoUrl(url);
 
     // Save to localStorage
-    localStorage.setItem('logoUrl', url);
+    localStorage.setItem("logoUrl", url);
 
     // In a real app, you would upload to a server here
     // For now, we'll just store the file name
-    localStorage.setItem('uploadedLogo', file.name);
+    localStorage.setItem("uploadedLogo", file.name);
   };
 
   const updateLogoSize = (size) => {
     setLogoSize(size);
-    localStorage.setItem('logoSize', size.toString());
+    localStorage.setItem("logoSize", size.toString());
   };
 
   const clearLogo = () => {
     setLogo(null);
     setLogoUrl(null);
     setLogoSize(32);
-    localStorage.removeItem('uploadedLogo');
-    localStorage.removeItem('logoUrl');
-    localStorage.removeItem('logoSize');
+    localStorage.removeItem("uploadedLogo");
+    localStorage.removeItem("logoUrl");
+    localStorage.removeItem("logoSize");
   };
 
   return (
-    <LogoContext.Provider value={{ logo, logoUrl, logoSize, updateLogo, updateLogoSize, clearLogo }}>
+    <LogoContext.Provider
+      value={{ logo, logoUrl, logoSize, updateLogo, updateLogoSize, clearLogo }}
+    >
       {children}
     </LogoContext.Provider>
   );
@@ -60,7 +62,7 @@ export function LogoProvider({ children }) {
 export function useLogo() {
   const context = useContext(LogoContext);
   if (!context) {
-    throw new Error('useLogo must be used within a LogoProvider');
+    throw new Error("useLogo must be used within a LogoProvider");
   }
   return context;
 }

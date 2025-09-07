@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { ArrowRight, Sparkles } from 'lucide-react';
+import { motion } from "framer-motion";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 function CTA() {
   return (
@@ -29,8 +29,9 @@ function CTA() {
             </h2>
 
             <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join thousands of creators who have already built stunning websites with Lovable.
-              No coding skills required, just your vision and our AI-powered platform.
+              Join thousands of creators who have already built stunning
+              websites with Lovable. No coding skills required, just your vision
+              and our AI-powered platform.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

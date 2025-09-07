@@ -32,16 +32,16 @@ function extractJson(text) {
 exports.handler = async (event) => {
   // CORS
   const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
   };
-  if (event.httpMethod === 'OPTIONS') {
+  if (event.httpMethod === "OPTIONS") {
     return { statusCode: 204, headers };
   }
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, headers, body: 'Method Not Allowed' };
+  if (event.httpMethod !== "POST") {
+    return { statusCode: 405, headers, body: "Method Not Allowed" };
   }
 
   const apiKey = process.env.OPENAI_API_KEY;
@@ -49,82 +49,98 @@ exports.handler = async (event) => {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Missing OPENAI_API_KEY on server' }),
+      body: JSON.stringify({ error: "Missing OPENAI_API_KEY on server" }),
     };
   }
 
   try {
-    const body = JSON.parse(event.body || '{}');
-    const userPrompt = String(body.prompt || '').trim();
+    const body = JSON.parse(event.body || "{}");
+    const userPrompt = String(body.prompt || "").trim();
     const history = Array.isArray(body.messages) ? body.messages : [];
 
     if (!userPrompt) {
-      return { statusCode: 400, headers, body: JSON.stringify({ error: 'Missing prompt' }) };
+      return {
+        statusCode: 400,
+        headers,
+        body: JSON.stringify({ error: "Missing prompt" }),
+      };
     }
 
     // Convert local history to OpenAI messages (keep last 6 for brevity)
     const recent = history.slice(-6).map((m) => {
-      if (m.type === 'user') {
-        return { role: 'user', content: m.content };
+      if (m.type === "user") {
+        return { role: "user", content: m.content };
       }
       // AI message: use its code as assistant content to provide context
       try {
         const c = m.content || {};
-        const title = c.title ? `Title: ${c.title}\n` : '';
-        const code = c.code ? `Code:\n${c.code}` : '';
-        return { role: 'assistant', content: `${title}${code}`.trim() };
+        const title = c.title ? `Title: ${c.title}\n` : "";
+        const code = c.code ? `Code:\n${c.code}` : "";
+        return { role: "assistant", content: `${title}${code}`.trim() };
       } catch (_) {
-        return { role: 'assistant', content: '' };
+        return { role: "assistant", content: "" };
       }
     });
 
     const messages = [
-      { role: 'system', content: SYSTEM_PROMPT },
+      { role: "system", content: SYSTEM_PROMPT },
       ...recent,
       {
-        role: 'user',
+        role: "user",
         content:
           `Please generate a React component based on this request. Return only JSON: {"title": string, "code": string}.` +
           `\nRequest: ${userPrompt}`,
       },
     ];
 
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
+    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: "gpt-4o-mini",
         messages,
         temperature: 0.5,
         max_tokens: 1400,
-        response_format: { type: 'text' },
+        response_format: { type: "text" },
       }),
     });
 
     if (!res.ok) {
       const errText = await res.text();
-      return { statusCode: res.status, headers, body: JSON.stringify({ error: 'OpenAI error', details: errText }) };
+      return {
+        statusCode: res.status,
+        headers,
+        body: JSON.stringify({ error: "OpenAI error", details: errText }),
+      };
     }
 
     const data = await res.json();
-    const content = data.choices?.[0]?.message?.content || '';
+    const content = data.choices?.[0]?.message?.content || "";
     let json = extractJson(content);
     if (!json) {
       // Fallback: wrap as generic component
       json = {
-        title: 'AI Generated Component',
+        title: "AI Generated Component",
         code: content,
       };
     }
 
-    if (!json.title) json.title = 'AI Generated Component';
-    if (!json.code) json.code = '<div />';
+    if (!json.title) json.title = "AI Generated Component";
+    if (!json.code) json.code = "<div />";
 
-    return { statusCode: 200, headers: { ...headers, 'Content-Type': 'application/json' }, body: JSON.stringify(json) };
+    return {
+      statusCode: 200,
+      headers: { ...headers, "Content-Type": "application/json" },
+      body: JSON.stringify(json),
+    };
   } catch (e) {
-    return { statusCode: 500, headers, body: JSON.stringify({ error: 'Server error', details: String(e) }) };
+    return {
+      statusCode: 500,
+      headers,
+      body: JSON.stringify({ error: "Server error", details: String(e) }),
+    };
   }
 };

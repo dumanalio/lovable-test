@@ -1,16 +1,17 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Settings, Upload, Image, Save, ArrowLeft } from 'lucide-react';
-import LogoUpload from './LogoUpload';
-import { useLogo } from '../contexts/LogoContext';
+import { useState } from "react";
+import { motion } from "framer-motion";
+import { Settings, Upload, Image, Save, ArrowLeft } from "lucide-react";
+import LogoUpload from "./LogoUpload";
+import { useLogo } from "../contexts/LogoContext";
 
 function AdminPanel({ onBackClick }) {
-  const { logoUrl, logoSize, updateLogo, updateLogoSize, clearLogo } = useLogo();
-  const [activeTab, setActiveTab] = useState('logo');
+  const { logoUrl, logoSize, updateLogo, updateLogoSize, clearLogo } =
+    useLogo();
+  const [activeTab, setActiveTab] = useState("logo");
 
   const tabs = [
-    { id: 'logo', name: 'Logo', icon: Image },
-    { id: 'general', name: 'Allgemein', icon: Settings },
+    { id: "logo", name: "Logo", icon: Image },
+    { id: "general", name: "Allgemein", icon: Settings },
   ];
 
   return (
@@ -29,7 +30,9 @@ function AdminPanel({ onBackClick }) {
             <span>Zurück zur Website</span>
           </button>
           <h1 className="text-3xl font-bold gradient-text mb-2">Admin Panel</h1>
-          <p className="text-gray-300">Verwalten Sie Ihre Website-Einstellungen</p>
+          <p className="text-gray-300">
+            Verwalten Sie Ihre Website-Einstellungen
+          </p>
         </motion.div>
 
         {/* Tabs */}
@@ -42,8 +45,8 @@ function AdminPanel({ onBackClick }) {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center space-x-2 px-6 py-3 rounded-lg font-medium transition-all duration-200 ${
                   activeTab === tab.id
-                    ? 'bg-lovable-500 text-white shadow-lg'
-                    : 'text-gray-300 hover:text-white hover:bg-white/10'
+                    ? "bg-lovable-500 text-white shadow-lg"
+                    : "text-gray-300 hover:text-white hover:bg-white/10"
                 }`}
               >
                 <Icon className="w-5 h-5" />
@@ -60,16 +63,17 @@ function AdminPanel({ onBackClick }) {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3 }}
         >
-          {activeTab === 'logo' && (
+          {activeTab === "logo" && (
             <div className="space-y-6">
               <div className="glassmorphism p-6 rounded-2xl">
                 <h2 className="text-2xl font-bold mb-4">Logo verwalten</h2>
                 <p className="text-gray-300 mb-6">
-                  Laden Sie Ihr Logo hoch, um es in der Navigation und im Footer zu verwenden.
+                  Laden Sie Ihr Logo hoch, um es in der Navigation und im Footer
+                  zu verwenden.
                 </p>
 
-                <LogoUpload 
-                  onLogoUpload={updateLogo} 
+                <LogoUpload
+                  onLogoUpload={updateLogo}
                   logoSize={logoSize}
                   onLogoSizeChange={updateLogoSize}
                 />
@@ -85,8 +89,12 @@ function AdminPanel({ onBackClick }) {
                         <Save className="w-5 h-5 text-green-400" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-green-400">Logo erfolgreich hochgeladen!</h3>
-                        <p className="text-sm text-gray-300">Das Logo wird jetzt auf der Website angezeigt.</p>
+                        <h3 className="font-semibold text-green-400">
+                          Logo erfolgreich hochgeladen!
+                        </h3>
+                        <p className="text-sm text-gray-300">
+                          Das Logo wird jetzt auf der Website angezeigt.
+                        </p>
                       </div>
                     </div>
                   </motion.div>
@@ -109,11 +117,13 @@ function AdminPanel({ onBackClick }) {
                         className="object-contain bg-white/10 rounded-lg p-2 transition-all duration-300"
                         style={{
                           width: `${logoSize}px`,
-                          height: `${logoSize}px`
+                          height: `${logoSize}px`,
                         }}
                       />
                       <div>
-                        <p className="text-gray-300 mb-2">Dieses Logo wird in der Navigation angezeigt</p>
+                        <p className="text-gray-300 mb-2">
+                          Dieses Logo wird in der Navigation angezeigt
+                        </p>
                         <div className="text-sm text-gray-400 mb-3">
                           Aktuelle Größe: {logoSize}px
                         </div>
@@ -125,10 +135,12 @@ function AdminPanel({ onBackClick }) {
                         </button>
                       </div>
                     </div>
-                    
+
                     {/* Quick Size Presets */}
                     <div>
-                      <p className="text-sm font-medium text-gray-300 mb-2">Schnelle Größenauswahl:</p>
+                      <p className="text-sm font-medium text-gray-300 mb-2">
+                        Schnelle Größenauswahl:
+                      </p>
                       <div className="flex space-x-2">
                         {[20, 32, 48, 64, 80].map((size) => (
                           <button
@@ -136,8 +148,8 @@ function AdminPanel({ onBackClick }) {
                             onClick={() => updateLogoSize(size)}
                             className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                               logoSize === size
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-white/10 text-gray-300 hover:bg-white/20'
+                                ? "bg-blue-500 text-white"
+                                : "bg-white/10 text-gray-300 hover:bg-white/20"
                             }`}
                           >
                             {size}px
@@ -151,9 +163,11 @@ function AdminPanel({ onBackClick }) {
             </div>
           )}
 
-          {activeTab === 'general' && (
+          {activeTab === "general" && (
             <div className="glassmorphism p-6 rounded-2xl">
-              <h2 className="text-2xl font-bold mb-4">Allgemeine Einstellungen</h2>
+              <h2 className="text-2xl font-bold mb-4">
+                Allgemeine Einstellungen
+              </h2>
               <p className="text-gray-300">
                 Weitere Einstellungen werden in Kürze verfügbar sein.
               </p>

@@ -1,32 +1,36 @@
-import { motion } from 'framer-motion';
-import { ArrowRight, Upload, Wand2, Rocket, CheckCircle } from 'lucide-react';
+import { motion } from "framer-motion";
+import { ArrowRight, Upload, Wand2, Rocket, CheckCircle } from "lucide-react";
 
 function HowItWorks() {
   const steps = [
     {
       icon: <Upload className="w-8 h-8" />,
       title: "1. Tell us your vision",
-      description: "Describe your website idea, target audience, and goals. Our AI will understand your vision perfectly.",
-      color: "from-blue-500 to-cyan-500"
+      description:
+        "Describe your website idea, target audience, and goals. Our AI will understand your vision perfectly.",
+      color: "from-blue-500 to-cyan-500",
     },
     {
       icon: <Wand2 className="w-8 h-8" />,
       title: "2. AI creates your site",
-      description: "Watch as our advanced AI generates a beautiful, professional website tailored to your needs.",
-      color: "from-purple-500 to-pink-500"
+      description:
+        "Watch as our advanced AI generates a beautiful, professional website tailored to your needs.",
+      color: "from-purple-500 to-pink-500",
     },
     {
       icon: <CheckCircle className="w-8 h-8" />,
       title: "3. Customize & perfect",
-      description: "Make any adjustments you want. Change colors, add content, or modify the layout with our easy editor.",
-      color: "from-green-500 to-emerald-500"
+      description:
+        "Make any adjustments you want. Change colors, add content, or modify the layout with our easy editor.",
+      color: "from-green-500 to-emerald-500",
     },
     {
       icon: <Rocket className="w-8 h-8" />,
       title: "4. Launch & grow",
-      description: "Publish your website instantly and start growing your online presence with built-in SEO and analytics.",
-      color: "from-orange-500 to-red-500"
-    }
+      description:
+        "Publish your website instantly and start growing your online presence with built-in SEO and analytics.",
+      color: "from-orange-500 to-red-500",
+    },
   ];
 
   const containerVariants = {
@@ -52,7 +56,10 @@ function HowItWorks() {
   };
 
   return (
-    <section id="how-it-works" className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent to-black/20">
+    <section
+      id="how-it-works"
+      className="py-24 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-transparent to-black/20"
+    >
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -61,12 +68,10 @@ function HowItWorks() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl sm:text-5xl font-bold mb-6">
-            How it works
-          </h2>
+          <h2 className="text-4xl sm:text-5xl font-bold mb-6">How it works</h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Creating a professional website has never been easier. Follow these simple steps
-            and watch your vision come to life in minutes.
+            Creating a professional website has never been easier. Follow these
+            simple steps and watch your vision come to life in minutes.
           </p>
         </motion.div>
 
@@ -97,7 +102,9 @@ function HowItWorks() {
                 className="text-center group"
               >
                 <div className="relative mb-6">
-                  <div className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r ${step.color} mb-4 group-hover:scale-110 transition-transform duration-300`}>
+                  <div
+                    className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-r ${step.color} mb-4 group-hover:scale-110 transition-transform duration-300`}
+                  >
                     {step.icon}
                   </div>
                   {index < steps.length - 1 && (
@@ -124,9 +131,12 @@ function HowItWorks() {
           className="text-center mt-16"
         >
           <div className="glassmorphism p-8 max-w-2xl mx-auto">
-            <h3 className="text-2xl font-bold mb-4">Ready to build your website?</h3>
+            <h3 className="text-2xl font-bold mb-4">
+              Ready to build your website?
+            </h3>
             <p className="text-gray-300 mb-6">
-              Join thousands of creators who have already transformed their ideas into beautiful websites.
+              Join thousands of creators who have already transformed their
+              ideas into beautiful websites.
             </p>
             <button className="btn-primary text-lg px-8 py-4">
               Start Building Now

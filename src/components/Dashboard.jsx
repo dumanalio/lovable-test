@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
   BarChart3,
@@ -23,30 +23,47 @@ import {
   ChevronUp,
   ChevronDown,
   Volume2,
-  VolumeX
-} from 'lucide-react';
+  VolumeX,
+} from "lucide-react";
 
 function Dashboard({ onBackClick }) {
-  const [activeTab, setActiveTab] = useState('today');
+  const [activeTab, setActiveTab] = useState("today");
   const [progress, setProgress] = useState(65);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [timerMinutes, setTimerMinutes] = useState(25);
   const [timerSeconds, setTimerSeconds] = useState(0);
-  const [timerMode, setTimerMode] = useState('work'); // work, shortBreak, longBreak
+  const [timerMode, setTimerMode] = useState("work"); // work, shortBreak, longBreak
   const [completedSessions, setCompletedSessions] = useState(0);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [notes, setNotes] = useState('Hier können Sie Ihre Notizen eingeben...');
+  const [notes, setNotes] = useState(
+    "Hier können Sie Ihre Notizen eingeben..."
+  );
   const [isEditingNotes, setIsEditingNotes] = useState(false);
   const [timerSettings, setTimerSettings] = useState({
     work: 25,
     shortBreak: 5,
-    longBreak: 15
+    longBreak: 15,
   });
 
   const timerModes = {
-    work: { duration: timerSettings.work, label: 'Arbeitszeit', color: 'from-blue-500 to-purple-600', bgColor: 'bg-blue-50' },
-    shortBreak: { duration: timerSettings.shortBreak, label: 'Kurze Pause', color: 'from-green-500 to-emerald-600', bgColor: 'bg-green-50' },
-    longBreak: { duration: timerSettings.longBreak, label: 'Lange Pause', color: 'from-orange-500 to-red-600', bgColor: 'bg-orange-50' }
+    work: {
+      duration: timerSettings.work,
+      label: "Arbeitszeit",
+      color: "from-blue-500 to-purple-600",
+      bgColor: "bg-blue-50",
+    },
+    shortBreak: {
+      duration: timerSettings.shortBreak,
+      label: "Kurze Pause",
+      color: "from-green-500 to-emerald-600",
+      bgColor: "bg-green-50",
+    },
+    longBreak: {
+      duration: timerSettings.longBreak,
+      label: "Lange Pause",
+      color: "from-orange-500 to-red-600",
+      bgColor: "bg-orange-50",
+    },
   };
 
   // Timer logic
@@ -71,21 +88,22 @@ function Dashboard({ onBackClick }) {
 
   const handleTimerComplete = () => {
     // Play notification sound (if available)
-    if ('Notification' in window && Notification.permission === 'granted') {
+    if ("Notification" in window && Notification.permission === "granted") {
       new Notification(`${timerModes[timerMode].label} beendet!`, {
-        body: timerMode === 'work' ? 'Zeit für eine Pause!' : 'Zurück zur Arbeit!',
-        icon: '/favicon.ico'
+        body:
+          timerMode === "work" ? "Zeit für eine Pause!" : "Zurück zur Arbeit!",
+        icon: "/favicon.ico",
       });
     }
 
-    if (timerMode === 'work') {
-      setCompletedSessions(prev => prev + 1);
+    if (timerMode === "work") {
+      setCompletedSessions((prev) => prev + 1);
       // Auto-switch to break
-      const nextMode = completedSessions % 4 === 3 ? 'longBreak' : 'shortBreak';
+      const nextMode = completedSessions % 4 === 3 ? "longBreak" : "shortBreak";
       switchTimerMode(nextMode);
     } else {
       // Switch back to work mode
-      switchTimerMode('work');
+      switchTimerMode("work");
     }
   };
 
@@ -111,26 +129,28 @@ function Dashboard({ onBackClick }) {
 
   // Request notification permission on component mount
   useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
+    if ("Notification" in window && Notification.permission === "default") {
       Notification.requestPermission();
     }
   }, []);
 
   const formatTime = (minutes, seconds) => {
-    return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    return `${minutes.toString().padStart(2, "0")}:${seconds
+      .toString()
+      .padStart(2, "0")}`;
   };
 
   const tabs = [
-    { id: 'today', label: 'Heute', count: 8 },
-    { id: 'week', label: 'Woche', count: 24 },
-    { id: 'all', label: 'Alle', count: 156 }
+    { id: "today", label: "Heute", count: 8 },
+    { id: "week", label: "Woche", count: 24 },
+    { id: "all", label: "Alle", count: 156 },
   ];
 
   const categories = [
-    { name: 'Arbeit', color: 'bg-blue-100 text-blue-800', count: 12 },
-    { name: 'Persönlich', color: 'bg-purple-100 text-purple-800', count: 5 },
-    { name: 'Lernen', color: 'bg-green-100 text-green-800', count: 7 },
-    { name: 'Gesundheit', color: 'bg-pink-100 text-pink-800', count: 3 }
+    { name: "Arbeit", color: "bg-blue-100 text-blue-800", count: 12 },
+    { name: "Persönlich", color: "bg-purple-100 text-purple-800", count: 5 },
+    { name: "Lernen", color: "bg-green-100 text-green-800", count: 7 },
+    { name: "Gesundheit", color: "bg-pink-100 text-pink-800", count: 3 },
   ];
 
   return (
@@ -156,12 +176,8 @@ function Dashboard({ onBackClick }) {
 
             {/* Main Title */}
             <div className="hidden md:block">
-              <h1 className="text-lg font-semibold text-gray-900">
-                Dashboard
-              </h1>
-              <p className="text-sm text-gray-500">
-                Produktivitäts-Übersicht
-              </p>
+              <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
+              <p className="text-sm text-gray-500">Produktivitäts-Übersicht</p>
             </div>
 
             {/* Spacer */}
@@ -217,8 +233,8 @@ function Dashboard({ onBackClick }) {
                 onClick={() => setActiveTab(tab.id)}
                 className={`px-6 py-2 rounded-lg text-sm font-medium transition-all ${
                   activeTab === tab.id
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-white/50'
+                    ? "bg-white text-gray-900 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-white/50"
                 }`}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -268,7 +284,9 @@ function Dashboard({ onBackClick }) {
           >
             <div className="bg-white/80 backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-gray-200/50">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900">Tagesfortschritt</h2>
+                <h2 className="text-xl font-bold text-gray-900">
+                  Tagesfortschritt
+                </h2>
                 <div className="flex items-center space-x-2 text-sm text-gray-500">
                   <TrendingUp className="w-4 h-4" />
                   <span>+12% gegenüber gestern</span>
@@ -277,8 +295,12 @@ function Dashboard({ onBackClick }) {
 
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-3xl font-bold text-gray-900">{progress}%</span>
-                  <span className="text-sm text-gray-500">8 von 12 Aufgaben erledigt</span>
+                  <span className="text-3xl font-bold text-gray-900">
+                    {progress}%
+                  </span>
+                  <span className="text-sm text-gray-500">
+                    8 von 12 Aufgaben erledigt
+                  </span>
                 </div>
 
                 <div className="relative">
@@ -302,7 +324,9 @@ function Dashboard({ onBackClick }) {
                     <div className="text-sm text-gray-500">Ausstehend</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">2h 30m</div>
+                    <div className="text-2xl font-bold text-green-600">
+                      2h 30m
+                    </div>
                     <div className="text-sm text-gray-500">Zeit heute</div>
                   </div>
                 </div>
@@ -316,25 +340,29 @@ function Dashboard({ onBackClick }) {
             animate={{ y: 0, opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            <div className={`${timerModes[timerMode].bgColor} backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-gray-200/50 transition-all duration-500`}>
+            <div
+              className={`${timerModes[timerMode].bgColor} backdrop-blur-lg rounded-2xl p-6 shadow-lg border border-gray-200/50 transition-all duration-500`}
+            >
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-gray-900">Pomodoro Timer</h3>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Pomodoro Timer
+                  </h3>
                   <div className="flex items-center space-x-2 mt-1">
                     <div className="flex space-x-1">
-                      {['work', 'shortBreak', 'longBreak'].map((mode) => (
+                      {["work", "shortBreak", "longBreak"].map((mode) => (
                         <motion.button
                           key={mode}
                           onClick={() => switchTimerMode(mode)}
                           whileHover={{ scale: 1.05 }}
                           whileTap={{ scale: 0.95 }}
                           className={`px-2 py-1 text-xs rounded-lg transition-all ${
-                            timerMode === mode 
-                              ? 'bg-white shadow-sm text-gray-900' 
-                              : 'text-gray-600 hover:bg-white/50'
+                            timerMode === mode
+                              ? "bg-white shadow-sm text-gray-900"
+                              : "text-gray-600 hover:bg-white/50"
                           }`}
                         >
-                          {mode === 'work' ? (
+                          {mode === "work" ? (
                             <Zap className="w-3 h-3" />
                           ) : (
                             <Coffee className="w-3 h-3" />
@@ -347,7 +375,7 @@ function Dashboard({ onBackClick }) {
                     </span>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-2">
                   <div className="text-right text-xs text-gray-500">
                     <div>{timerModes[timerMode].label}</div>
@@ -356,7 +384,9 @@ function Dashboard({ onBackClick }) {
                         <div
                           key={i}
                           className={`w-2 h-2 rounded-full ${
-                            i < completedSessions % 4 ? 'bg-green-500' : 'bg-gray-300'
+                            i < completedSessions % 4
+                              ? "bg-green-500"
+                              : "bg-gray-300"
                           }`}
                         />
                       ))}
@@ -368,7 +398,10 @@ function Dashboard({ onBackClick }) {
               <div className="text-center">
                 {/* Circular Progress */}
                 <div className="relative w-48 h-48 mx-auto mb-6">
-                  <svg className="w-48 h-48 transform -rotate-90" viewBox="0 0 100 100">
+                  <svg
+                    className="w-48 h-48 transform -rotate-90"
+                    viewBox="0 0 100 100"
+                  >
                     {/* Background Circle */}
                     <circle
                       cx="50"
@@ -390,33 +423,68 @@ function Dashboard({ onBackClick }) {
                       strokeDasharray={`${2 * Math.PI * 45}`}
                       initial={{ strokeDashoffset: 2 * Math.PI * 45 }}
                       animate={{
-                        strokeDashoffset: 2 * Math.PI * 45 * (1 - ((timerMinutes * 60 + timerSeconds) / (timerModes[timerMode].duration * 60)))
+                        strokeDashoffset:
+                          2 *
+                          Math.PI *
+                          45 *
+                          (1 -
+                            (timerMinutes * 60 + timerSeconds) /
+                              (timerModes[timerMode].duration * 60)),
                       }}
                       transition={{ duration: 0.5 }}
                       className="drop-shadow-sm"
                     />
                     <defs>
-                      <linearGradient id="timerGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor={timerMode === 'work' ? '#3b82f6' : timerMode === 'shortBreak' ? '#10b981' : '#f59e0b'} />
-                        <stop offset="100%" stopColor={timerMode === 'work' ? '#8b5cf6' : timerMode === 'shortBreak' ? '#059669' : '#dc2626'} />
+                      <linearGradient
+                        id="timerGradient"
+                        x1="0%"
+                        y1="0%"
+                        x2="100%"
+                        y2="100%"
+                      >
+                        <stop
+                          offset="0%"
+                          stopColor={
+                            timerMode === "work"
+                              ? "#3b82f6"
+                              : timerMode === "shortBreak"
+                              ? "#10b981"
+                              : "#f59e0b"
+                          }
+                        />
+                        <stop
+                          offset="100%"
+                          stopColor={
+                            timerMode === "work"
+                              ? "#8b5cf6"
+                              : timerMode === "shortBreak"
+                              ? "#059669"
+                              : "#dc2626"
+                          }
+                        />
                       </linearGradient>
                     </defs>
                   </svg>
-                  
+
                   {/* Timer Display */}
                   <div className="absolute inset-0 flex items-center justify-center">
                     <div>
-                      <motion.div 
+                      <motion.div
                         className="text-4xl font-bold text-gray-900 mb-1"
-                        animate={{ 
-                          scale: isTimerRunning && timerSeconds === 0 && timerMinutes > 0 ? [1, 1.1, 1] : 1 
+                        animate={{
+                          scale:
+                            isTimerRunning &&
+                            timerSeconds === 0 &&
+                            timerMinutes > 0
+                              ? [1, 1.1, 1]
+                              : 1,
                         }}
                         transition={{ duration: 0.3 }}
                       >
                         {formatTime(timerMinutes, timerSeconds)}
                       </motion.div>
                       <div className="text-sm text-gray-500">
-                        {isTimerRunning ? 'Läuft...' : 'Bereit'}
+                        {isTimerRunning ? "Läuft..." : "Bereit"}
                       </div>
                     </div>
                   </div>
@@ -424,7 +492,7 @@ function Dashboard({ onBackClick }) {
 
                 {/* Time Adjustment */}
                 {!isTimerRunning && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="flex items-center justify-center space-x-4 mb-4"
@@ -459,13 +527,17 @@ function Dashboard({ onBackClick }) {
                     onClick={() => setIsTimerRunning(!isTimerRunning)}
                     className={`p-4 rounded-xl shadow-lg transition-all ${
                       isTimerRunning
-                        ? 'bg-red-500 hover:bg-red-600 text-white'
+                        ? "bg-red-500 hover:bg-red-600 text-white"
                         : `bg-gradient-to-r ${timerModes[timerMode].color} text-white hover:shadow-xl`
                     }`}
                   >
-                    {isTimerRunning ? <Pause className="w-6 h-6" /> : <Play className="w-6 h-6" />}
+                    {isTimerRunning ? (
+                      <Pause className="w-6 h-6" />
+                    ) : (
+                      <Play className="w-6 h-6" />
+                    )}
                   </motion.button>
-                  
+
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
@@ -485,7 +557,9 @@ function Dashboard({ onBackClick }) {
                 </div>
 
                 <div className="mt-4 text-xs text-gray-500">
-                  {timerMode === 'work' ? 'Fokussierte Arbeitszeit' : 'Entspannung & Erholung'}
+                  {timerMode === "work"
+                    ? "Fokussierte Arbeitszeit"
+                    : "Entspannung & Erholung"}
                 </div>
               </div>
             </div>
@@ -535,7 +609,8 @@ function Dashboard({ onBackClick }) {
                   animate={{ opacity: 1 }}
                   className="min-h-32 p-4 bg-gray-50 rounded-xl text-gray-700"
                 >
-                  {notes || 'Keine Notizen vorhanden. Klicken Sie auf Bearbeiten, um Notizen hinzuzufügen.'}
+                  {notes ||
+                    "Keine Notizen vorhanden. Klicken Sie auf Bearbeiten, um Notizen hinzuzufügen."}
                 </motion.div>
               )}
             </div>
@@ -561,7 +636,9 @@ function Dashboard({ onBackClick }) {
               className="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl"
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-gray-900">Neue Aufgabe</h3>
+                <h3 className="text-xl font-bold text-gray-900">
+                  Neue Aufgabe
+                </h3>
                 <button
                   onClick={() => setShowAddModal(false)}
                   className="p-2 rounded-lg hover:bg-gray-100"

@@ -1,12 +1,13 @@
 import { useState } from "react";
 
-export default function StandaloneChatTest() {
+export default function ChatSidebarDebug() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSend = () => {
-    if (!input.trim()) return;
-    setMessages((prev) => [...prev, input.trim()]);
+    if (!input.trim() || isLoading) return;
+    setMessages((prev) => [...prev, { type: "user", content: input.trim() }]);
     setInput("");
   };
 
@@ -18,20 +19,14 @@ export default function StandaloneChatTest() {
   };
 
   return (
-    <div
-      style={{
-        maxWidth: 400,
-        margin: "40px auto",
-        background: "#eee",
-        padding: 24,
-        borderRadius: 8,
-      }}
+    <aside
+      style={{ width: 320, background: "#222", color: "#fff", padding: 16 }}
     >
-      <h2>Standalone Chat Test</h2>
-      <div style={{ minHeight: 80, marginBottom: 16 }}>
+      <h4>Debug Chat</h4>
+      <div style={{ minHeight: 100, marginBottom: 16 }}>
         {messages.map((m, i) => (
-          <div key={i} style={{ marginBottom: 8, color: "#333" }}>
-            {m}
+          <div key={i} style={{ marginBottom: 8 }}>
+            {m.type}: {m.content}
           </div>
         ))}
       </div>
@@ -41,11 +36,12 @@ export default function StandaloneChatTest() {
         onKeyDown={handleKeyDown}
         placeholder="Test-Eingabe..."
         style={{ width: "100%", minHeight: 60, marginBottom: 8 }}
+        disabled={isLoading}
       />
       <button
         type="button"
         onClick={handleSend}
-        disabled={!input.trim()}
+        disabled={isLoading || !input.trim()}
         style={{
           width: "100%",
           padding: 8,
@@ -53,12 +49,12 @@ export default function StandaloneChatTest() {
           color: "#fff",
           border: "none",
           borderRadius: 4,
-          opacity: !input.trim() ? 0.5 : 1,
-          cursor: !input.trim() ? "not-allowed" : "pointer",
+          opacity: isLoading || !input.trim() ? 0.5 : 1,
+          cursor: isLoading || !input.trim() ? "not-allowed" : "pointer",
         }}
       >
         Senden
       </button>
-    </div>
+    </aside>
   );
 }

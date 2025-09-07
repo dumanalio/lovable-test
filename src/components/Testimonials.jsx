@@ -1,5 +1,5 @@
-import { motion } from 'framer-motion';
-import { Star, Quote } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Star, Quote } from "lucide-react";
 
 function Testimonials() {
   const testimonials = [
@@ -7,50 +7,56 @@ function Testimonials() {
       name: "Sarah Johnson",
       role: "Small Business Owner",
       company: "Sarah's Bakery",
-      content: "Lovable transformed my small bakery business. I went from having no online presence to a beautiful website that attracts customers every day. The AI understood exactly what I needed!",
+      content:
+        "Lovable transformed my small bakery business. I went from having no online presence to a beautiful website that attracts customers every day. The AI understood exactly what I needed!",
       rating: 5,
-      avatar: "SJ"
+      avatar: "SJ",
     },
     {
       name: "Michael Chen",
       role: "Freelance Designer",
       company: "Design Studio",
-      content: "As a designer, I'm picky about aesthetics. Lovable exceeded my expectations. The templates are gorgeous and the customization options are incredible. My portfolio has never looked better.",
+      content:
+        "As a designer, I'm picky about aesthetics. Lovable exceeded my expectations. The templates are gorgeous and the customization options are incredible. My portfolio has never looked better.",
       rating: 5,
-      avatar: "MC"
+      avatar: "MC",
     },
     {
       name: "Emma Rodriguez",
       role: "Restaurant Owner",
       company: "Bella Vista",
-      content: "I had zero technical skills, but Lovable made it so easy. My restaurant's website now showcases our menu beautifully and we've seen a 40% increase in reservations. Amazing!",
+      content:
+        "I had zero technical skills, but Lovable made it so easy. My restaurant's website now showcases our menu beautifully and we've seen a 40% increase in reservations. Amazing!",
       rating: 5,
-      avatar: "ER"
+      avatar: "ER",
     },
     {
       name: "David Kim",
       role: "Startup Founder",
       company: "TechFlow",
-      content: "We needed a professional website fast for our product launch. Lovable delivered in hours what would have taken weeks with traditional development. The ROI has been incredible.",
+      content:
+        "We needed a professional website fast for our product launch. Lovable delivered in hours what would have taken weeks with traditional development. The ROI has been incredible.",
       rating: 5,
-      avatar: "DK"
+      avatar: "DK",
     },
     {
       name: "Lisa Thompson",
       role: "Marketing Director",
       company: "Global Corp",
-      content: "Our marketing team loves how quickly we can create landing pages for campaigns. The AI suggestions are spot-on and the results speak for themselves. Highly recommended!",
+      content:
+        "Our marketing team loves how quickly we can create landing pages for campaigns. The AI suggestions are spot-on and the results speak for themselves. Highly recommended!",
       rating: 5,
-      avatar: "LT"
+      avatar: "LT",
     },
     {
       name: "James Wilson",
       role: "E-commerce Store Owner",
       company: "Wilson Goods",
-      content: "My online store was struggling until I found Lovable. The e-commerce features are fantastic and my conversion rate has doubled. Best investment I've made for my business.",
+      content:
+        "My online store was struggling until I found Lovable. The e-commerce features are fantastic and my conversion rate has doubled. Best investment I've made for my business.",
       rating: 5,
-      avatar: "JW"
-    }
+      avatar: "JW",
+    },
   ];
 
   const containerVariants = {
@@ -90,8 +96,8 @@ function Testimonials() {
             <span className="block gradient-text">worldwide</span>
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Don't just take our word for it. Here's what our amazing community of creators
-            has to say about building with Lovable.
+            Don't just take our word for it. Here's what our amazing community
+            of creators has to say about building with Lovable.
           </p>
         </motion.div>
 
@@ -124,7 +130,10 @@ function Testimonials() {
 
               <div className="flex mb-4">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 text-yellow-400 fill-current" />
+                  <Star
+                    key={i}
+                    className="w-4 h-4 text-yellow-400 fill-current"
+                  />
                 ))}
               </div>
 
@@ -147,19 +156,27 @@ function Testimonials() {
           className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 text-center"
         >
           <div>
-            <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">4.9/5</div>
+            <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">
+              4.9/5
+            </div>
             <div className="text-gray-400">Average Rating</div>
           </div>
           <div>
-            <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">50K+</div>
+            <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">
+              50K+
+            </div>
             <div className="text-gray-400">Happy Customers</div>
           </div>
           <div>
-            <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">99%</div>
+            <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">
+              99%
+            </div>
             <div className="text-gray-400">Satisfaction Rate</div>
           </div>
           <div>
-            <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">24/7</div>
+            <div className="text-3xl sm:text-4xl font-bold gradient-text mb-2">
+              24/7
+            </div>
             <div className="text-gray-400">Support Available</div>
           </div>
         </motion.div>

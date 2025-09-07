@@ -1,39 +1,39 @@
-import { motion } from 'framer-motion';
-import { Github, Twitter, Linkedin, Mail, Heart } from 'lucide-react';
+import { motion } from "framer-motion";
+import { Github, Twitter, Linkedin, Mail, Heart } from "lucide-react";
 
 function Footer() {
   const footerLinks = {
     product: [
-      { name: 'Features', href: '#features' },
-      { name: 'Templates', href: '#templates' },
-      { name: 'Pricing', href: '#pricing' },
-      { name: 'API', href: '#api' }
+      { name: "Features", href: "#features" },
+      { name: "Templates", href: "#templates" },
+      { name: "Pricing", href: "#pricing" },
+      { name: "API", href: "#api" },
     ],
     company: [
-      { name: 'About', href: '#about' },
-      { name: 'Blog', href: '#blog' },
-      { name: 'Careers', href: '#careers' },
-      { name: 'Press', href: '#press' }
+      { name: "About", href: "#about" },
+      { name: "Blog", href: "#blog" },
+      { name: "Careers", href: "#careers" },
+      { name: "Press", href: "#press" },
     ],
     support: [
-      { name: 'Help Center', href: '#help' },
-      { name: 'Community', href: '#community' },
-      { name: 'Contact', href: '#contact' },
-      { name: 'Status', href: '#status' }
+      { name: "Help Center", href: "#help" },
+      { name: "Community", href: "#community" },
+      { name: "Contact", href: "#contact" },
+      { name: "Status", href: "#status" },
     ],
     legal: [
-      { name: 'Privacy', href: '#privacy' },
-      { name: 'Terms', href: '#terms' },
-      { name: 'Security', href: '#security' },
-      { name: 'Cookies', href: '#cookies' }
-    ]
+      { name: "Privacy", href: "#privacy" },
+      { name: "Terms", href: "#terms" },
+      { name: "Security", href: "#security" },
+      { name: "Cookies", href: "#cookies" },
+    ],
   };
 
   const socialLinks = [
-    { icon: <Github className="w-5 h-5" />, href: '#', label: 'GitHub' },
-    { icon: <Twitter className="w-5 h-5" />, href: '#', label: 'Twitter' },
-    { icon: <Linkedin className="w-5 h-5" />, href: '#', label: 'LinkedIn' },
-    { icon: <Mail className="w-5 h-5" />, href: '#', label: 'Email' }
+    { icon: <Github className="w-5 h-5" />, href: "#", label: "GitHub" },
+    { icon: <Twitter className="w-5 h-5" />, href: "#", label: "Twitter" },
+    { icon: <Linkedin className="w-5 h-5" />, href: "#", label: "LinkedIn" },
+    { icon: <Mail className="w-5 h-5" />, href: "#", label: "Email" },
   ];
 
   return (
@@ -56,8 +56,9 @@ function Footer() {
                 <span className="text-xl font-bold gradient-text">Lovable</span>
               </div>
               <p className="text-gray-400 mb-6 max-w-sm">
-                Build beautiful websites with AI. No coding required.
-                Join thousands of creators who have already transformed their ideas into stunning websites.
+                Build beautiful websites with AI. No coding required. Join
+                thousands of creators who have already transformed their ideas
+                into stunning websites.
               </p>
               <div className="flex space-x-4">
                 {socialLinks.map((social, index) => (
@@ -113,7 +114,9 @@ function Footer() {
           className="border-t border-white/10 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center"
         >
           <p className="text-gray-400 text-sm mb-4 md:mb-0">
-            © 2025 Lovable. Made with <Heart className="w-4 h-4 inline text-red-400" /> for creators worldwide.
+            © 2025 Lovable. Made with{" "}
+            <Heart className="w-4 h-4 inline text-red-400" /> for creators
+            worldwide.
           </p>
           <div className="flex items-center space-x-6 text-sm text-gray-400">
             <span>🇺🇸 English</span>
