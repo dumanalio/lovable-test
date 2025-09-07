@@ -293,7 +293,7 @@ function extractJson(text) {
   }
 }
 
-exports.handler = async (event) => {
+export const handler = async (event) => {
   // CORS
   const headers = {
     "Access-Control-Allow-Origin": "*",
@@ -349,8 +349,9 @@ exports.handler = async (event) => {
     // Load few-shot example from file to avoid inline escaping issues
     let FEW_SHOT = null;
     try {
-      const fs = require("fs");
-      const path = require("path");
+      const fs = await import("fs");
+      const path = await import("path");
+      const __dirname = path.dirname(new URL(import.meta.url).pathname);
       const p = path.join(__dirname, "fewshot_new.json");
       if (fs.existsSync(p)) {
         const sample = fs.readFileSync(p, "utf-8");
