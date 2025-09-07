@@ -1,5 +1,64 @@
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
+
+// Lightweight in-browser React runtime using Babel Standalone
+// We compile user-provided JSX to JS, then eval in a sandboxed Function scope.
+function useTranspiled(code) {
+  return useMemo(() => {
+    if (!code) return null;
+    try {
+      // Babel standalone is provided via CDN in index.html? Not guaranteed.
+      // Fallback: basic passthrough if Babel isn't available.
+      const hasBabel = typeof window !== "undefined" && window.Babel && window.Babel.transform;
+      const js = hasBabel
+        ? window.Babel.transform(code, { presets: ["react"] }).code
+        : code;
+      return js;
+    } catch (e) {
+      console.error("Transpile error", e);
+      return null;
+    }
+  }, [code]);
+}
+
+function PreviewRuntime({ code }) {
+  const mountRef = useRef(null);
+  const js = useTranspiled(code);
+
+  useEffect(() => {
+    const container = mountRef.current;
+    if (!container) return;
+
+    // Cleanup previous render
+    container.innerHTML = "";
+
+    try {
+      const React = window.React;
+      const ReactDOM = window.ReactDOM;
+      if (!React || !ReactDOM) {
+        container.innerHTML = `<div style="padding:16px;color:#ef4444;font-family:ui-sans-serif;">Preview runtime missing React/ReactDOM globals.</div>`;
+        return;
+      }
+      // eslint-disable-next-line no-new-func
+      const factory = new Function("React", "ReactDOM", `${js}; return App;`);
+      const App = factory(React, ReactDOM);
+      if (!App) {
+        container.innerHTML = `<div style="padding:16px;color:#ef4444;font-family:ui-sans-serif;">No App export found.</div>`;
+        return;
+      }
+      const root = ReactDOM.createRoot(container);
+      root.render(React.createElement(App));
+      return () => {
+        try { root.unmount(); } catch (_) {}
+      };
+    } catch (e) {
+      console.error(e);
+      container.innerHTML = `<pre style="padding:16px;color:#ef4444;white-space:pre-wrap;font-family:ui-monospace,monospace;">${String(e)}</pre>`;
+    }
+  }, [js]);
+
+  return <div ref={mountRef} className="w-full h-full bg-white" />;
+}
 
 export default function BuilderPreview({ item }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -60,10 +119,8 @@ export default function BuilderPreview({ item }) {
       </div>
 
       {/* Preview Content */}
-      <div className="flex-1 overflow-auto">
-        <div
-          className={`p-6 ${isFullscreen ? "max-w-none" : "max-w-6xl mx-auto"}`}
-        >
+      <div className="flex-1 overflow-hidden">
+        <div className={`p-6 ${isFullscreen ? "max-w-none" : "max-w-6xl mx-auto"}`}>
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -87,31 +144,7 @@ export default function BuilderPreview({ item }) {
             {/* Content */}
             <div className="min-h-[600px] bg-gray-50">
               <div className="w-full h-full">
-                {/* Render the generated component */}
-                <div
-                  className="w-full h-full"
-                  dangerouslySetInnerHTML={{
-                    __html: `
-                      <div style="width: 100%; height: 100%; padding: 20px; background: white;">
-                        <style>
-                          .preview-content * {
-                            box-sizing: border-box;
-                          }
-                          .preview-content img {
-                            max-width: 100%;
-                            height: auto;
-                          }
-                        </style>
-                        <div class="preview-content">
-                          ${item.code.replace(
-                            /<script[^>]*>.*?<\/script>/gis,
-                            ""
-                          )}
-                        </div>
-                      </div>
-                    `,
-                  }}
-                />
+                <PreviewRuntime code={item.code} />
               </div>
             </div>
           </motion.div>

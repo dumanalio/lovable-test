@@ -26,7 +26,7 @@ export default function BuilderPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 overflow-hidden">
       {/* Chat Sidebar */}
       <ChatSidebar
         onGenerate={handleGenerate}
@@ -35,7 +35,7 @@ export default function BuilderPage() {
       />
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col">
+  <main className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <header className="bg-white/10 backdrop-blur-sm border-b border-white/10 px-6 py-4">
           <div className="flex items-center justify-between">
@@ -85,7 +85,7 @@ export default function BuilderPage() {
         </header>
 
         {/* Content Area */}
-        <div className="flex-1 overflow-auto">
+  <div className="flex-1 overflow-hidden">
           {isGenerating ? (
             <div className="flex items-center justify-center h-full">
               <motion.div
@@ -107,7 +107,7 @@ export default function BuilderPage() {
               </motion.div>
             </div>
           ) : generated ? (
-            <div className="h-full">
+            <div className="h-full overflow-hidden">
               {currentView === "preview" ? (
                 <BuilderPreview item={generated} />
               ) : (

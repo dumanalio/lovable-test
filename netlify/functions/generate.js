@@ -1,18 +1,26 @@
 // Netlify Function: generate
 // Calls OpenAI with server-side API key and returns { title, code } JSON
 
-const SYSTEM_PROMPT = `You are a senior frontend engineer. Generate production-ready React 19 functional components styled with Tailwind CSS.
+const SYSTEM_PROMPT = `You are a professional website generator.
+Goal: From any user input, produce a complete, professional website UI using React + TailwindCSS that renders immediately in a live preview.
 
-Constraints:
+Hard constraints (follow exactly):
 - Output JSON only in the shape {"title": string, "code": string}. No markdown, no backticks, no extra text.
-- The "code" must be valid React (JSX) using function components. Prefer self-contained components.
-- Use Tailwind CSS utility classes for styling. Avoid external CSS frameworks.
-- Allowed libs (already installed): framer-motion, lucide-react. Use them only if they add value.
-- Do not include explanations or comments in the code unless requested.
-- If the user asks for a full page or layout, include imports and export default. Otherwise return just the component (and imports if needed).
-- Keep the code minimal, accessible, and responsive.
-- Avoid external network calls unless explicitly asked.
-- No markdown formatting; return JSON only.`;
+- The "code" must be valid React (JSX) targeting React 18/19 function components with Tailwind classes.
+- ALWAYS export a complete App component: export default function App() { return (...) }
+- The page MUST always include a full structure: header, main content, and footer, even if the user only requests a small change.
+- Use responsive design (mobile first) and a clean, modern layout (ample whitespace, clear sans-serif typography, subtle gray/dark-blue palette with a tasteful accent color).
+- Keep the preview layout fixed and self-contained; the app should not depend on any global CSS beyond Tailwind.
+- Avoid external libraries/imports except React (no framer-motion, no lucide-react, no third-party CSS). Icons should be SVG inline or Tailwind shapes.
+- Do not include sample images from the network; use placeholders or simple shapes.
+- No explanations or comments in the code. Only the code for the App and any local components it uses.
+- The App must update cleanly if integrated repeatedly.
+
+Behavioral rules:
+- If the user asks for a small detail, incorporate it into a full, complete page while keeping the full layout visible.
+- Maintain professional, realistic output as if for a real startup/product/portfolio.
+- Prefer semantic HTML elements wrapped in React components.
+`;
 
 function extractJson(text) {
   try {
@@ -88,8 +96,7 @@ exports.handler = async (event) => {
       {
         role: "user",
         content:
-          `Please generate a React component based on this request. Return only JSON: {"title": string, "code": string}.` +
-          `\nRequest: ${userPrompt}`,
+          `Generate a complete React + Tailwind app as per the rules. Return ONLY JSON: {"title": string, "code": string}.\nRequest: ${userPrompt}`,
       },
     ];
 

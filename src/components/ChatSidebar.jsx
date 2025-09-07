@@ -118,7 +118,7 @@ export default function ChatSidebar({
   };
 
   return (
-    <aside className="w-96 bg-white/10 backdrop-blur-sm border-r border-white/10 min-h-screen flex flex-col">
+    <aside className="w-96 bg-white/10 backdrop-blur-sm border-r border-white/10 min-h-screen flex flex-col overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b border-white/10">
         <div className="flex items-center justify-between mb-4">
@@ -146,7 +146,7 @@ export default function ChatSidebar({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-auto p-4 space-y-4">
+  <div className="flex-1 overflow-auto p-4 space-y-4">
         {messages.length === 0 ? (
           <div className="text-center text-gray-400 mt-8">
             <Bot className="w-12 h-12 mx-auto mb-4 opacity-50" />
