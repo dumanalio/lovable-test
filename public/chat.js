@@ -259,6 +259,14 @@ async function callChatAPI(message) {
     console.log("📋 Generated Spec:", data.spec);
     console.log("🔗 Used Endpoint:", usedEndpoint || 'unknown');
     
+    // Automatisch Website generieren wenn Spec vorhanden
+    if (data.spec && data.success) {
+      setTimeout(async () => {
+        updateStatus('processing', 'Generiere Live-Vorschau...');
+        await generateWebsitePreview(data.spec);
+      }, 1000);
+    }
+    
     // Nächste Aktion vorschlagen
     if (data.next?.action === 'generate') {
       setTimeout(() => {
@@ -337,6 +345,104 @@ function handleDeviceChange(device) {
   
   updateStatus('ready', `${device} Ansicht aktiv`);
 }
+
+// Website Preview Generator
+async function generateWebsitePreview(spec) {
+  const previewFrame = document.getElementById('preview-frame');
+  if (!previewFrame) return;
+  
+  try {
+    updateStatus('processing', 'Generiere Website...');
+    
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({ spec })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `HTTP ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.success && data.html) {
+      // HTML in iframe laden
+      const blob = new Blob([data.html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      
+      previewFrame.onload = () => {
+        URL.revokeObjectURL(url);
+        updateStatus('success', 'Website generiert!');
+        addMessage("✅ **Live-Vorschau aktualisiert!** Sieh dir deine neue Website rechts an.", "bot", { isMarkdown: true });
+      };
+      
+      previewFrame.src = url;
+      
+      console.log("🎨 Website generiert:", data.message);
+      
+    } else {
+      throw new Error('Keine HTML-Daten erhalten');
+    }
+    
+  } catch (error) {
+    console.error('Preview Generation Error:', error);
+    updateStatus('error', 'Generierung fehlgeschlagen');
+    addMessage(`⚠️ **Vorschau-Fehler:** ${error.message}`, "bot", { isMarkdown: true });
+    
+    // Fallback: Zeige Fehler-Seite im iframe
+    const errorHtml = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Fehler</title>
+        <style>
+          body { 
+            font-family: system-ui, sans-serif; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            height: 100vh; 
+            margin: 0; 
+            background: #f8f9fa; 
+            color: #dc3545; 
+            text-align: center; 
+          }
+          .error { 
+            padding: 2rem; 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+          }
+        </style>
+      </head>
+      <body>
+        <div class="error">
+          <h2>⚠️ Generierung fehlgeschlagen</h2>
+          <p>${error.message}</p>
+          <p><small>Versuche es mit einer anderen Beschreibung.</small></p>
+        </div>
+      </body>
+      </html>
+    `;
+    
+    const blob = new Blob([errorHtml], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    previewFrame.src = url;
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+}
+
+// Event System für Preview Updates
+window.addEventListener('previewUpdate', (event) => {
+  if (event.detail && event.detail.spec) {
+    generateWebsitePreview(event.detail.spec);
+  }
+});
 
 // CSS Animation für fadeOut
 const style = document.createElement('style');
