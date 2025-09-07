@@ -26,7 +26,7 @@ import CTA from "./components/CTA";
 import Footer from "./components/Footer";
 import AdminPanel from "./components/AdminPanel";
 import Dashboard from "./components/Dashboard";
-import BuilderPage from "./components/BuilderPage";
+import BuilderPageNew from "./components/BuilderPageNew";
 import { LogoProvider } from "./contexts/LogoContext";
 
 function App() {
@@ -83,7 +83,7 @@ function App() {
       ) : currentPage === "dashboard" ? (
         <Dashboard onBackClick={() => setCurrentPage("home")} />
       ) : (
-        <BuilderPage />
+                            <BuilderPageNew />
       )}
     </LogoProvider>
   );

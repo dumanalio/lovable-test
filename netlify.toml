@@ -28,4 +28,4 @@
   pretty_urls = true
 
 [dev]
-  targetPort = 3002
+  targetPort = 3000

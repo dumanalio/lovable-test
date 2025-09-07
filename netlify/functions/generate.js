@@ -2,13 +2,9 @@
 // Calls OpenAI with server-side API key and returns { title, code } JSON
 
 const SYSTEM_PROMPT =
-  'You are a Senior React Developer. Generate modern, responsive React components with best practices.\n\nREQUIREMENTS:\n- Use functional components with React hooks\n- DO NOT include any import statements\n- Use Tailwind CSS for styling\n- Ensure accessibility (WCAG 2.1 AA)\n- Mobile-first responsive design\n- Clean, semantic JSX structure\n\nOUTPUT FORMAT:\nReturn ONLY valid JSON:\n{\n  "title": "Component Name",\n  "code": "const ComponentName = () => {\\\\n  return (\\\\n    <div className=\'p-4\'>\\\\n      <h1>Hello World</h1>\\\\n    </div>\\\\n  );\\\\n};\\\\n\\\\nexport default ComponentName;"\n}\n\nGenerate a complete React component based on the user\'s request. IMPORTANT: Do not include any import statements in the code.';
-
-const PROJECT_BRIEF = 'Create a modern React component using Tailwind CSS with the following design system:\n- Color palette: Use the custom colors defined in tailwind.config.js (lovable, plum, gradient)\n- Typography: Use Inter font family\n- Components: Use semantic HTML with proper accessibility\n- Layout: Mobile-first responsive design\n- Animations: Use the defined keyframes (fadeIn, slideUp, bounceSubtle, float)\n- Shadows: Use the custom shadow-elev class\n- Border radius: Use the custom card class';
+  'You are a Senior React Developer. Generate modern, responsive React components with best practices.\n\nREQUIREMENTS:\n- Use functional components with React hooks\n- Use Tailwind CSS for styling\n- Ensure accessibility (WCAG 2.1 AA)\n- Mobile-first responsive design\n- Clean, semantic JSX structure\n\nOUTPUT FORMAT:\nReturn ONLY valid JSON:\n{\n  "title": "Component Name",\n  "code": "import React from \'react\';\\\\n\\\\nconst ComponentName = () => {\\\\n  return (\\\\n    <div className=\'p-4\'>\\\\n      <h1>Hello World</h1>\\\\n    </div>\\\\n  );\\\\n};\\\\n\\\\nexport default ComponentName;"\n}\n\nGenerate a complete React component based on the user\'s request.';
 
 function extractJson(text) {
-  if (!text || typeof text !== 'string') return null;
-
   try {
     return JSON.parse(text);
   } catch (_) {
@@ -114,33 +110,33 @@ exports.handler = async (event) => {
       }),
     });
 
+    // Add detailed logging for debugging
+    console.log("Received event:", event);
+
+    // Validate OpenAI response
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("OpenAI API error:", errorText);
+      console.error("OpenAI API error:", await response.text());
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ error: "Failed to generate component from AI service." }),
+        body: JSON.stringify({ error: "Failed to generate component." }),
       };
     }
 
     const responseBody = await response.json();
-    const content = responseBody.choices?.[0]?.message?.content || responseBody.choices?.[0]?.text;
-
-    if (!content) {
-      console.error("No content in OpenAI response:", responseBody);
+    const extractedJson = extractJson(responseBody.choices[0].text);
+    if (!extractedJson) {
+      console.error("Failed to extract JSON from response:", responseBody);
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ error: "No response from AI service." }),
+        body: JSON.stringify({ error: "Invalid response format." }),
       };
     }
 
-    console.log("AI Response content:", content);
-
     let json = extractJson(content);
     if (!json) {
-      console.warn("Failed to parse JSON, using fallback");
+      // Fallback: wrap as generic component
       json = {
         title: "AI Generated Component",
         code: content,
@@ -148,7 +144,7 @@ exports.handler = async (event) => {
     }
 
     if (!json.title) json.title = "AI Generated Component";
-    if (!json.code) json.code = "export default function Component() { return <div>Generated Component</div>; }";
+    if (!json.code) json.code = "<div />";
 
     return {
       statusCode: 200,
