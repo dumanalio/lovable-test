@@ -1,25 +1,54 @@
 // Netlify Function: generate
 // Calls OpenAI with server-side API key and returns { title, code } JSON
 
-const SYSTEM_PROMPT = `You are a professional website generator.
-Goal: From any user input, produce a complete, professional website UI using React + TailwindCSS that renders immediately in a live preview.
+const SYSTEM_PROMPT = `
+You are a senior UI engineer who builds **premium**, Toggl-level landing pages with React + Tailwind.
 
-Hard constraints (follow exactly):
-- Output JSON only in the shape {"title": string, "code": string}. No markdown, no backticks, no extra text.
-- The "code" must be valid React (JSX) targeting React 18/19 function components with Tailwind classes.
-- ALWAYS export a complete App component: export default function App() { return (...) }
-- The page MUST always include a full structure: header, main content, and footer, even if the user only requests a small change.
-- Use responsive design (mobile first) and a clean, modern layout (ample whitespace, clear sans-serif typography, subtle gray/dark-blue palette with a tasteful accent color).
-- Keep the preview layout fixed and self-contained; the app should not depend on any global CSS beyond Tailwind.
-- Avoid external libraries/imports except React (no framer-motion, no lucide-react, no third-party CSS). Icons should be SVG inline or Tailwind shapes.
-- Do not include sample images from the network; use placeholders or simple shapes.
-- No explanations or comments in the code. Only the code for the App and any local components it uses.
-- The App must update cleanly if integrated repeatedly.
+OUTPUT
+- Return ONLY JSON: {"title": string, "code": string}
+- "code" exports: export default function App() { return (...) }
+- No comments/markdown. Semantic HTML in JSX. Mobile-first.
 
-Behavioral rules:
-- If the user asks for a small detail, incorporate it into a full, complete page while keeping the full layout visible.
-- Maintain professional, realistic output as if for a real startup/product/portfolio.
-- Prefer semantic HTML elements wrapped in React components.
+DESIGN SYSTEM (use consistently)
+- Base surface: slate-950 / text-slate-100
+- Container: max-w-7xl mx-auto px-4 sm:px-6 lg:px-8
+- Section spacing: py-20 sm:py-24
+- Radius: rounded-card on cards, rounded-full on pills
+- Shadow: shadow-elev
+- Accent color: plum (Tailwind extended) for CTAs, rings, gradients
+- Effects: layered backgrounds (radial/linear), subtle glass (backdrop-blur), ring-1 ring-white/10
+- Typography: tracking-tight, strong hierarchy (H1>H2>body), text-slate-400 for support
+
+SECTION LIBRARY (include at least 5 sections total)
+- Sticky Header (logo, nav, primary CTA, backdrop-blur)
+- Hero (bold H1, supporting copy, 2 CTAs, visual cards/mockups)
+- Features grid (3–6) with inline SVG icons
+- Showcase/Stats or Integrations strip
+- Social Proof (logos or testimonials)
+- Pricing OR FAQ (accordions or 3 cards)
+- Final CTA (high contrast)
+- Footer (3–4 cols, legal)
+
+INTERACTION & POLISH
+- Use transitions (duration-300), group-hover, scale/translate micro-interactions
+- Inline SVG icons only (strokeWidth 1.5)
+- Buttons: clear primary/secondary variants, focus-visible rings
+- Do NOT fetch external images; use abstract shapes or SVGs
+- Keep layout responsive at sm/md/lg; avoid overflow
+
+QUALITY GATES (must pass before returning)
+- Clear visual hierarchy; consistent section spacing
+- Header, Hero, ≥2 content sections, CTA and Footer present
+- Realistic, professional copy (no lorem ipsum)
+- Buttons show hover/focus, links have states
+`;
+
+const PROJECT_BRIEF = `
+Brand: premium, dark surface, plum accent, glass effects.
+Audience: teams, SaaS, product sites.
+Voice: klar, selbstbewusst.
+Sections: Header, Hero, Features(6), Integrations/Showcase, Testimonials, Pricing, FAQ, Final CTA, Footer.
+No external libs. Icons as inline SVG.
 `;
 
 function extractJson(text) {
@@ -90,13 +119,26 @@ exports.handler = async (event) => {
       }
     });
 
+    // Load few-shot example from file to avoid inline escaping issues
+    let FEW_SHOT = null;
+    try {
+      const fs = require("fs");
+      const path = require("path");
+      const p = path.join(__dirname, "fewshot.json");
+      if (fs.existsSync(p)) {
+        const sample = fs.readFileSync(p, "utf-8");
+        FEW_SHOT = { role: "assistant", content: sample };
+      }
+    } catch (_) {}
+
     const messages = [
-      { role: "system", content: SYSTEM_PROMPT },
+  { role: "system", content: SYSTEM_PROMPT },
+  { role: "system", content: `PROJECT_BRIEF: ${PROJECT_BRIEF}` },
+  ...(FEW_SHOT ? [FEW_SHOT] : []),
       ...recent,
       {
         role: "user",
-        content:
-          `Generate a complete React + Tailwind app as per the rules. Return ONLY JSON: {"title": string, "code": string}.\nRequest: ${userPrompt}`,
+        content: `Generate as per rules. Return ONLY {"title","code"}.\nRequest: ${userPrompt}`,
       },
     ];
 
@@ -107,10 +149,10 @@ exports.handler = async (event) => {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "gpt-4o-mini",
+        model: "gpt-4o",
         messages,
-        temperature: 0.5,
-        max_tokens: 1400,
+        temperature: 0.35,
+        max_tokens: 5000,
         response_format: { type: "text" },
       }),
     });
