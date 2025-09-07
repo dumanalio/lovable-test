@@ -1,4 +1,4 @@
-// const SYSTEM_PROMPT =
+const SYSTEM_PROMPT =
   'Du bist ein Experte für Webentwicklung und Website-Generierung. Erstelle vollständige, moderne, responsive und professionelle Websites basierend auf den gegebenen Anforderungen. Berücksichtige dabei alle Aspekte moderner Webentwicklung von der Struktur bis zur Performance-Optimierung.\n\n' +
 
   '## HTML-Struktur & Semantik\n' +
@@ -253,19 +253,44 @@
   '}\n\n' +
   'Generiere eine vollständige, moderne React-Komponente basierend auf der Anfrage des Benutzers.';
 
+const PROJECT_BRIEF = 'Erstelle eine moderne, professionelle Website mit folgenden Merkmalen:\n' +
+  '- Responsive Design mit Mobile-First Ansatz\n' +
+  '- Moderne UI/UX mit Tailwind CSS\n' +
+  '- React-Komponenten mit Hooks\n' +
+  '- Performance-optimiert\n' +
+  '- Accessibility-konform\n' +
+  '- SEO-freundlich\n' +
+  '- Sicher und wartbar';
+
 function extractJson(text) {
+  if (!text || typeof text !== 'string') return null;
+
   try {
+    // Try direct parsing first
     return JSON.parse(text);
-  } catch (_) {
+  } catch (e) {
     // Try to extract JSON substring
     const match = text.match(/\{[\s\S]*\}/);
     if (match) {
       try {
         return JSON.parse(match[0]);
-      } catch (_) {}
+      } catch (e2) {
+        console.error("JSON parsing failed:", e2.message);
+      }
     }
+
+    // Try to find JSON between code blocks
+    const codeBlockMatch = text.match(/```json\s*(\{[\s\S]*?\})\s*```/);
+    if (codeBlockMatch) {
+      try {
+        return JSON.parse(codeBlockMatch[1]);
+      } catch (e3) {
+        console.error("Code block JSON parsing failed:", e3.message);
+      }
+    }
+
+    return null;
   }
-  return null;
 }
 
 exports.handler = async (event) => {
@@ -360,28 +385,45 @@ exports.handler = async (event) => {
     });
 
     // Add detailed logging for debugging
-    console.log("Received event:", event);
+    console.log("OpenAI API request sent successfully");
 
     // Validate OpenAI response
     if (!response.ok) {
-      console.error("OpenAI API error:", await response.text());
+      const errorText = await response.text();
+      console.error("OpenAI API error:", response.status, errorText);
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ error: "Failed to generate component." }),
+        body: JSON.stringify({
+          error: "AI-Generierung fehlgeschlagen",
+          details: `OpenAI API Fehler: ${response.status}`
+        }),
       };
     }
 
     const responseBody = await response.json();
-    const content = responseBody.choices[0].message.content;
-    const extractedJson = extractJson(content);
+    const content = responseBody.choices?.[0]?.message?.content;
 
-    if (!extractedJson) {
-      console.error("Failed to extract JSON from response:", responseBody);
+    if (!content) {
+      console.error("No content in OpenAI response:", responseBody);
       return {
         statusCode: 500,
         headers,
-        body: JSON.stringify({ error: "Invalid response format." }),
+        body: JSON.stringify({ error: "Keine Antwort von der AI erhalten" }),
+      };
+    }
+
+    const extractedJson = extractJson(content);
+
+    if (!extractedJson) {
+      console.error("Failed to extract JSON from response:", content);
+      return {
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({
+          error: "Ungültiges Antwortformat von der AI",
+          details: "Die AI hat kein gültiges JSON zurückgegeben"
+        }),
       };
     }
 
@@ -396,10 +438,14 @@ exports.handler = async (event) => {
       body: JSON.stringify(json),
     };
   } catch (e) {
+    console.error("Server error:", e);
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: "Server error", details: String(e) }),
+      body: JSON.stringify({
+        error: "Interner Serverfehler",
+        details: process.env.NODE_ENV === 'development' ? e.message : "Bitte versuchen Sie es später erneut"
+      }),
     };
   }
 };
