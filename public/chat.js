@@ -193,9 +193,11 @@ async function callChatAPI(message) {
     
     let res;
     let lastError;
+    let usedEndpoint;
     
     for (const endpoint of endpoints) {
       try {
+        console.log(`🔍 Versuche Endpoint: ${endpoint}`);
         res = await fetch(endpoint, {
           method: "POST",
           headers: { 
@@ -211,14 +213,19 @@ async function callChatAPI(message) {
         });
         
         if (res.ok) {
+          usedEndpoint = endpoint;
+          console.log(`✅ Erfolgreicher Endpoint: ${endpoint}`);
           break; // Erfolgreicher Request
         } else if (res.status !== 404) {
           // Nicht-404 Fehler sofort werfen
           const errorText = await res.text();
           throw new Error(`Server Fehler ${res.status}: ${errorText}`);
+        } else {
+          console.log(`❌ 404 bei Endpoint: ${endpoint}`);
         }
         
       } catch (err) {
+        console.log(`❌ Fehler bei Endpoint ${endpoint}:`, err.message);
         lastError = err;
         if (err.name === 'AbortError') {
           throw err; // Timeout sofort weiterwerfen
@@ -247,11 +254,10 @@ async function callChatAPI(message) {
       addMessage("❌ Keine Antwort vom Assistenten erhalten.", "bot");
     }
 
-    // Debug Info (nur in Development)
-    if (window.location.hostname === 'localhost') {
-      console.log("🤖 Chat Response:", data);
-      console.log("📋 Generated Spec:", data.spec);
-    }
+    // Debug Info (immer anzeigen für Troubleshooting)
+    console.log("🤖 Chat Response:", data);
+    console.log("📋 Generated Spec:", data.spec);
+    console.log("🔗 Used Endpoint:", usedEndpoint || 'unknown');
     
     // Nächste Aktion vorschlagen
     if (data.next?.action === 'generate') {
