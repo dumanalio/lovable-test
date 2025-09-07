@@ -8,6 +8,7 @@ export default function BuilderPage() {
   const [generated, setGenerated] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [currentView, setCurrentView] = useState("preview");
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     // Auto-switch to preview when something is generated
@@ -17,12 +18,18 @@ export default function BuilderPage() {
   }, [generated, currentView]);
 
   const handleGenerate = (item) => {
-    setGenerated(item);
+    if (item) {
+      setGenerated(item);
+      setError(null);
+    } else {
+      setError("Failed to generate component. Please try again.");
+    }
     setIsGenerating(false);
   };
 
   const handleStartGenerating = () => {
     setIsGenerating(true);
+    setError(null);
   };
 
   return (
@@ -50,6 +57,12 @@ export default function BuilderPage() {
                 <div className="flex items-center space-x-2 text-sm text-gray-300">
                   <span>•</span>
                   <span>{generated.title}</span>
+                </div>
+              )}
+              {error && (
+                <div className="flex items-center space-x-2 text-sm text-red-400">
+                  <span>•</span>
+                  <span>{error}</span>
                 </div>
               )}
             </div>

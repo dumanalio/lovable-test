@@ -31,16 +31,18 @@ function useTranspiled(code) {
       // Provide common React hooks without explicit imports
       const preamble = `const { useState, useEffect, useMemo, useRef, useCallback } = React;`;
       const source = `${preamble}\n${normalized}`;
-      // Babel standalone is provided via CDN in index.html? Not guaranteed. Fallback passthrough.
+      // Babel standalone is provided via CDN in index.html
       const hasBabel =
         typeof window !== "undefined" && window.Babel && window.Babel.transform;
-      const js = hasBabel
-        ? window.Babel.transform(source, { presets: ["react"] }).code
-        : source;
+      if (!hasBabel) {
+        console.warn("Babel not available, using source directly");
+        return source;
+      }
+      const js = window.Babel.transform(source, { presets: ["react"] }).code;
       return js;
     } catch (e) {
       console.error("Transpile error", e);
-      return null;
+      return `console.error("Transpilation failed:", ${JSON.stringify(e.message)}); function App() { return React.createElement("div", {className: "p-4 text-red-500"}, "Transpilation Error: " + ${JSON.stringify(e.message)}); }`;
     }
   }, [code]);
 }
@@ -60,14 +62,18 @@ function PreviewRuntime({ code }) {
       const React = window.React;
       const ReactDOM = window.ReactDOM;
       if (!React || !ReactDOM) {
-        container.innerHTML = `<div style="padding:16px;color:#ef4444;font-family:ui-sans-serif;">Preview runtime missing React/ReactDOM globals.</div>`;
+        container.innerHTML = `<div style="padding:16px;color:#ef4444;font-family:ui-sans-serif;">Preview runtime missing React/ReactDOM globals. Please check your internet connection.</div>`;
+        return;
+      }
+      if (!js) {
+        container.innerHTML = `<div style="padding:16px;color:#6b7280;font-family:ui-sans-serif;">No code to preview.</div>`;
         return;
       }
       // eslint-disable-next-line no-new-func
       const factory = new Function("React", "ReactDOM", `${js}; return App;`);
       const App = factory(React, ReactDOM);
       if (!App) {
-        container.innerHTML = `<div style="padding:16px;color:#ef4444;font-family:ui-sans-serif;">No App export found.</div>`;
+        container.innerHTML = `<div style="padding:16px;color:#ef4444;font-family:ui-sans-serif;">No App component found in the generated code.</div>`;
         return;
       }
       const root = ReactDOM.createRoot(container);
@@ -78,10 +84,8 @@ function PreviewRuntime({ code }) {
         } catch (_) {}
       };
     } catch (e) {
-      console.error(e);
-      container.innerHTML = `<pre style="padding:16px;color:#ef4444;white-space:pre-wrap;font-family:ui-monospace,monospace;">${String(
-        e
-      )}</pre>`;
+      console.error("Preview runtime error:", e);
+      container.innerHTML = `<div style="padding:16px;color:#ef4444;font-family:ui-sans-serif;"><strong>Preview Error:</strong><br><pre style="white-space:pre-wrap;font-size:12px;margin-top:8px;">${String(e)}</pre></div>`;
     }
   }, [js]);
 

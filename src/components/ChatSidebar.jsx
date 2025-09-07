@@ -63,11 +63,13 @@ export default function ChatSidebar({
         setMessages((prev) => [...prev, aiMessage]);
         onGenerate(aiMessage.content);
       } else {
+        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
+        console.error("API Error:", errorData);
         const errorMessage = {
           type: "ai",
           content: {
-            title: "Fehler",
-            code: "Es gab einen Fehler bei der Generierung. Bitte versuche es erneut.",
+            title: "Generierungsfehler",
+            code: `Fehler: ${errorData.error || "Unbekannter Fehler bei der Generierung"}`,
           },
           timestamp: new Date(),
         };
@@ -75,12 +77,12 @@ export default function ChatSidebar({
         onGenerate(null);
       }
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Network Error:", error);
       const errorMessage = {
         type: "ai",
         content: {
           title: "Verbindungsfehler",
-          code: "Keine Verbindung zum Server. Bitte überprüfe deine Internetverbindung.",
+          code: `Netzwerkfehler: ${error.message || "Keine Verbindung zum Server möglich"}`,
         },
         timestamp: new Date(),
       };
