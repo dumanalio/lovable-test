@@ -104,7 +104,7 @@ exports.handler = async (event) => {
     }
 
     // Convert local history to OpenAI messages (keep last 6 for brevity)
-    const recent = history.slice(-6).map((m) => {
+  const recent = history.slice(-6).map((m) => {
       if (m.type === "user") {
         return { role: "user", content: m.content };
       }
@@ -131,15 +131,39 @@ exports.handler = async (event) => {
       }
     } catch (_) {}
 
+    // Two-pass: Planner then Builder
+    const PLANNER_INSTRUCTION = `Act as PLANNER. Summarize a concise plan ensuring QUALITY GATES and at least 5 sections (Header, Hero, content sections, CTA, Footer). Return JSON ONLY: {"plan": string}.`;
+
+    let planText = "";
+    try {
+      const plannerMessages = [
+        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: `PROJECT_BRIEF: ${PROJECT_BRIEF}` },
+        { role: "user", content: `${PLANNER_INSTRUCTION}\nRequest: ${userPrompt}` },
+      ];
+      const pres = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({ model: "gpt-4o", messages: plannerMessages, temperature: 0.2, max_tokens: 800 }),
+      });
+      if (pres.ok) {
+        const pdata = await pres.json();
+        const pcontent = pdata.choices?.[0]?.message?.content || "";
+        const pobj = extractJson(pcontent);
+        planText = pobj?.plan || pcontent || "";
+      }
+    } catch (_) {}
+
     const messages = [
-  { role: "system", content: SYSTEM_PROMPT },
-  { role: "system", content: `PROJECT_BRIEF: ${PROJECT_BRIEF}` },
-  ...(FEW_SHOT ? [FEW_SHOT] : []),
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "system", content: `PROJECT_BRIEF: ${PROJECT_BRIEF}` },
+      ...(planText ? [{ role: "system", content: `PLANNER_PLAN: ${planText}` }] : []),
+      ...(FEW_SHOT ? [FEW_SHOT] : []),
       ...recent,
-      {
-        role: "user",
-        content: `Generate as per rules. Return ONLY {"title","code"}.\nRequest: ${userPrompt}`,
-      },
+      { role: "user", content: `Generate as per rules. Return ONLY {"title","code"}.\nRequest: ${userPrompt}` },
     ];
 
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -148,13 +172,7 @@ exports.handler = async (event) => {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
-      body: JSON.stringify({
-        model: "gpt-4o",
-        messages,
-        temperature: 0.35,
-        max_tokens: 5000,
-        response_format: { type: "text" },
-      }),
+      body: JSON.stringify({ model: "gpt-4o", messages, temperature: 0.35, max_tokens: 5000, response_format: { type: "text" } }),
     });
 
     if (!res.ok) {
