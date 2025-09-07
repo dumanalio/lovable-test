@@ -43,8 +43,11 @@ export default function BuilderPage() {
               <div className="flex items-center space-x-2">
                 <Sparkles className="w-6 h-6 text-yellow-400" />
                 <h1 className="text-xl font-bold text-white">
-                  AI Website Builder
+                  Professional AI Website Builder
                 </h1>
+                <p className="text-xs text-gray-400 mt-1">
+                  Erstelle professionelle Websites mit modernsten Standards
+                </p>
               </div>
               {generated && (
                 <div className="flex items-center space-x-2 text-sm text-gray-300">

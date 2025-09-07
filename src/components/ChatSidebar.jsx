@@ -63,11 +63,28 @@ export default function ChatSidebar({
         setMessages((prev) => [...prev, aiMessage]);
         onGenerate(aiMessage.content);
       } else {
+        const errorText = await response.text();
+        console.error("API Error:", errorText);
+
+        let errorTitle = "Generierungsfehler";
+        let errorCode = "Es gab einen Fehler bei der Generierung. Bitte versuche es erneut.";
+
+        if (response.status === 429) {
+          errorTitle = "Rate Limit erreicht";
+          errorCode = "Zu viele Anfragen. Bitte warte einen Moment und versuche es erneut.";
+        } else if (response.status === 500) {
+          errorTitle = "Serverfehler";
+          errorCode = "Interner Serverfehler. Bitte versuche es später erneut.";
+        } else if (response.status === 400) {
+          errorTitle = "Ungültige Anfrage";
+          errorCode = "Die Anfrage war ungültig. Bitte überprüfe deine Eingabe.";
+        }
+
         const errorMessage = {
           type: "ai",
           content: {
-            title: "Fehler",
-            code: "Es gab einen Fehler bei der Generierung. Bitte versuche es erneut.",
+            title: errorTitle,
+            code: errorCode,
           },
           timestamp: new Date(),
         };
@@ -154,18 +171,28 @@ export default function ChatSidebar({
               Beschreibe deine Website-Idee und ich erstelle den Code dafür!
             </p>
             <div className="mt-4 text-xs space-y-2">
-              <p>Beispiele:</p>
+              <p className="text-blue-400 font-medium">Beispiele für professionelle Websites:</p>
               <div className="space-y-1">
-                <p className="bg-white/5 px-3 py-2 rounded">
-                  "Erstelle eine moderne Landing Page"
+                <p className="bg-white/5 px-3 py-2 rounded text-xs cursor-pointer hover:bg-white/10 transition-colors"
+                   onClick={() => setInput("Erstelle eine moderne Business-Landingpage mit Hero-Sektion, Features, Testimonials und Kontaktformular für ein SaaS-Unternehmen")}>
+                  "Business Landingpage mit allen Features"
                 </p>
-                <p className="bg-white/5 px-3 py-2 rounded">
-                  "Baue ein Kontaktformular"
+                <p className="bg-white/5 px-3 py-2 rounded text-xs cursor-pointer hover:bg-white/10 transition-colors"
+                   onClick={() => setInput("Baue einen E-Commerce-Shop für Mode mit Produktkatalog, Warenkorb, Filter und Checkout für responsive Design")}>
+                  "E-Commerce Shop mit vollem Funktionsumfang"
                 </p>
-                <p className="bg-white/5 px-3 py-2 rounded">
-                  "Mache eine Produktgalerie"
+                <p className="bg-white/5 px-3 py-2 rounded text-xs cursor-pointer hover:bg-white/10 transition-colors"
+                   onClick={() => setInput("Entwickle ein Portfolio für einen Fotografen mit Galerie, About-Sektion, Kontaktformular und SEO-Optimierung")}>
+                  "Fotografie-Portfolio mit Galerie"
+                </p>
+                <p className="bg-white/5 px-3 py-2 rounded text-xs cursor-pointer hover:bg-white/10 transition-colors"
+                   onClick={() => setInput("Erstelle ein Blog-System mit Artikelliste, Kategorien, Suche, Kommentaren und Social-Media-Integration")}>
+                  "Professionelles Blog-System"
                 </p>
               </div>
+              <p className="text-gray-500 text-xs mt-2">
+                💡 Tipp: Gib detaillierte Anforderungen für bessere Ergebnisse!
+              </p>
             </div>
           </div>
         ) : (

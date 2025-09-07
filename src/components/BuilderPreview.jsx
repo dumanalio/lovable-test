@@ -100,7 +100,6 @@ function PreviewRuntime({ code }) {
         return;
       }
 
-      // eslint-disable-next-line no-new-func
       const factory = new Function("React", "ReactDOM", js + "\n\nreturn typeof App !== 'undefined' ? App : null;");
       const App = factory(React, ReactDOM);
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar,
@@ -28,7 +28,6 @@ import {
 
 function Dashboard({ onBackClick }) {
   const [activeTab, setActiveTab] = useState("today");
-  const [progress, setProgress] = useState(65);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [timerMinutes, setTimerMinutes] = useState(25);
   const [timerSeconds, setTimerSeconds] = useState(0);
@@ -39,13 +38,13 @@ function Dashboard({ onBackClick }) {
     "Hier können Sie Ihre Notizen eingeben..."
   );
   const [isEditingNotes, setIsEditingNotes] = useState(false);
-  const [timerSettings, setTimerSettings] = useState({
+  const [timerSettings] = useState({
     work: 25,
     shortBreak: 5,
     longBreak: 15,
   });
 
-  const timerModes = {
+  const timerModes = useMemo(() => ({
     work: {
       duration: timerSettings.work,
       label: "Arbeitszeit",
@@ -64,7 +63,7 @@ function Dashboard({ onBackClick }) {
       color: "from-orange-500 to-red-600",
       bgColor: "bg-orange-50",
     },
-  };
+  }), [timerSettings]);
 
   // Timer logic
   useEffect(() => {
@@ -84,9 +83,9 @@ function Dashboard({ onBackClick }) {
       handleTimerComplete();
     }
     return () => clearInterval(interval);
-  }, [isTimerRunning, timerMinutes, timerSeconds]);
+  }, [isTimerRunning, timerMinutes, timerSeconds, handleTimerComplete]);
 
-  const handleTimerComplete = () => {
+  const handleTimerComplete = useCallback(() => {
     // Play notification sound (if available)
     if ("Notification" in window && Notification.permission === "granted") {
       new Notification(`${timerModes[timerMode].label} beendet!`, {
@@ -105,14 +104,14 @@ function Dashboard({ onBackClick }) {
       // Switch back to work mode
       switchTimerMode("work");
     }
-  };
+  }, [timerMode, completedSessions, switchTimerMode, timerModes]);
 
-  const switchTimerMode = (mode) => {
+  const switchTimerMode = useCallback((mode) => {
     setTimerMode(mode);
     setTimerMinutes(timerModes[mode].duration);
     setTimerSeconds(0);
     setIsTimerRunning(false);
-  };
+  }, [timerModes]);
 
   const resetTimer = () => {
     setTimerMinutes(timerModes[timerMode].duration);
@@ -296,7 +295,7 @@ function Dashboard({ onBackClick }) {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <span className="text-3xl font-bold text-gray-900">
-                    {progress}%
+                    65%
                   </span>
                   <span className="text-sm text-gray-500">
                     8 von 12 Aufgaben erledigt
@@ -308,7 +307,7 @@ function Dashboard({ onBackClick }) {
                     <motion.div
                       className="h-full bg-gradient-to-r from-blue-500 to-purple-600 rounded-full"
                       initial={{ width: 0 }}
-                      animate={{ width: `${progress}%` }}
+                      animate={{ width: `65%` }}
                       transition={{ duration: 1, delay: 0.5 }}
                     />
                   </div>

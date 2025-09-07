@@ -60,7 +60,7 @@ function shopReducer(state, action) {
         cart: state.cart.filter((item) => item.cartId !== action.payload),
       };
 
-    case TOGGLE_WISHLIST:
+    case TOGGLE_WISHLIST: {
       const isInWishlist = state.wishlist.some(
         (item) => item.id === action.payload.id
       );
@@ -70,6 +70,7 @@ function shopReducer(state, action) {
           ? state.wishlist.filter((item) => item.id !== action.payload.id)
           : [...state.wishlist, action.payload],
       };
+    }
 
     case SET_FILTER:
       return {

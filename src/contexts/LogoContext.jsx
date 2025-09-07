@@ -9,7 +9,6 @@ export function LogoProvider({ children }) {
 
   // Load logo and size from localStorage on mount
   useEffect(() => {
-    const savedLogo = localStorage.getItem("uploadedLogo");
     const savedLogoUrl = localStorage.getItem("logoUrl");
     const savedLogoSize = localStorage.getItem("logoSize");
 

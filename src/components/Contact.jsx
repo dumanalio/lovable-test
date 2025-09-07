@@ -1,8 +1,6 @@
 import { useState } from "react";
-import { useShop } from "../contexts/ShopContext";
 
 function Contact() {
-  const { state } = useShop();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
