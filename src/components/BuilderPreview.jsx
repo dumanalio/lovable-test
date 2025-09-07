@@ -6,20 +6,35 @@ import { motion } from "framer-motion";
 function normalizeAppCode(src) {
   if (!src || typeof src !== "string") return "";
   let s = src;
-  // remove import lines
+
+  // Remove import statements
   s = s.replace(/^\s*import[^;]*;?\s*$/gm, "");
-  // handle common export default patterns
-  s = s.replace(/export\s+default\s+function\s+App\s*\(/g, "function App(");
-  s = s.replace(/export\s+default\s+class\s+App\s*/g, "class App ");
-  s = s.replace(/export\s+default\s*\(/g, "const App = (");
-  s = s.replace(/export\s+default\s+async\s*\(/g, "const App = async (");
-  s = s.replace(
-    /export\s+default\s+([A-Za-z_$][\w$]*)\s*;/g,
-    "const App = $1;"
-  );
-  // remove any remaining export statements
+
+  // Handle different export patterns and ensure App is defined
+  if (s.includes('export default')) {
+    // Replace export default with const App =
+    s = s.replace(/export\s+default\s+function\s+([A-Za-z_$][\w$]*)\s*\(/g, 'const App = function $1(');
+    s = s.replace(/export\s+default\s+const\s+([A-Za-z_$][\w$]*)\s*=/g, 'const App = $1 =');
+    s = s.replace(/export\s+default\s*\(/g, 'const App = (');
+    s = s.replace(/export\s+default\s+async\s*\(/g, 'const App = async (');
+
+    // Handle class exports
+    s = s.replace(/export\s+default\s+class\s+([A-Za-z_$][\w$]*)/g, 'const App = class $1');
+
+    // Handle simple variable exports
+    s = s.replace(/export\s+default\s+([A-Za-z_$][\w$]*)\s*;/g, 'const App = $1;');
+
+    // Remove any remaining export default statements
+    s = s.replace(/^\s*export\s+default\s*;?\s*$/gm, '');
+  } else if (!s.includes('const App =') && !s.includes('function App') && !s.includes('class App')) {
+    // If no export and no App definition, wrap the entire code in a function
+    s = `const App = () => {\n${s}\n};`;
+  }
+
+  // Remove any remaining export statements
   s = s.replace(/^\s*export\s+\{[^}]*\}\s*;?\s*$/gm, "");
-  s = s.replace(/^\s*export\s+default\s*;?\s*$/gm, "");
+  s = s.replace(/^\s*export\s+(const|let|var|function)\s+/gm, "");
+
   return s;
 }
 
@@ -29,15 +44,30 @@ function useTranspiled(code) {
     try {
       const normalized = normalizeAppCode(code);
       // Provide common React hooks without explicit imports
-      const preamble = `const { useState, useEffect, useMemo, useRef, useCallback } = React;`;
+      const preamble = `
+        const { useState, useEffect, useMemo, useRef, useCallback, useContext } = React;
+        const { Fragment, StrictMode, Suspense } = React;
+      `;
       const source = `${preamble}\n${normalized}`;
-      // Babel standalone is provided via CDN in index.html? Not guaranteed. Fallback passthrough.
+
+      // Try to use Babel if available, otherwise use the normalized code directly
       const hasBabel =
         typeof window !== "undefined" && window.Babel && window.Babel.transform;
-      const js = hasBabel
-        ? window.Babel.transform(source, { presets: ["react"] }).code
-        : source;
-      return js;
+
+      if (hasBabel) {
+        try {
+          const result = window.Babel.transform(source, {
+            presets: ["react"],
+            plugins: ["transform-modules-commonjs"]
+          });
+          return result.code;
+        } catch (babelError) {
+          console.warn("Babel transform failed, using normalized code:", babelError);
+          return source;
+        }
+      }
+
+      return source;
     } catch (e) {
       console.error("Transpile error", e);
       return null;
@@ -59,29 +89,46 @@ function PreviewRuntime({ code }) {
     try {
       const React = window.React;
       const ReactDOM = window.ReactDOM;
+
       if (!React || !ReactDOM) {
-        container.innerHTML = `<div style="padding:16px;color:#ef4444;font-family:ui-sans-serif;">Preview runtime missing React/ReactDOM globals.</div>`;
+        container.innerHTML = `<div style="padding:16px;color:#ef4444;font-family:ui-sans-serif;">Preview runtime missing React/ReactDOM globals. Please ensure React is loaded.</div>`;
         return;
       }
+
+      if (!js) {
+        container.innerHTML = `<div style="padding:16px;color:#666;font-family:ui-sans-serif;">No code to preview.</div>`;
+        return;
+      }
+
       // eslint-disable-next-line no-new-func
-      const factory = new Function("React", "ReactDOM", `${js}; return App;`);
+      const factory = new Function("React", "ReactDOM", js + "\n\nreturn typeof App !== 'undefined' ? App : null;");
       const App = factory(React, ReactDOM);
+
       if (!App) {
-        container.innerHTML = `<div style="padding:16px;color:#ef4444;font-family:ui-sans-serif;">No App export found.</div>`;
+        container.innerHTML = `<div style="padding:16px;color:#ef4444;font-family:ui-sans-serif;">Could not find App component in generated code. Make sure your component is properly exported.</div>`;
         return;
       }
+
+      // Create root and render
       const root = ReactDOM.createRoot(container);
       root.render(React.createElement(App));
+
       return () => {
         try {
-          root.unmount();
-        } catch (_) {}
+          if (root && typeof root.unmount === 'function') {
+            root.unmount();
+          }
+        } catch (unmountError) {
+          console.warn("Error unmounting React component:", unmountError);
+        }
       };
     } catch (e) {
-      console.error(e);
-      container.innerHTML = `<pre style="padding:16px;color:#ef4444;white-space:pre-wrap;font-family:ui-monospace,monospace;">${String(
-        e
-      )}</pre>`;
+      console.error("Preview runtime error:", e);
+      const errorMessage = e.message || String(e);
+      container.innerHTML = `<div style="padding:16px;color:#ef4444;font-family:ui-sans-serif;border:1px solid #ef4444;border-radius:4px;background:#fef2f2;">
+        <strong>Preview Error:</strong><br>
+        <pre style="margin-top:8px;font-family:monospace;font-size:12px;white-space:pre-wrap;">${errorMessage}</pre>
+      </div>`;
     }
   }, [js]);
 
