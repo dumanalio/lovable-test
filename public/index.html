@@ -3,25 +3,101 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Lovable Light</title>
+  <title>Website Builder - Erstelle deine Traumwebsite</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="app">
-    <!-- Chatbereich -->
-    <aside class="chat">
-      <h2>Chat</h2>
-      <div id="chat-messages"></div>
-      <div class="chat-input">
-        <input type="text" id="message-input" placeholder="Schreib hier..." />
-        <button id="send-btn">Senden</button>
+    <!-- Header -->
+    <header class="app-header">
+      <div class="logo">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+          <circle cx="16" cy="16" r="16" fill="url(#gradient)"/>
+          <path d="M12 10h8v2h-6v4h5v2h-5v4h6v2h-8V10z" fill="white"/>
+          <defs>
+            <linearGradient id="gradient" x1="0" y1="0" x2="32" y2="32">
+              <stop offset="0%" stop-color="#667eea"/>
+              <stop offset="100%" stop-color="#764ba2"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <span>Website Builder</span>
       </div>
-    </aside>
+      <div class="header-actions">
+        <button class="btn-secondary" id="save-btn">💾 Speichern</button>
+        <button class="btn-primary" id="export-btn">📤 Exportieren</button>
+      </div>
+    </header>
 
-    <!-- Vorschau -->
-    <main class="preview">
-      <iframe id="preview-frame" src="preview.html"></iframe>
-    </main>
+    <div class="main-content">
+      <!-- Chatbereich -->
+      <aside class="chat">
+        <div class="chat-header">
+          <h2>🤖 KI-Assistent</h2>
+          <p class="chat-subtitle">Beschreibe einfach, was du brauchst</p>
+        </div>
+        
+        <div class="chat-welcome" id="chat-welcome">
+          <div class="welcome-card">
+            <h3>👋 Willkommen!</h3>
+            <p>Ich helfe dir dabei, deine perfekte Website zu erstellen. Beschreibe einfach, was du brauchst:</p>
+            <div class="example-prompts">
+              <button class="example-prompt" data-prompt="Erstelle eine moderne Landingpage für mein Startup mit blauer Farbgebung">
+                💼 Startup Landingpage
+              </button>
+              <button class="example-prompt" data-prompt="Ich brauche eine Portfolio-Website für meine Fotografie mit einer großen Bildergalerie">
+                📸 Portfolio Website
+              </button>
+              <button class="example-prompt" data-prompt="Erstelle eine About-Seite für mein Unternehmen mit Team-Bereich">
+                👥 Über uns Seite
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="chat-messages"></div>
+        
+        <div class="chat-input">
+          <div class="input-wrapper">
+            <textarea id="message-input" placeholder="Z.B. 'Erstelle eine moderne Landingpage für mein Restaurant mit warmen Farben und Speisekarte'" rows="1"></textarea>
+            <button id="send-btn" disabled>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                <path d="M2 21L23 12L2 3V10L17 12L2 14V21Z" fill="currentColor"/>
+              </svg>
+            </button>
+          </div>
+          <div class="input-footer">
+            <span class="typing-indicator" id="typing-indicator" style="display: none;">
+              <span></span><span></span><span></span>
+            </span>
+            <span class="char-count" id="char-count">0/500</span>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Vorschau -->
+      <main class="preview">
+        <div class="preview-header">
+          <h3>📱 Live Vorschau</h3>
+          <div class="preview-controls">
+            <button class="device-btn active" data-device="desktop">💻</button>
+            <button class="device-btn" data-device="tablet">📱</button>
+            <button class="device-btn" data-device="mobile">📱</button>
+            <button class="refresh-btn" id="refresh-preview">🔄</button>
+          </div>
+        </div>
+        <div class="preview-container">
+          <iframe id="preview-frame" src="preview.html"></iframe>
+        </div>
+        <div class="preview-status" id="preview-status">
+          <span class="status-indicator">🟢</span>
+          <span>Bereit für Eingaben</span>
+        </div>
+      </main>
+    </div>
   </div>
 
   <script src="chat.js"></script>

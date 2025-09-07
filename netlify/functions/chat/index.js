@@ -366,17 +366,78 @@ export async function handler(event, context) {
   }
 
   // ----------------------------------------------------------
-  // 4) Antworttext für No-Coder (verständlich + nächste Schritte)
+  // 4) Intelligenter Antworttext für No-Coder (verständlich + nächste Schritte)
   // ----------------------------------------------------------
-  const reply = [
-    "Alles klar! Ich habe verstanden, was du möchtest:",
-    `• Seitentyp: ${finalSpec.pageType}`,
-    `• Stil: ${finalSpec.tone}, Hauptfarbe: ${finalSpec.theme.primary}`,
-    `• Abschnitte: ${finalSpec.sections.join(", ")}`,
-    `• Bilder: ~${finalSpec.images.desired} vorgesehen`,
+  
+  // Dynamische Antwort basierend auf erkannten Inhalten
+  const pageTypeNames = {
+    landing: "Landingpage",
+    portfolio: "Portfolio-Website", 
+    about: "Über uns Seite",
+    blog: "Blog",
+    shop: "Online-Shop",
+    contact: "Kontaktseite"
+  };
+  
+  const colorNames = {
+    blue: "Blau-Tönen",
+    beige: "warmen Beige-Tönen", 
+    black: "elegantem Schwarz",
+    white: "klarem Weiß",
+    gray: "modernem Grau",
+    green: "frischem Grün",
+    red: "kräftigem Rot"
+  };
+  
+  const toneNames = {
+    minimal: "minimalistisch und clean",
+    premium: "hochwertig und premium", 
+    playful: "verspielt und freundlich"
+  };
+  
+  // Personalisierte Begrüßung
+  const greeting = [
+    "Perfekt! 🎉 Ich habe deine Wünsche verstanden und einen Plan erstellt:",
     "",
-    "Wenn du willst, kann ich daraus jetzt direkt eine Vorschau bauen.",
-    "Sag z. B.: „Erzeuge die Seite“ oder „Mach daraus eine Landingpage mit großer Hero-Sektion und Button“.",
+    `**${pageTypeNames[finalSpec.pageType] || finalSpec.pageType}** in ${colorNames[finalSpec.theme.primary] || finalSpec.theme.primary}`,
+    `Stil: ${toneNames[finalSpec.tone] || finalSpec.tone}`,
+    ""
+  ];
+  
+  // Abschnitte benutzerfreundlich erklären
+  const sectionDescriptions = {
+    hero: "🎯 Hero-Bereich (großer Titel + Hauptbotschaft)",
+    features: "⭐ Funktionen/Vorteile-Sektion", 
+    gallery: "🖼️ Bildergalerie",
+    cta: "📢 Call-to-Action (Handlungsaufforderung)",
+    testimonials: "💬 Kundenstimmen",
+    pricing: "💰 Preise/Pakete",
+    faq: "❓ Häufige Fragen",
+    footer: "📄 Fußbereich (Links, Impressum)",
+    about: "👥 Über uns/mich",
+    contact: "📞 Kontakt-Formular"
+  };
+  
+  const sectionsText = finalSpec.sections
+    .map(s => sectionDescriptions[s] || `• ${s}`)
+    .join("\n");
+  
+  // Nächste Schritte vorschlagen
+  const nextSteps = [
+    "",
+    "**Was passiert als nächstes?**",
+    "✅ Sage **'Generiere die Website'** für eine Live-Vorschau",
+    "✏️ Oder beschreibe Änderungen: *'Mach die Farbe grüner'*",
+    "🎨 Oder füge hinzu: *'Ich brauche noch eine Galerie mit 6 Bildern'*",
+    "",
+    "*Ich erstelle alles automatisch - du musst nichts programmieren!* 🚀"
+  ];
+  
+  const reply = [
+    ...greeting,
+    "**Geplante Bereiche:**",
+    sectionsText,
+    ...nextSteps
   ].join("\n");
 
   // ----------------------------------------------------------

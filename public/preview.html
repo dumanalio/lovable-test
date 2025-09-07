@@ -3,31 +3,260 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Preview</title>
+  <title>Live Vorschau</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
+    
     body {
       margin: 0;
-      font-family: system-ui, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
-      background: #f0f0f0;
+      padding: 2rem;
     }
-    .placeholder {
+    
+    .preview-container {
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      padding: 3rem;
+      max-width: 600px;
       text-align: center;
-      color: #555;
+      position: relative;
+      overflow: hidden;
     }
-    .placeholder h1 {
-      font-size: 1.8rem;
+    
+    .preview-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+      background-size: 200% 100%;
+      animation: shimmer 2s ease-in-out infinite;
+    }
+    
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    
+    .logo {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 2rem;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin: 0 0 1rem 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+    
+    .subtitle {
+      font-size: 1.25rem;
+      color: #6b7280;
+      margin-bottom: 2rem;
+      line-height: 1.5;
+    }
+    
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.5rem;
+      margin: 3rem 0;
+    }
+    
+    .feature {
+      padding: 1.5rem;
+      background: #f8fafc;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
+      transition: all 0.3s ease;
+    }
+    
+    .feature:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      border-color: #cbd5e1;
+    }
+    
+    .feature-icon {
+      font-size: 2rem;
       margin-bottom: 0.5rem;
+      display: block;
+    }
+    
+    .feature-title {
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 0.25rem;
+    }
+    
+    .feature-desc {
+      font-size: 0.875rem;
+      color: #6b7280;
+      line-height: 1.4;
+    }
+    
+    .cta-section {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid #e5e7eb;
+    }
+    
+    .cta-text {
+      font-size: 1.125rem;
+      color: #374151;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+    }
+    
+    .example-prompts {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    
+    .example-prompt {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 0.875rem;
+      color: #374151;
+      text-align: left;
+      transition: all 0.2s ease;
+      cursor: default;
+    }
+    
+    .example-prompt:hover {
+      background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+      transform: translateX(4px);
+    }
+    
+    .status {
+      position: absolute;
+      bottom: 1rem;
+      right: 1rem;
+      background: #10b981;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .status::before {
+      content: '●';
+      animation: blink 2s ease-in-out infinite;
+    }
+    
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0.3; }
+    }
+    
+    @media (max-width: 640px) {
+      body {
+        padding: 1rem;
+      }
+      
+      .preview-container {
+        padding: 2rem;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+      
+      .features {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="placeholder">
-    <h1>🚀 Deine Seite erscheint hier</h1>
-    <p>Frag mich links im Chat, was du bauen möchtest.</p>
+  <div class="preview-container">
+    <div class="logo">🚀</div>
+    
+    <h1>Deine Website wird hier entstehen</h1>
+    <p class="subtitle">Beschreibe einfach im Chat links, was du brauchst - ich erstelle alles automatisch für dich!</p>
+    
+    <div class="features">
+      <div class="feature">
+        <span class="feature-icon">💬</span>
+        <div class="feature-title">Einfach beschreiben</div>
+        <div class="feature-desc">In natürlicher Sprache sagen, was du willst</div>
+      </div>
+      
+      <div class="feature">
+        <span class="feature-icon">🎨</span>
+        <div class="feature-title">Automatisches Design</div>
+        <div class="feature-desc">KI wählt Farben, Layout und Stil passend aus</div>
+      </div>
+      
+      <div class="feature">
+        <span class="feature-icon">⚡</span>
+        <div class="feature-title">Sofortige Vorschau</div>
+        <div class="feature-desc">Sieh deine Website direkt hier entstehen</div>
+      </div>
+    </div>
+    
+    <div class="cta-section">
+      <div class="cta-text">Probiere diese Beispiele aus:</div>
+      
+      <div class="example-prompts">
+        <div class="example-prompt">
+          💼 "Erstelle eine Landingpage für mein Startup"
+        </div>
+        <div class="example-prompt">
+          📸 "Ich brauche eine Portfolio-Website für Fotografie"
+        </div>
+        <div class="example-prompt">
+          🍕 "Erstelle eine Website für mein Restaurant"
+        </div>
+        <div class="example-prompt">
+          👥 "Mache eine Über-uns Seite für mein Team"
+        </div>
+      </div>
+    </div>
+    
+    <div class="status">
+      Bereit für deine Ideen
+    </div>
   </div>
 </body>
 </html>
