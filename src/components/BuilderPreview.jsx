@@ -1,5 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
+import PropTypes from "prop-types";
+
+// Make PropTypes globally available for generated code
+if (typeof window !== "undefined") {
+  window.PropTypes = PropTypes;
+}
 
 // Lightweight in-browser React runtime using Babel Standalone
 // We compile user-provided JSX to JS, then eval in a sandboxed Function scope.
@@ -47,6 +53,7 @@ function useTranspiled(code) {
       const preamble = `
         const { useState, useEffect, useMemo, useRef, useCallback, useContext } = React;
         const { Fragment, StrictMode, Suspense } = React;
+        const PropTypes = window.PropTypes;
       `;
       const source = `${preamble}\n${normalized}`;
 
@@ -95,7 +102,10 @@ function PreviewRuntime({ code }) {
         return;
       }
 
-      if (!js) {
+        // Make PropTypes available globally for generated code
+        if (!window.PropTypes) {
+          window.PropTypes = PropTypes;
+        }      if (!js) {
         container.innerHTML = `<div style="padding:16px;color:#666;font-family:ui-sans-serif;">No code to preview.</div>`;
         return;
       }
