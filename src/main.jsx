@@ -1,11 +1,10 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import StandaloneChatTest from "./StandaloneChatTest";
+import App from "./App";
+import "./index.css";
 
-// This is a temporary debug setup to isolate the chat input issue.
-// It renders ONLY the standalone test component.
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <StandaloneChatTest />
+    <App />
   </React.StrictMode>
 );
