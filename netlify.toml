@@ -5,7 +5,7 @@
 [build]
   publish = "public"
   functions = "netlify/functions"
-  command = "npm run build"
+  command = "echo 'Static site - no build needed'"
 
 # Node.js Version
 [build.environment]
@@ -14,7 +14,7 @@
 
 # Function Configuration
 [functions]
-  node_bundler = "esbuild"
+  node_bundler = "esbuild
   external_node_modules = ["zod"]
 
 # API Redirects - Clean URLs für bessere UX
@@ -124,15 +124,14 @@
 [context.branch-deploy.environment]
   NODE_ENV = "development"
 
-# Edge Functions (für zukünftige Features)
-[[edge_functions]]
-  function = "middleware"
-  path = "/*"
+# Edge Functions werden später hinzugefügt
+# [[edge_functions]]
+#   function = "middleware"
+#   path = "/*"
 
-# Rate Limiting Edge Function
-[[edge_functions]]
-  function = "rate-limit"
-  path = "/api/*"
+# [[edge_functions]]
+#   function = "rate-limit"
+#   path = "/api/*"
 
 # Development Settings
 [dev]
