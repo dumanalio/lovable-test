@@ -1,7 +1,8 @@
 // Netlify Function: generate
 // Calls OpenAI with server-side API key and returns { title, code } JSON
 
-const SYSTEM_PROMPT = "You are a Senior React Developer. Generate modern, responsive React components with best practices.\n\nREQUIREMENTS:\n- Use functional components with React hooks\n- Use Tailwind CSS for styling\n- Ensure accessibility (WCAG 2.1 AA)\n- Mobile-first responsive design\n- Clean, semantic JSX structure\n\nOUTPUT FORMAT:\nReturn ONLY valid JSON:\n{\n  \"title\": \"Component Name\",\n  \"code\": \"import React from 'react';\\\\n\\\\nconst ComponentName = () => {\\\\n  return (\\\\n    <div className='p-4'>\\\\n      <h1>Hello World</h1>\\\\n    </div>\\\\n  );\\\\n};\\\\n\\\\nexport default ComponentName;\"\n}\n\nGenerate a complete React component based on the user's request.";
+const SYSTEM_PROMPT =
+  'You are a Senior React Developer. Generate modern, responsive React components with best practices.\n\nREQUIREMENTS:\n- Use functional components with React hooks\n- Use Tailwind CSS for styling\n- Ensure accessibility (WCAG 2.1 AA)\n- Mobile-first responsive design\n- Clean, semantic JSX structure\n\nOUTPUT FORMAT:\nReturn ONLY valid JSON:\n{\n  "title": "Component Name",\n  "code": "import React from \'react\';\\\\n\\\\nconst ComponentName = () => {\\\\n  return (\\\\n    <div className=\'p-4\'>\\\\n      <h1>Hello World</h1>\\\\n    </div>\\\\n  );\\\\n};\\\\n\\\\nexport default ComponentName;"\n}\n\nGenerate a complete React component based on the user\'s request.';
 
 function extractJson(text) {
   try {
@@ -88,7 +89,10 @@ exports.handler = async (event) => {
       { role: "system", content: `PROJECT_BRIEF: ${PROJECT_BRIEF}` },
       ...(FEW_SHOT ? [FEW_SHOT] : []),
       ...recent,
-      { role: "user", content: `Generate as per rules. Return ONLY {"title","code"}.\nRequest: ${userPrompt}` },
+      {
+        role: "user",
+        content: `Generate as per rules. Return ONLY {"title","code"}.\nRequest: ${userPrompt}`,
+      },
     ];
 
     const res = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -102,7 +106,7 @@ exports.handler = async (event) => {
         messages,
         temperature: 0.35,
         max_tokens: 5000,
-        response_format: { type: "text" }
+        response_format: { type: "text" },
       }),
     });
 

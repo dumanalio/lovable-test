@@ -26,3 +26,6 @@
 
 [build.processing.html]
   pretty_urls = true
+
+[dev]
+  targetPort = 3000

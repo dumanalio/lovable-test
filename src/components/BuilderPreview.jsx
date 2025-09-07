@@ -13,7 +13,10 @@ function normalizeAppCode(src) {
   s = s.replace(/export\s+default\s+class\s+App\s*/g, "class App ");
   s = s.replace(/export\s+default\s*\(/g, "const App = (");
   s = s.replace(/export\s+default\s+async\s*\(/g, "const App = async (");
-  s = s.replace(/export\s+default\s+([A-Za-z_$][\w$]*)\s*;/g, "const App = $1;");
+  s = s.replace(
+    /export\s+default\s+([A-Za-z_$][\w$]*)\s*;/g,
+    "const App = $1;"
+  );
   // remove any remaining export statements
   s = s.replace(/^\s*export\s+\{[^}]*\}\s*;?\s*$/gm, "");
   s = s.replace(/^\s*export\s+default\s*;?\s*$/gm, "");
@@ -29,7 +32,8 @@ function useTranspiled(code) {
       const preamble = `const { useState, useEffect, useMemo, useRef, useCallback } = React;`;
       const source = `${preamble}\n${normalized}`;
       // Babel standalone is provided via CDN in index.html? Not guaranteed. Fallback passthrough.
-      const hasBabel = typeof window !== "undefined" && window.Babel && window.Babel.transform;
+      const hasBabel =
+        typeof window !== "undefined" && window.Babel && window.Babel.transform;
       const js = hasBabel
         ? window.Babel.transform(source, { presets: ["react"] }).code
         : source;
@@ -69,11 +73,15 @@ function PreviewRuntime({ code }) {
       const root = ReactDOM.createRoot(container);
       root.render(React.createElement(App));
       return () => {
-        try { root.unmount(); } catch (_) {}
+        try {
+          root.unmount();
+        } catch (_) {}
       };
     } catch (e) {
       console.error(e);
-      container.innerHTML = `<pre style="padding:16px;color:#ef4444;white-space:pre-wrap;font-family:ui-monospace,monospace;">${String(e)}</pre>`;
+      container.innerHTML = `<pre style="padding:16px;color:#ef4444;white-space:pre-wrap;font-family:ui-monospace,monospace;">${String(
+        e
+      )}</pre>`;
     }
   }, [js]);
 
@@ -140,7 +148,9 @@ export default function BuilderPreview({ item }) {
 
       {/* Preview Content */}
       <div className="flex-1 overflow-hidden">
-        <div className={`p-6 ${isFullscreen ? "max-w-none" : "max-w-6xl mx-auto"}`}>
+        <div
+          className={`p-6 ${isFullscreen ? "max-w-none" : "max-w-6xl mx-auto"}`}
+        >
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
