@@ -29,18 +29,19 @@
   to = "/.netlify/functions/projects/:splat"
   status = 200
 
-# SPA Fallback
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# SPA Fallback entfernt - verursacht iframe-Probleme
 
 # Basic Headers
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
     X-Content-Type-Options = "nosniff"
+
+# Erlaube iframe für preview.html
+[[headers]]
+  for = "/preview.html"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
 
 [[headers]]
   for = "/api/*"
