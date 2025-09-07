@@ -6,8 +6,18 @@ import { motion } from "framer-motion";
 function normalizeAppCode(src) {
   if (!src || typeof src !== "string") return "";
   let s = src;
-  // remove import lines
+
+  // Remove all import statements (more comprehensive pattern)
+  s = s.replace(/^\s*import\s+.*?\s*from\s+['"`][^'"`]*['"`]\s*;?\s*$/gm, "");
+  s = s.replace(/^\s*import\s*\{[^}]*\}\s*from\s+['"`][^'"`]*['"`]\s*;?\s*$/gm, "");
+  s = s.replace(/^\s*import\s+['"`][^'"`]*['"`]\s*;?\s*$/gm, "");
+
+  // Remove any remaining import lines that might not match the above patterns
   s = s.replace(/^\s*import[^;]*;?\s*$/gm, "");
+
+  // Clean up extra newlines
+  s = s.replace(/\n\s*\n/g, '\n');
+
   // handle common export default patterns
   s = s.replace(/export\s+default\s+function\s+App\s*\(/g, "function App(");
   s = s.replace(/export\s+default\s+class\s+App\s*/g, "class App ");
@@ -20,17 +30,31 @@ function normalizeAppCode(src) {
   // remove any remaining export statements
   s = s.replace(/^\s*export\s+\{[^}]*\}\s*;?\s*$/gm, "");
   s = s.replace(/^\s*export\s+default\s*;?\s*$/gm, "");
-  return s;
+
+  // Ensure we have a proper App export
+  if (!s.includes('const App =') && !s.includes('function App') && !s.includes('class App')) {
+    // If no App is defined, wrap the entire code in a function
+    s = `function App() {\n${s}\n  return null;\n}`;
+  }
+
+  return s.trim();
 }
 
 function useTranspiled(code) {
   return useMemo(() => {
     if (!code) return null;
     try {
+      console.log("Original code:", code);
+
       const normalized = normalizeAppCode(code);
+      console.log("Normalized code:", normalized);
+
       // Provide common React hooks without explicit imports
       const preamble = `const { useState, useEffect, useMemo, useRef, useCallback } = React;`;
       const source = `${preamble}\n${normalized}`;
+
+      console.log("Source to transpile:", source);
+
       // Babel standalone is provided via CDN in index.html
       const hasBabel =
         typeof window !== "undefined" && window.Babel && window.Babel.transform;
@@ -38,11 +62,29 @@ function useTranspiled(code) {
         console.warn("Babel not available, using source directly");
         return source;
       }
-      const js = window.Babel.transform(source, { presets: ["react"] }).code;
-      return js;
+
+      const result = window.Babel.transform(source, {
+        presets: ["react"],
+        plugins: [],
+        filename: 'component.jsx'
+      });
+
+      console.log("Transpiled result:", result.code);
+      return result.code;
+
     } catch (e) {
-      console.error("Transpile error", e);
-      return `console.error("Transpilation failed:", ${JSON.stringify(e.message)}); function App() { return React.createElement("div", {className: "p-4 text-red-500"}, "Transpilation Error: " + ${JSON.stringify(e.message)}); }`;
+      console.error("Transpile error details:", e);
+      console.error("Error stack:", e.stack);
+
+      // Create a fallback component that shows the error
+      const errorMessage = e.message.replace(/['"`]/g, '\\$&'); // Escape quotes
+      return `console.error("Transpilation failed:", "${errorMessage}");
+function App() {
+  return React.createElement("div", {
+    className: "p-4 text-red-500 bg-red-50 border border-red-200 rounded",
+    style: { fontFamily: "ui-sans-serif, sans-serif" }
+  }, "Transpilation Error: ${errorMessage}");
+}`;
     }
   }, [code]);
 }
