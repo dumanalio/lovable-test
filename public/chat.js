@@ -184,26 +184,55 @@ async function callChatAPI(message) {
   try {
     updateStatus('processing', 'Verbinde mit KI...');
     
-    const res = await fetch("/api/chat", {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({ 
-        message, 
-        mode: "spec", // später auch "spec+ai"
-        history: conversationHistory.slice(-5) // Letzten 5 Nachrichten für Kontext
-      }),
-      signal: controller.signal
-    });
+    // Versuche verschiedene API-Endpunkte (für lokale Entwicklung und Produktion)
+    const endpoints = [
+      "/api/chat",                    // Netlify Redirect
+      "/.netlify/functions/chat",     // Direkter Netlify Path
+      "/netlify/functions/chat"       // Fallback
+    ];
+    
+    let res;
+    let lastError;
+    
+    for (const endpoint of endpoints) {
+      try {
+        res = await fetch(endpoint, {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify({ 
+            message, 
+            mode: "spec", // später auch "spec+ai"
+            history: conversationHistory.slice(-5) // Letzten 5 Nachrichten für Kontext
+          }),
+          signal: controller.signal
+        });
+        
+        if (res.ok) {
+          break; // Erfolgreicher Request
+        } else if (res.status !== 404) {
+          // Nicht-404 Fehler sofort werfen
+          const errorText = await res.text();
+          throw new Error(`Server Fehler ${res.status}: ${errorText}`);
+        }
+        
+      } catch (err) {
+        lastError = err;
+        if (err.name === 'AbortError') {
+          throw err; // Timeout sofort weiterwerfen
+        }
+        // Bei anderen Fehlern nächsten Endpoint versuchen
+        continue;
+      }
+    }
+    
+    if (!res || !res.ok) {
+      throw lastError || new Error('Alle API-Endpunkte nicht erreichbar');
+    }
 
     clearTimeout(timeoutId);
-
-    if (!res.ok) {
-      const errorText = await res.text();
-      throw new Error(`Server Fehler ${res.status}: ${errorText}`);
-    }
 
     const data = await res.json();
     
